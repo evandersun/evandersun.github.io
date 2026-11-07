@@ -1,0 +1,41 @@
+Package: com.evander.screentimespoofer
+Name: ScreenTimeSpoofer
+Version: 0.6.3
+Architecture: iphoneos-arm64
+Description: 修改「屏幕使用时间」界面里显示/统计的时长（只改 ScreenTimeUI 渲染层，不动系统数据库） · rootless（Dopamine / palera1n）
+Maintainer: evander
+Author: evander
+Section: Tweaks
+Depends: mobilesubstrate, firmware (>= 15.0)
+Replaces: com.example.screentimepoofer
+Filename: debs/com.evander.screentimespoofer_0.6.3_iphoneos-arm64.deb
+Size: 39300
+MD5sum: 8ecd31e87a95338b7e2925d9a459fcb4
+SHA1: 684978b52c5ab35e940d724d0600b482d7015e31
+SHA256: a4ba29d22a8894d0c538bbf2113ec8127432ae1aca3090bf97a99071f3da0ce3
+SHA512: 07aef4ef7ab90a3eeb9322fd613dd8c226e5a1173f6d1716bdf92f625bd5db3e419b5d61563b004b963c5b7d391c7dab9a0eb7d8cfbe7d537dae91ef949b22a3
+Depiction: https://evandersun.github.io/depiction/screentimespoofer.html
+SileoDepiction: https://evandersun.github.io/depiction/screentimespoofer.json
+Icon: https://evandersun.github.io/assets/icon.png
+Tag: role::hacker, compatible::ios15+
+
+Package: com.evander.screentimespoofer
+Name: ScreenTimeSpoofer
+Version: 0.6.3
+Architecture: iphoneos-arm64e
+Description: 修改「屏幕使用时间」界面里显示/统计的时长（只改 ScreenTimeUI 渲染层，不动系统数据库） · roothide（隐根 / Dopamine RootHide）
+Maintainer: evander
+Author: evander
+Section: Tweaks
+Depends: mobilesubstrate, firmware (>= 15.0)
+Replaces: com.example.screentimepoofer
+Filename: debs/com.evander.screentimespoofer_0.6.3_iphoneos-arm64e.deb
+Size: 39332
+MD5sum: 3ff129c7458f45d5c6ba2a57d615be18
+SHA1: 0714dea62e24ffa572b8d8888ed63c2e22e580f4
+SHA256: eb2a0b2152a73e5fcf4a5595c3357fb4eab4ed8e0f9896393e95d98a94ca5f2e
+SHA512: 8228a23882b33187546130d586f1be88057ba4820c5c784c7615a7279872c83704b1db585a94565e2d76e170a4f4a9fd427c44a1dac103f04f3095ab6e883fe5
+Depiction: https://evandersun.github.io/depiction/screentimespoofer.html
+SileoDepiction: https://evandersun.github.io/depiction/screentimespoofer.json
+Icon: https://evandersun.github.io/assets/icon.png
+Tag: role::hacker, compatible::ios15+

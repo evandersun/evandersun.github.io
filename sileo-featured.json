@@ -1,0 +1,11 @@
+{
+  "class": "FeaturedBannerView",
+  "banners": [
+    {
+      "title": "ScreenTimeSpoofer",
+      "url": "https://evandersun.github.io/depiction/screentimespoofer.html",
+      "image": "https://evandersun.github.io/assets/banner.png",
+      "package": "com.evander.screentimespoofer"
+    }
+  ]
+}

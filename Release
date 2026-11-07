@@ -1,0 +1,37 @@
+Origin: Evander's Repo
+Label: Evander's Repo
+Suite: stable
+Version: 1.0
+Codename: stable
+Architectures: iphoneos-arm iphoneos-arm64 iphoneos-arm64e
+Components: main
+Description: ScreenTimeSpoofer —— 修改「屏幕使用时间」显示的时长
+Date: Sat, 07 Nov 2026 10:41:17 GMT
+MD5Sum:
+ 09045caa5cd1f0ff97d1ae0f22f4a417             2078 Packages
+ 9477c036d3f5475c64b4fb20bb4d0a9e              931 Packages.gz
+ 3b3e874a2f4cf1c25e2a086d836e18c3             1100 Packages.bz2
+ c10cc520cdf4a3dada0ee8b143d7b64a              924 Packages.xz
+ fa26c493e398ebd572fffeaf956d75cb             1127 CydiaIcon.png
+ 102387d9dfc6e181e76ec1ebf597ab39              296 sileo-featured.json
+SHA1:
+ 0eafd1333795bdd328d5f35f7cf44b00748fe705             2078 Packages
+ 3c781c3a6516f6d98e3f3ad38d41257ab5a30a64              931 Packages.gz
+ 509be26e2c72d87641ab1963add9d143b566522a             1100 Packages.bz2
+ 948fb3029c07258c803af1414bbf9ce76e9422a8              924 Packages.xz
+ 7f32445833f57068240e7c1c34def3341cf8711c             1127 CydiaIcon.png
+ 22a315d17a5c7fdacb1b6c227e22d16fe37730be              296 sileo-featured.json
+SHA256:
+ d821d4c7d6195e4766e3e32060e88949ad779b477a6976d3e1bb894403383122             2078 Packages
+ 3c3df8b9e631311882b558957aad5e94980dc65f811e5d97e362173df72d630e              931 Packages.gz
+ edff8a2e1d1b1b84ce8a548a0d98f2d1d9d0865de267a6ef37361c5da8ac5581             1100 Packages.bz2
+ 5c2037da3f06466da3ce4c68f0bbe49d571e01d801874ff0041b81578df1a2cb              924 Packages.xz
+ 61eb5ce4012be854f230fbc2c7cd8cc8cbb48cda0bde144949e0e56822517de9             1127 CydiaIcon.png
+ 91d110d1a9ae4530629338ad6530072f153851f9e6306010cbf547a7562786e6              296 sileo-featured.json
+SHA512:
+ 12f8c3df3415123218cc3c02cd692473639aa5639e2cc28be476c560f3bab2d6e98ee32ee17f851ce2f3ef5f4c91d578a1d25cd2d72711f173daa2c53dd307de             2078 Packages
+ 7c856b090b33c1f93eaf699a2eb7441a619deb9104e3b3131fd611affe1d6686b270e41042e8f2e50170f6f18dd5cc47d2bdce90872199ebd19581ece3daaa6a              931 Packages.gz
+ f3dec65ae1b49da38fa3b82a2c8604c48a2b18b2ecc7ec6900565505d96e7302c129bfbf4d7cba6e54d2bec31395aa59f0b8b7713587f649ffd907d215beaf6c             1100 Packages.bz2
+ 785ff807242ecb58d920e9d7842d8e0cf8f7aa2dcc40b189aa2cd36e56033844c75337b031598f403d56b64b9da8d98c343446a94bcb29b4188cbfcda599d0ca              924 Packages.xz
+ 89cd06585947996fdfd5a2aa58a217906875f59f362277c556962c797f7ff739a4c1aecd0f65f34e76721006b7bbb5215aee43b4b2070de14fb15665dd14da18             1127 CydiaIcon.png
+ 0baf9db2c375d4b00d6d0280bcd912a4bc4b699a6892ff5403b245c8df673dafcc399bd2972c76313511e961f9a7b472f2478b699f05d0ebc34f927b6043c894              296 sileo-featured.json
