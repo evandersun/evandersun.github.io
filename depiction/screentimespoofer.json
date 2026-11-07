@@ -1,6 +1,6 @@
 {
   "minVersion": "0.1",
-  "headerImage": "https://evandersun.github.io/assets/banner.png?v=2",
+  "headerImage": "https://evandersun.github.io/assets/banner.png?v=3",
   "tintColor": "#4A9DFF",
   "backgroundColor": "#121A2E",
   "tabs": [
@@ -11,12 +11,12 @@
         {
           "class": "DepictionHeaderView",
           "title": "ScreenTimeSpoofer",
-          "subtitle": "v0.6.3 · roothide / rootless",
-          "icon": "https://evandersun.github.io/assets/icon.png?v=2"
+          "subtitle": "v0.6.4 · roothide / rootless",
+          "icon": "https://evandersun.github.io/assets/icon.png?v=3"
         },
         {
           "class": "DepictionMarkdownView",
-          "markdown": "## 修改「屏幕使用时间」显示的时长\n\n只改「设置 → 屏幕使用时间」界面的**显示值**，不动系统数据库、不影响真实的屏幕使用时间统计。\n\n### 用法\n\n1. 安装后打开「设置 → ScreenTimeSpoofer」\n2. 输入想要的分钟数，点「应用」\n3. 点「打开屏幕使用时间」按钮（约 0.75 秒）进入页面查看效果\n\n### 两种包，按你的越狱环境自动匹配\n\n| 架构 | 适用环境 |\n|---|---|\n| `iphoneos-arm64e` | **roothide**（Dopamine RootHide 等隐根越狱） |\n| `iphoneos-arm64` | **rootless**（Dopamine / palera1n） |\n\n包管理器会按设备架构自动选择正确的那个，不用手动挑。\n\n### 说明\n\n- 依赖 PreferenceLoader、mobilesubstrate / ElleKit，目标 iOS 15 及以上\n- 若装过旧包名 `com.example.screentimepoofer`，新包带 `Replaces`，直接覆盖安装即可\n- 诊断日志：`/var/mobile/Library/Logs/ScreenTimeSpoofer-boot.log`",
+          "markdown": "## 修改「屏幕使用时间」显示的时长\n\n只改「设置 → 屏幕使用时间」界面的**显示值**，不动系统数据库、不影响真实的屏幕使用时间统计。\n\n### 用法\n\n1. 安装后打开「设置 → ScreenTimeSpoofer」\n2. 输入想要的分钟数，点「应用」\n3. 点「打开屏幕使用时间」按钮（约 0.75 秒）进入页面查看效果\n4. 点「QQ群：1135135953」跳转加入交流群\n\n### 两种包，按你的越狱环境自动匹配\n\n| 架构 | 适用环境 |\n|---|---|\n| `iphoneos-arm64e` | **roothide**（Dopamine RootHide 等隐根越狱） |\n| `iphoneos-arm64` | **rootless**（Dopamine / palera1n） |\n\n包管理器会按设备架构自动选择正确的那个，不用手动挑。\n\n### 说明\n\n- 依赖 PreferenceLoader、mobilesubstrate / ElleKit，目标 iOS 15 及以上\n- 若装过旧包名 `com.example.screentimepoofer`，新包带 `Replaces`，直接覆盖安装即可\n- 诊断日志：`/var/mobile/Library/Logs/ScreenTimeSpoofer-boot.log`\n- 完整版本历史：[源内更新日志](https://evandersun.github.io/changelog.html)",
           "useSpacing": true
         },
         {
@@ -37,11 +37,11 @@
       "views": [
         {
           "class": "DepictionSubheaderView",
-          "title": "v0.6.3"
+          "title": "v0.6.4"
         },
         {
           "class": "DepictionMarkdownView",
-          "markdown": "- 一键跳转从 20 多秒压到约 0.75 秒：删掉阻塞主线程的同步 `openURL`、URL 精简为 2 个纯异步、立即 pop 回首页 + 0.25 秒后 didSelect\n- `[JUMP]` 日志带相对耗时时间戳\n\n**v0.6.2** 修好一键跳转（多阶段协调器：URL 深链 → pop 回首页 → 首页 active 时 didSelect → 验证 → 弹窗）。\n\n**v0.6.1** 框架懒加载实时 dump + 设置页按钮写入同一份 boot 日志。\n\n**v0.5.9** `Replaces` 解决旧包名文件覆盖冲突，`preinst` 改精确路径清理，安装恢复到秒级。",
+          "markdown": "- 设置页新增「QQ群：1135135953」按钮，点一下异步打开加群链接\n- 只用异步 `openURL:options:completionHandler:`，不阻塞主线程\n- 源侧新增精选置顶横幅与[完整更新日志](https://evandersun.github.io/changelog.html)\n- 插件图标改回几何时钟，源头像（猫图）保持不变\n\n**v0.6.3** 一键跳转从 20 多秒压到约 0.75 秒：删掉阻塞主线程的同步 `openURL`、URL 精简为 2 个纯异步、立即 pop 回首页 + 0.25 秒后 didSelect；`[JUMP]` 日志带相对耗时时间戳。\n\n**v0.6.2** 修好一键跳转（多阶段协调器：URL 深链 → pop 回首页 → 首页 active 时 didSelect → 验证 → 弹窗）。\n\n**v0.6.1** 框架懒加载实时 dump + 设置页按钮写入同一份 boot 日志。\n\n**v0.5.9** `Replaces` 解决旧包名文件覆盖冲突，`preinst` 改精确路径清理，安装恢复到秒级。",
           "useSpacing": true
         }
       ]
