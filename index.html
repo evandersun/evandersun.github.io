@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Evander's Repo · iOS 越狱源</title>
-<meta name="description" content="ScreenTimeSpoofer 官方越狱源，支持 roothide 与 rootless">
+<meta name="description" content="Evander's Repo，兼容 Sileo / Zebra / Cydia / Installer 的 iOS 越狱源">
 <style>
   :root{color-scheme:dark;--bg:#0a0f1e;--card:#131d33;--bd:#26365a;--tx:#eaf1ff;--mut:#93a7cd;--acc:#4a9dff;--ok:#42d392}
   *{box-sizing:border-box}
@@ -36,8 +36,6 @@
   th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--bd)}
   th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
   td code{background:#0c1730;padding:2px 7px;border-radius:5px;font-size:12.5px;color:#a9d2ff}
-  .pill{font-size:11px;padding:2px 9px;border-radius:99px;background:#1d3a2a;color:#7ce0ae;border:1px solid #2c5942}
-  .pill.rh{background:#1a2f52;color:#8fc0ff;border-color:#2d4d80}
   .sec{margin-top:34px}
   .sec h2{font-size:19px;margin:0 0 12px}
   a{color:var(--acc)}
@@ -52,7 +50,7 @@
     <img src="CydiaIcon.png" alt="repo icon">
     <div>
       <h1>Evander's Repo <span class="badge">iOS 越狱源</span></h1>
-      <div class="sub">ScreenTimeSpoofer 官方源 · 支持 roothide 与 rootless</div>
+      <div class="sub">个人维护的软件源 · 兼容 Sileo / Zebra / Cydia / Installer</div>
     </div>
   </div>
 
@@ -71,52 +69,32 @@
         <li><b>Cydia</b>：源 → 编辑 → 添加 → 输入地址</li>
         <li><b>Installer</b>：Sources → ＋ → 粘贴地址</li>
       </ul>
-      <p class="m" style="font-size:13px;margin:12px 0 0">添加后搜索 <b>ScreenTimeSpoofer</b> 安装即可。</p>
+      <p class="m" style="font-size:13px;margin:12px 0 0">添加后刷新一次源即可浏览收录内容。</p>
     </div>
     <div class="card">
-      <h2>包会自动匹配架构</h2>
-      <p class="m" style="font-size:14px;margin:0 0 10px">源里同时提供两个包，包管理器按设备架构自动选对那个，<b>不用手动挑</b>：</p>
+      <h2>源信息</h2>
       <table>
-        <tr><th>架构</th><th>适用越狱</th></tr>
-        <tr><td><code>iphoneos-arm64e</code></td><td><span class="pill rh">roothide</span> Dopamine RootHide</td></tr>
-        <tr><td><code>iphoneos-arm64</code></td><td><span class="pill">rootless</span> Dopamine / palera1n</td></tr>
+        <tr><th>项目</th><th>内容</th></tr>
+        <tr><td>类型</td><td>flat repo</td></tr>
+        <tr><td>索引</td><td><code>Packages</code> / <code>.gz</code> / <code>.bz2</code> / <code>.xz</code></td></tr>
+        <tr><td>校验</td><td><code>Release</code>（MD5 / SHA1 / SHA256 / SHA512）</td></tr>
+        <tr><td>客户端</td><td>Sileo / Zebra / Cydia / Installer</td></tr>
       </table>
     </div>
   </div>
 
   <div class="sec">
-    <h2>收录的包</h2>
+    <h2>关于本源</h2>
     <div class="card">
-      <table>
-        <tr><th>包名</th><th>版本</th><th>架构</th><th>说明</th></tr>
-        <tr><td><b>ScreenTimeSpoofer</b><br><span class="m" style="font-size:12px">com.evander.screentimespoofer</span></td>
-            <td>0.6.4</td><td><code>arm64e</code> / <code>arm64</code></td>
-            <td>修改「设置 → 屏幕使用时间」显示的时长</td></tr>
-      </table>
-      <p class="m" style="font-size:13px;margin:12px 0 0">装好后进「设置 → ScreenTimeSpoofer」输入分钟数 → 点「应用」→ 点「打开屏幕使用时间」查看效果；点「QQ群：1135135953」可加入交流群。</p>
+      <p class="m" style="font-size:14px;margin:0">这是由 GitHub Pages 托管的标准 APT 软件源。索引文件与校验和由仓库内的构建脚本自动生成，包管理器可按设备架构读取对应条目。</p>
     </div>
     <div class="note">
-      本源为 <b>flat repo</b>，提供 <code>Packages</code> / <code>.gz</code> / <code>.bz2</code> / <code>.xz</code> 与 <code>Release</code> 校验和，兼容 Sileo / Zebra / Cydia / Installer。若装过旧包名 <code>com.example.screentimepoofer</code>，新包带 <code>Replaces</code>，可直接覆盖安装。
-    </div>
-  </div>
-
-  <div class="sec">
-    <h2>最近更新</h2>
-    <div class="card">
-      <table>
-        <tr><th>版本</th><th>日期</th><th>要点</th></tr>
-        <tr><td><b>v0.6.4</b></td><td>2026-11-07</td><td>QQ群入口按钮 · 精选置顶横幅 · 更新日志 · 插件图标改回时钟</td></tr>
-        <tr><td>v0.6.3</td><td>2026-11-07</td><td>一键跳转提速到约 0.75 秒 · 新建官方源</td></tr>
-        <tr><td>v0.6.2</td><td>2026-11-07</td><td>修复「打开屏幕使用时间」按钮无反应</td></tr>
-      </table>
-      <p class="m" style="font-size:13px;margin:12px 0 0"><a href="changelog.html">查看完整更新日志 →</a></p>
+      源图标、索引与页面均随仓库更新自动发布；若包管理器里显示的是旧内容，刷新源或删除后重新添加即可。
     </div>
   </div>
 
   <footer>
-    源码：<a href="https://github.com/evandersun/ScreenTimeSpoofer">github.com/evandersun/ScreenTimeSpoofer</a> ·
-    <a href="changelog.html">更新日志</a> ·
-    <a href="depiction/screentimespoofer.html">包详情</a>
+    Evander's Repo · Powered by GitHub Pages
   </footer>
 </div>
 <script>

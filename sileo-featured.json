@@ -2,18 +2,5 @@
   "class": "FeaturedBannersView",
   "itemSize": "{263, 148}",
   "itemCornerRadius": 10,
-  "banners": [
-    {
-      "url": "https://evandersun.github.io/assets/featured.png?v=3",
-      "title": "ScreenTimeSpoofer · 置顶推荐",
-      "package": "com.evander.screentimespoofer",
-      "hideShadow": false
-    },
-    {
-      "url": "https://evandersun.github.io/assets/featured-group.png?v=3",
-      "title": "v0.6.4 · QQ群 1135135953 已上线",
-      "package": "com.evander.screentimespoofer",
-      "hideShadow": false
-    }
-  ]
+  "banners": []
 }
