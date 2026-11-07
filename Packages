@@ -16,7 +16,7 @@ SHA256: a4ba29d22a8894d0c538bbf2113ec8127432ae1aca3090bf97a99071f3da0ce3
 SHA512: 07aef4ef7ab90a3eeb9322fd613dd8c226e5a1173f6d1716bdf92f625bd5db3e419b5d61563b004b963c5b7d391c7dab9a0eb7d8cfbe7d537dae91ef949b22a3
 Depiction: https://evandersun.github.io/depiction/screentimespoofer.html
 SileoDepiction: https://evandersun.github.io/depiction/screentimespoofer.json
-Icon: https://evandersun.github.io/assets/icon.png
+Icon: https://evandersun.github.io/assets/icon.png?v=2
 Tag: role::hacker, compatible::ios15+
 
 Package: com.evander.screentimespoofer
@@ -37,5 +37,5 @@ SHA256: eb2a0b2152a73e5fcf4a5595c3357fb4eab4ed8e0f9896393e95d98a94ca5f2e
 SHA512: 8228a23882b33187546130d586f1be88057ba4820c5c784c7615a7279872c83704b1db585a94565e2d76e170a4f4a9fd427c44a1dac103f04f3095ab6e883fe5
 Depiction: https://evandersun.github.io/depiction/screentimespoofer.html
 SileoDepiction: https://evandersun.github.io/depiction/screentimespoofer.json
-Icon: https://evandersun.github.io/assets/icon.png
+Icon: https://evandersun.github.io/assets/icon.png?v=2
 Tag: role::hacker, compatible::ios15+

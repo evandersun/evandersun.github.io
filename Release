@@ -6,32 +6,57 @@ Codename: stable
 Architectures: iphoneos-arm iphoneos-arm64 iphoneos-arm64e
 Components: main
 Description: ScreenTimeSpoofer —— 修改「屏幕使用时间」显示的时长
-Date: Sat, 07 Nov 2026 10:58:15 GMT
+Icon: file://CydiaIcon.png
+Date: Sat, 07 Nov 2026 11:52:10 GMT
 MD5Sum:
- 09045caa5cd1f0ff97d1ae0f22f4a417             2078 Packages
- 9477c036d3f5475c64b4fb20bb4d0a9e              931 Packages.gz
- 3b3e874a2f4cf1c25e2a086d836e18c3             1100 Packages.bz2
- c10cc520cdf4a3dada0ee8b143d7b64a              924 Packages.xz
+ 93d2096f6e584a15513e4cc365d2efeb             2086 Packages
+ 1bb473a039b03e944beeee19bd4fabb0              936 Packages.gz
+ 3c3e096c61d51c1a269ffb9fd69cb196             1101 Packages.bz2
+ 77d789129715971ea24d97f73510899b              924 Packages.xz
  98c918c16a0818bcc2e28597ddd48d66           106171 CydiaIcon.png
- 102387d9dfc6e181e76ec1ebf597ab39              296 sileo-featured.json
+ d6f557192bab1afa9c9f0058a85247b0             9061 CydiaIcon@1x.png
+ 24c49f3f9f2ac71db65b3e2239826e9c            31220 CydiaIcon@2x.png
+ c3bf48ead09c14e7e9d5710479d5f4bd            63993 CydiaIcon@3x.png
+ c3bf48ead09c14e7e9d5710479d5f4bd            63993 RepoIcon.png
+ c3bf48ead09c14e7e9d5710479d5f4bd            63993 icon.png
+ 9d2073d1aa0f641c14809f295da769bb              300 sileo-featured.json
+ d7f881c3a651d9887101ca3a035f961c             2756 depiction/screentimespoofer.json
 SHA1:
- 0eafd1333795bdd328d5f35f7cf44b00748fe705             2078 Packages
- 3c781c3a6516f6d98e3f3ad38d41257ab5a30a64              931 Packages.gz
- 509be26e2c72d87641ab1963add9d143b566522a             1100 Packages.bz2
- 948fb3029c07258c803af1414bbf9ce76e9422a8              924 Packages.xz
+ 93b1e17862f867702bf966666e391b046059f53d             2086 Packages
+ 66a41eaebff3c95d513599b3a45c84e0f778e88d              936 Packages.gz
+ e2a98ab345d711c5ba4b8a6325f933467ba68d0a             1101 Packages.bz2
+ 56a7bdea97fe84a85c32ea643cddb72c01006f48              924 Packages.xz
  4e286ca0efbc7d0a2ec022e1eba0ef79c42b55a6           106171 CydiaIcon.png
- 22a315d17a5c7fdacb1b6c227e22d16fe37730be              296 sileo-featured.json
+ 5bb99da26ab245c0493dd94f63d07b910b7fa539             9061 CydiaIcon@1x.png
+ 7450346d7d696826a889ff73c64ddaf283c6701f            31220 CydiaIcon@2x.png
+ 04b6682038e342585980b28e4f6248108dd446ce            63993 CydiaIcon@3x.png
+ 04b6682038e342585980b28e4f6248108dd446ce            63993 RepoIcon.png
+ 04b6682038e342585980b28e4f6248108dd446ce            63993 icon.png
+ ae84a40a15bb218682d0660da16bbd9798f194cd              300 sileo-featured.json
+ e0ef469d368f27db6c7e3a1039d640e6719def50             2756 depiction/screentimespoofer.json
 SHA256:
- d821d4c7d6195e4766e3e32060e88949ad779b477a6976d3e1bb894403383122             2078 Packages
- 3c3df8b9e631311882b558957aad5e94980dc65f811e5d97e362173df72d630e              931 Packages.gz
- edff8a2e1d1b1b84ce8a548a0d98f2d1d9d0865de267a6ef37361c5da8ac5581             1100 Packages.bz2
- 5c2037da3f06466da3ce4c68f0bbe49d571e01d801874ff0041b81578df1a2cb              924 Packages.xz
+ b0289376f6a032982c2cd08b171438dfbac81075418a306833e4256d6d97d6b7             2086 Packages
+ 838a8f9aabb96d1b6045092e141f49f1358b7dfd1ccf30304633b9db60453216              936 Packages.gz
+ 789c62b6cd50f0b4241bef9778e7bbf6c6a977e5544fae0c88411c0f2ebf3c48             1101 Packages.bz2
+ 74c6d7b32c61000034fcf4d7247f687e62d85e16fd181b78814caee216442a34              924 Packages.xz
  8e4557dec86f977ec3e4491634a9567722f376ddef39ab699209a7ad9a0a9acf           106171 CydiaIcon.png
- 91d110d1a9ae4530629338ad6530072f153851f9e6306010cbf547a7562786e6              296 sileo-featured.json
+ 6f4e4eb10ce48e820a9c6a23585fdbd187e7919bb75940465bf2d662f087cafe             9061 CydiaIcon@1x.png
+ 544042ab457d77a27f3c8e88605201a7949db0ca4b082c35f2f80a4a37a2c564            31220 CydiaIcon@2x.png
+ 57f6b4b00ba89a9f019be27441f7538c7633c3d815765d41590015fb09e0f7ac            63993 CydiaIcon@3x.png
+ 57f6b4b00ba89a9f019be27441f7538c7633c3d815765d41590015fb09e0f7ac            63993 RepoIcon.png
+ 57f6b4b00ba89a9f019be27441f7538c7633c3d815765d41590015fb09e0f7ac            63993 icon.png
+ 6a45b8561e72a26f7eb483c2fc639408d63d21f7337a60202bae3d35170c306e              300 sileo-featured.json
+ e8b78fc6fd43b29aad6ff9a60c1cbe40fb756f2d7cf1be7bf27fc7d39293a3d6             2756 depiction/screentimespoofer.json
 SHA512:
- 12f8c3df3415123218cc3c02cd692473639aa5639e2cc28be476c560f3bab2d6e98ee32ee17f851ce2f3ef5f4c91d578a1d25cd2d72711f173daa2c53dd307de             2078 Packages
- 7c856b090b33c1f93eaf699a2eb7441a619deb9104e3b3131fd611affe1d6686b270e41042e8f2e50170f6f18dd5cc47d2bdce90872199ebd19581ece3daaa6a              931 Packages.gz
- f3dec65ae1b49da38fa3b82a2c8604c48a2b18b2ecc7ec6900565505d96e7302c129bfbf4d7cba6e54d2bec31395aa59f0b8b7713587f649ffd907d215beaf6c             1100 Packages.bz2
- 785ff807242ecb58d920e9d7842d8e0cf8f7aa2dcc40b189aa2cd36e56033844c75337b031598f403d56b64b9da8d98c343446a94bcb29b4188cbfcda599d0ca              924 Packages.xz
+ f2c948e5c93dcc864dff1e141564648df7270ddf916a2654ab3838eb2c7b096f6224c905db1e6f342c2eeb097ae7c1ea77c993880e13c642c9f0116a712c0c97             2086 Packages
+ 90a3cd2b73a330b582ca917dfdf40cf1e99bf6dddcf889f4a1bfd7579880d1328bd021e06d9e0e215db0988c0c95b013f540b03dcf63e21c86cfb361a4e34964              936 Packages.gz
+ 23770ebe0da3e2d9a0372f66546b7722b14da06aa9a6cbde7a846e490e1383541235c83af8d775097c6364458f1f17e18a5a31dbfcba06d2400dd82c32c8bf32             1101 Packages.bz2
+ d0971b3c50ec0604d4b14b59fbdbb50383a2d1e971014568ee07e75fb841c2b0692ed5a3fa889916aac4a9bef0329d7be6469cb9a92caae5862a25f68012435a              924 Packages.xz
  b42017a40828fc41452e9715d2cb6eaeae2c5e79b3902aca2c237e79847685adfc565506efe52b2bc61a168d9a0c1e81c1300b501f6f8c1fdaff6d754bc4fbb7           106171 CydiaIcon.png
- 0baf9db2c375d4b00d6d0280bcd912a4bc4b699a6892ff5403b245c8df673dafcc399bd2972c76313511e961f9a7b472f2478b699f05d0ebc34f927b6043c894              296 sileo-featured.json
+ 78747f268cb7c0ca93a1d873ae64ba6ea01a17bc3a8a5a6f26b180b240ad4f217fdfb7bdcaa353af5fc8458b193abdfa6fbe1b5cb645f551eb4c0c14e91ea1d5             9061 CydiaIcon@1x.png
+ 426193de294abcb745d0bb3006a8c20104b8bcb64729d1869e0277a8796dc92b5868b0b8c1aaf7cfe30bbffe575b5ffacdbb7cc7ae29646f3d4820eb672aa738            31220 CydiaIcon@2x.png
+ 41890cf8b78507a570935404af7ea00eedb21c999aa56f2d36b8c0ddb841223e07b02b99fa5b439eb2cddf41382316d1b5992a7a5cda5929a56cbb340844d86b            63993 CydiaIcon@3x.png
+ 41890cf8b78507a570935404af7ea00eedb21c999aa56f2d36b8c0ddb841223e07b02b99fa5b439eb2cddf41382316d1b5992a7a5cda5929a56cbb340844d86b            63993 RepoIcon.png
+ 41890cf8b78507a570935404af7ea00eedb21c999aa56f2d36b8c0ddb841223e07b02b99fa5b439eb2cddf41382316d1b5992a7a5cda5929a56cbb340844d86b            63993 icon.png
+ 633cb356b601c0c1af9e68c50634363de08688f00c4b030a043c714e016dbac47cd952aec7f950f4090bd3b66846851f63cca8dcfb3f02279cd517996a5a2278              300 sileo-featured.json
+ ba72829039d4a8e5641911893755dbbfe87657ef8879ff884b436b26eba3d449730eaa9ad630338576a406fa72d85471269f8cb590d9945bae8887ef334ac558             2756 depiction/screentimespoofer.json

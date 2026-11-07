@@ -34,6 +34,7 @@ except ImportError:          # 没装 Pillow 时跳过图标生成，不影响�
 
 # 源对外 URL；换域名/换托管时只改这一处
 BASE_URL = "https://evandersun.github.io"
+ASSET_VER = "v=2"   # 图片 URL 版本戳；换头像时递增，穿透包管理器/CDN 缓存
 REPO_NAME = "Evander's Repo"
 REPO_LABEL = "Evander's Repo"
 REPO_DESC = "ScreenTimeSpoofer —— 修改「屏幕使用时间」显示的时长"
@@ -93,7 +94,7 @@ def make_stanza(deb, relname):
         "SHA512: " + digest(data, "sha512"),
         "Depiction: %s/depiction/screentimespoofer.html" % BASE_URL,
         "SileoDepiction: %s/depiction/screentimespoofer.json" % BASE_URL,
-        "Icon: %s/assets/icon.png" % BASE_URL,
+        "Icon: %s/assets/icon.png?%s" % (BASE_URL, ASSET_VER),
         "Tag: role::hacker, compatible::ios15+",
     ]
     return "\n".join(lines) + "\n"
@@ -122,7 +123,9 @@ def write_packages():
 
 def write_release(debs):
     index_files = ["Packages", "Packages.gz", "Packages.bz2", "Packages.xz",
-                   "CydiaIcon.png", "sileo-featured.json"]
+                   "CydiaIcon.png", "CydiaIcon@1x.png", "CydiaIcon@2x.png",
+                   "CydiaIcon@3x.png", "RepoIcon.png", "icon.png",
+                   "sileo-featured.json", "depiction/screentimespoofer.json"]
     sums = {}
     for algo in ("md5", "sha1", "sha256", "sha512"):
         sums[algo] = []
@@ -146,6 +149,7 @@ def write_release(debs):
         "Architectures: " + " ".join(archs),
         "Components: main",
         "Description: " + REPO_DESC,
+        "Icon: file://CydiaIcon.png",
         "Date: " + email.utils.formatdate(usegmt=True),
     ]
     for key, algo in (("MD5Sum", "md5"), ("SHA1", "sha1"),
@@ -224,14 +228,24 @@ def make_assets():
 
     avatar = load_avatar_square()
 
+    # 各客户端读的图标文件名并不相同：Cydia 用 CydiaIcon.png / @1x，
+    # Sileo 优先 @2x，Zebra 自适应，Installer 用 RepoIcon.png / icon.png。
+    # 全部用同一张猫图生成；这些新文件名此前不存在，客户端没有历史缓存，
+    # 能直接穿透「换图标不生效」的缓存问题。图标都不加圆角（客户端自己渲染）。
+    ICON_SET = [("CydiaIcon.png", 256), ("CydiaIcon@1x.png", 64),
+                ("CydiaIcon@2x.png", 128), ("CydiaIcon@3x.png", 192),
+                ("RepoIcon.png", 192), ("icon.png", 192)]
+
+    def save_icon_set(render):
+        for name, sz in ICON_SET:
+            render(sz).save(ROOT / name, "PNG", optimize=True)
+
     if avatar is not None:
-        # 源图标不加圆角：圆角由各包管理器自己渲染，避免双重圆角。
-        avatar.resize((256, 256), Image.LANCZOS).save(ROOT / "CydiaIcon.png",
-                                                      "PNG", optimize=True)
+        save_icon_set(lambda sz: avatar.resize((sz, sz), Image.LANCZOS))
         avatar.resize((240, 240), Image.LANCZOS).save(ASSETS / "icon.png",
                                                       "PNG", optimize=True)
         banner_icon = avatar.resize((240, 240), Image.LANCZOS)
-        print("  -> 使用 assets/repo-avatar-source.jpg 自定义头像")
+        print("  -> 使用 assets/repo-avatar-source.jpg 自定义头像（全套 6 个图标文件名）")
     else:
         def clock(size, radius_ratio=0.34):
             im = Image.new("RGB", (size, size), (0, 0, 0))
@@ -262,7 +276,7 @@ def make_assets():
                       fill=(255, 255, 255))
             return im
 
-        clock(60).save(ROOT / "CydiaIcon.png")
+        save_icon_set(clock)
         clock(120).save(ASSETS / "icon.png")
         banner_icon = clock(240)
         print("  -> 未找到自定义头像，使用内置几何图标")
@@ -280,7 +294,7 @@ def make_assets():
     d.text((332, 258), "roothide  /  rootless  ·  v0.6.3", font=small,
            fill=(120, 150, 200))
     im.save(ASSETS / "banner.png")
-    print("  -> CydiaIcon.png / assets/icon.png / assets/banner.png")
+    print("  -> CydiaIcon.png + @1x/@2x/@3x / RepoIcon.png / icon.png / assets/icon.png / banner.png")
 
 
 def main():

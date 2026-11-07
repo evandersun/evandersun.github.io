@@ -47,10 +47,22 @@
 包管理器里显示的源头像是根目录 **`CydiaIcon.png`**；首页和包详情页用 `assets/icon.png`，Sileo 精选横幅用 `assets/banner.png`。三者都由 `tools/build_repo.py` 从同一张源图生成：
 
 - 把要用的图片存成 **`assets/repo-avatar-source.jpg`**（竖图/横图均可，脚本会裁成中心偏上的正方形，聚焦主体）。当前这张是戴棒球帽的猫。
-- 运行 `python3 tools/build_repo.py`：生成 `CydiaIcon.png`（256×256，**不加圆角**，圆角交给各包管理器自己渲染，避免双重圆角）、`assets/icon.png`（240×240）、`assets/banner.png`（左侧 240 圆角头像 + 文字），并刷新 `Release` 里 `CydiaIcon.png` 的校验和。
+- 运行 `python3 tools/build_repo.py`：从同一张源图生成**全套 6 个图标文件名**（都不加圆角，圆角交给各包管理器自己渲染）、`assets/icon.png`（240×240）、`assets/banner.png`（左侧 240 圆角头像 + 文字），并刷新 `Release` 的校验和与 `Icon` 字段。
 - 删掉 `assets/repo-avatar-source.jpg` 会回退到内置几何时钟图标。
 
-> 换头像后**必须重跑脚本**：`Release` 里记录了 `CydiaIcon.png` 的 MD5/SHA1/SHA256/SHA512，只替换图片不刷新索引会导致校验和不匹配。
+各客户端读的图标文件名并不相同，所以必须全给：
+
+| 文件 | 尺寸 | 谁读 |
+|---|---|---|
+| `CydiaIcon.png` | 256×256 | Cydia / Sileo / Zebra 主图标 |
+| `CydiaIcon@1x.png` | 64×64 | Cydia 传统密度 |
+| `CydiaIcon@2x.png` | 128×128 | **Sileo 优先读这个**、Zebra 高密度 |
+| `CydiaIcon@3x.png` | 192×192 | 高分屏 |
+| `RepoIcon.png` / `icon.png` | 192×192 | Installer / 部分网页端 |
+
+> 换头像后**必须重跑脚本**：`Release` 里记录了各图标的 MD5/SHA1/SHA256/SHA512，只替换图片不刷新索引会导致校验和不匹配。
+>
+> **客户端会长期缓存源图标**。脚本顶部的 `ASSET_VER`（当前 `v=2`）是图片 URL 版本戳，`index.html` / `depiction/` / `sileo-featured.json` 里的图片 URL 都带它；换头像时递增这个值可穿透缓存。若包管理器里仍显示旧图标，最彻底的办法是**删除该源后重新添加** —— 新加的 `@2x` 等文件名没有历史缓存，会直接拉到新图。
 
 ## 源码与 Release
 

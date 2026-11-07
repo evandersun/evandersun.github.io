@@ -1,6 +1,6 @@
 {
   "minVersion": "0.1",
-  "headerImage": "https://evandersun.github.io/assets/banner.png",
+  "headerImage": "https://evandersun.github.io/assets/banner.png?v=2",
   "tintColor": "#4A9DFF",
   "backgroundColor": "#121A2E",
   "tabs": [
@@ -12,7 +12,7 @@
           "class": "DepictionHeaderView",
           "title": "ScreenTimeSpoofer",
           "subtitle": "v0.6.3 · roothide / rootless",
-          "icon": "https://evandersun.github.io/assets/icon.png"
+          "icon": "https://evandersun.github.io/assets/icon.png?v=2"
         },
         {
           "class": "DepictionMarkdownView",
