@@ -42,6 +42,16 @@
 
 > 换域名时改 `tools/build_repo.py` 顶部的 `BASE_URL`，以及 `index.html` / `depiction/` 里的绝对 URL。
 
+## 自定义源头像
+
+包管理器里显示的源头像是根目录 **`CydiaIcon.png`**；首页和包详情页用 `assets/icon.png`，Sileo 精选横幅用 `assets/banner.png`。三者都由 `tools/build_repo.py` 从同一张源图生成：
+
+- 把要用的图片存成 **`assets/repo-avatar-source.jpg`**（竖图/横图均可，脚本会裁成中心偏上的正方形，聚焦主体）。当前这张是戴棒球帽的猫。
+- 运行 `python3 tools/build_repo.py`：生成 `CydiaIcon.png`（256×256，**不加圆角**，圆角交给各包管理器自己渲染，避免双重圆角）、`assets/icon.png`（240×240）、`assets/banner.png`（左侧 240 圆角头像 + 文字），并刷新 `Release` 里 `CydiaIcon.png` 的校验和。
+- 删掉 `assets/repo-avatar-source.jpg` 会回退到内置几何时钟图标。
+
+> 换头像后**必须重跑脚本**：`Release` 里记录了 `CydiaIcon.png` 的 MD5/SHA1/SHA256/SHA512，只替换图片不刷新索引会导致校验和不匹配。
+
 ## 源码与 Release
 
 插件源码、构建脚本与历史版本在 [github.com/evandersun/ScreenTimeSpoofer](https://github.com/evandersun/ScreenTimeSpoofer)。
