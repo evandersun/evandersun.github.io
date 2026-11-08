@@ -58,10 +58,11 @@
   th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
   td.fname{word-break:break-all;max-width:420px}
   td.size{color:var(--mut);white-space:nowrap;width:90px}
-  td.act{text-align:right;white-space:nowrap;width:96px}
+  td.act{text-align:right;white-space:nowrap;width:172px}
   a.dl,button.dl{display:inline-block;background:#1f6feb;color:#fff;text-decoration:none;
     border-radius:8px;padding:6px 15px;font-size:13px;font-weight:600;border:0}
   a.dl:hover,button.dl:hover{filter:brightness(1.14)}
+  td.act button.danger{margin-left:8px;padding:6px 13px;border-radius:8px;font-size:13px}
   .tag{display:inline-block;margin-left:8px;font-size:11px;color:#ffd9a0;background:#3a2c12;
     border:1px solid #6b5220;border-radius:6px;padding:1px 7px;vertical-align:middle;white-space:nowrap}
   .bar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -162,7 +163,7 @@
   </div>
 
   <div class="note">
-    <b>关于存储：</b>文件保存在网站仓库的 <code>uploads/</code> 目录，并登记在公开的 <code>uploads/manifest.json</code> 里，因此<strong>任何设备（手机/电脑）打开本页都能看到并下载，不需要填令牌</strong>；只有上传、删除需要令牌。<br>
+    <b>关于存储：</b>文件保存在网站仓库的 <code>uploads/</code> 目录，并登记在公开的 <code>uploads/manifest.json</code> 里，因此<strong>任何设备（手机/电脑）打开本页都能看到并下载，不需要填令牌</strong>；只有上传、删除需要令牌。登录并连接令牌后，每行「下载」后面会出现「删除」按钮，点它会先二次确认，再同时移除仓库里的文件和清单记录（一次提交完成）。<br>
     <b>上传后：</b>GitHub Pages 通常需要 10–60 秒发布新文件，若在别的设备上还看不到，稍等后点「刷新列表」即可。<br>
     <b>含密钥的文件：</b>检测到疑似密钥（<code>ghp_...</code>、<code>github_pat_...</code>、私钥、<code>AKIA...</code> 等）时不会明文入库，本页会自动压缩存储并标注「压缩存储」，点「下载」时在浏览器里还原成原文件；若服务器仍以「Secret detected」拒绝，也会自动回退到压缩存储。<br>
     <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器。删除插件同样会自动重建索引。<br>
@@ -339,8 +340,38 @@
         link.setAttribute('download', it.name);
         a.appendChild(link);
       }
+      // 删除按钮紧跟在「下载」后面；只读模式（没令牌）不显示，避免点了没反应
+      if(getToken()){
+        var del = document.createElement('button');
+        del.className = 'danger';
+        del.textContent = '删除';
+        del.onclick = function(){ deleteFile(it); };
+        a.appendChild(del);
+      }
       tr.appendChild(n); tr.appendChild(s); tr.appendChild(a);
       listBody.appendChild(tr);
+    });
+  }
+
+  // 删除文件：仓库文件 + manifest 记录一次原子提交；先二次确认
+  function deleteFile(it){
+    if(!getToken()){ showSetup('删除文件需要先填写令牌'); return; }
+    if(!confirm('确定删除「' + it.name + '」？这会从公开仓库移除该文件及清单记录，删除后无法在本页恢复。')) return;
+    var path = it.path || ('uploads/' + (it.gz ? it.name + '.gz' : it.name));
+    setStatus('正在删除「' + it.name + '」…', 'info');
+    readManifestForWrite().then(function(m){
+      var files = (m.files || []).filter(function(x){
+        return x.name !== it.name && x.path !== it.path && x.path !== path;
+      });
+      var changes = {};
+      changes[MANIFEST] = writeManifest(files, new Date().toISOString());
+      return commitTree(changes, [path], 'delete file: ' + it.name);
+    }).then(function(){
+      setStatus('✅ 已删除「' + it.name + '」，约 10–60 秒后点「刷新列表」生效。', 'ok');
+      loadList();
+    }).catch(function(e){
+      if(e && (e.status === 401 || e.status === 403)) showSetup('令牌无效或权限不足，请重新填写');
+      setStatus('❌ 删除失败：' + (e && e.message ? e.message : '未知错误'), 'err');
     });
   }
 
