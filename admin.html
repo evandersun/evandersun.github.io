@@ -22,6 +22,40 @@
   button.danger{background:#8f2f3f;color:#fff;border:1px solid #c04a5b}
   button.danger:hover{filter:brightness(1.14)}
   td.pname{word-break:break-all;font-weight:600}
+  .pkgid{display:block;font-weight:400;font-size:11.5px;color:var(--mut);
+         font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:2px}
+  td.pver{color:#cfe4ff;white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  td.parch{white-space:nowrap}
+  .arch{display:inline-block;margin:0 5px 4px 0;font-size:11px;padding:1px 8px;border-radius:99px;
+        color:#a9d2ff;background:#132444;border:1px solid #29405f}
+  #pluginTable th:nth-child(2){width:64px}
+  #pluginTable th:nth-child(3){width:186px}
+  #pluginTable th:nth-child(4){width:88px}
+  #pluginTable td.act{width:88px}
+  .pver-inline{display:none}
+  /* 手机上四列放不下：整行改成「名字 + 包名 + 版本/架构」，删除按钮浮到右上 */
+  @media(max-width:560px){
+    #pluginTable thead{display:none}
+    #pluginTable,#pluginTable tbody,#pluginTable tr,#pluginTable td{display:block;width:auto;box-sizing:border-box}
+    #pluginTable tr{position:relative;padding:12px 0;border-bottom:1px solid var(--bd)}
+    #pluginTable tr:last-child{border-bottom:0}
+    #pluginTable td{padding:0;text-align:left;border-bottom:0}
+    #pluginTable td.pname{padding-right:66px}
+    #pluginTable td.pver{display:none}
+    .pver-inline{display:inline-block;margin:5px 8px 0 0;font-size:12px;color:#cfe4ff;
+                 font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    #pluginTable td.act{position:absolute;right:0;top:10px;width:auto}
+    #pluginTable td.act button.danger{margin-left:0}
+    /* 文件表同理：手机上竖排，避免文件名被挤成三行 */
+    #fileTable thead{display:none}
+    #fileTable,#fileTable tbody,#fileTable tr,#fileTable td{display:block;width:auto;box-sizing:border-box}
+    #fileTable tr{padding:11px 0;border-bottom:1px solid var(--bd)}
+    #fileTable tr:last-child{border-bottom:0}
+    #fileTable td{padding:0;border-bottom:0;text-align:left}
+    #fileTable td.fname{max-width:none;font-size:14px}
+    #fileTable td.size{width:auto;margin-top:3px;font-size:12px}
+    #fileTable td.act{width:auto;margin-top:8px;text-align:left}
+  }
   .plugin-form{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
   .plugin-form label{font-size:13px;color:var(--mut)}
   .plugin-form input[type=text]{flex:1;min-width:180px;background:#0c1730;border:1px solid var(--bd);
@@ -106,7 +140,7 @@
         选择文件上传
         <input type="file" id="fileInput" multiple>
       </label>
-      <span class="drop-hint">支持任意类型，可多选，也可以把文件拖到这里 · 单文件建议 &lt; 20MB</span>
+      <span class="drop-hint">支持任意类型，可多选，也可以把文件拖到这里 · 单文件最大 40MB · 20MB 以内可走加速节点下载</span>
     </div>
 
     <div class="setup" id="setup" hidden>
@@ -129,7 +163,7 @@
         选择插件 zip
         <input type="file" id="pluginInput" accept=".zip,application/zip">
       </label>
-      <span class="drop-hint">zip 文件名即插件名 · 包内需含 <code>arm64.deb</code>（rootless）与 <code>arm64e.deb</code>（roothide）· 可拖到这里 · 单文件 &lt; 20MB</span>
+      <span class="drop-hint">zip 文件名即插件名 · 包内需含 <code>arm64.deb</code>（rootless）与 <code>arm64e.deb</code>（roothide）· 可拖到这里 · 单文件 ≤ 40MB</span>
     </div>
     <div class="plugin-form">
       <label for="pluginNameInput">插件名</label>
@@ -144,8 +178,8 @@
       <h2>已收录插件</h2>
       <button class="ghost" id="refreshPluginBtn">刷新列表</button>
     </div>
-    <table>
-      <thead><tr><th>插件名</th><th>上传包</th><th style="text-align:right">操作</th></tr></thead>
+    <table id="pluginTable">
+      <thead><tr><th>插件名</th><th>版本</th><th>架构</th><th style="text-align:right">操作</th></tr></thead>
       <tbody id="pluginBody"></tbody>
     </table>
   </div>
@@ -156,7 +190,7 @@
       <button class="ghost" id="refreshBtn">刷新列表</button>
       <button class="ghost" id="changeTokenBtn">更换令牌</button>
     </div>
-    <table>
+    <table id="fileTable">
       <thead><tr><th>文件名</th><th>大小</th><th style="text-align:right">操作</th></tr></thead>
       <tbody id="listBody"></tbody>
     </table>
@@ -166,8 +200,10 @@
     <b>关于存储：</b>文件保存在网站仓库的 <code>uploads/</code> 目录，并登记在公开的 <code>uploads/manifest.json</code> 里，因此<strong>任何设备（手机/电脑）打开本页都能看到并下载，不需要填令牌</strong>；只有上传、删除需要令牌。登录并连接令牌后，每行「下载」后面会出现「删除」按钮，点它会先二次确认，再同时移除仓库里的文件和清单记录（一次提交完成）。<br>
     <b>上传后：</b>GitHub Pages 通常需要 10–60 秒发布新文件，若在别的设备上还看不到，稍等后点「刷新列表」即可。<br>
     <b>含密钥的文件：</b>检测到疑似密钥（<code>ghp_...</code>、<code>github_pat_...</code>、私钥、<code>AKIA...</code> 等）时不会明文入库，本页会自动压缩存储并标注「压缩存储」，点「下载」时在浏览器里还原成原文件；若服务器仍以「Secret detected」拒绝，也会自动回退到压缩存储。<br>
-    <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器。删除插件同样会自动重建索引。<br>
-    <b>限制：</b>GitHub 接口对单文件有体积限制，这里上限设为 20MB；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
+    <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器，<strong>上传完就直接进源</strong>。删除插件同样会自动重建索引。<br>
+    <b>已收录插件：</b>这张表读的是源里的 <code>Packages</code> 索引，所以<strong>列出来的就是包管理器里能装到的</strong>；不用令牌（如手机）也能看到，只是不能删除。<br>
+    <b>下载加速：</b>20MB 以内的文件会优先从 jsDelivr 加速节点取回，实测比 GitHub Pages 快一个数量级，下载时显示实时进度；节点不通会自动回退本站。<strong>超过 20MB 的文件只能走本站</strong>（加速节点有单文件上限），列表里会标「大文件 · 无加速」。<br>
+    <b>限制：</b>单文件上限 <strong>40MB</strong>（GitHub 写入接口实测可传 40MB，45MB 起会被拒绝）；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
     <b>安全：</b>本页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
   </div>
 
@@ -195,7 +231,12 @@
   var PAGE = 'https://evandersun.github.io/uploads/';
   var SITE = 'https://evandersun.github.io/';
   var MANIFEST = 'uploads/manifest.json';
-  var MAX  = 20 * 1024 * 1024;
+  var MAX  = 40 * 1024 * 1024;           /* GitHub 接口实测 40MB 可传，45MB 起被拒 */
+  var CDN_MAX  = 20 * 1024 * 1024;       /* jsDelivr 单文件上限，超过只能走本站 */
+  var CDN_LIST = [
+    'https://gcore.jsdelivr.net/gh/evandersun/evandersun.github.io@main/',
+    'https://cdn.jsdelivr.net/gh/evandersun/evandersun.github.io@main/'
+  ];
 
   var setupEl   = document.getElementById('setup');
   var statusEl  = document.getElementById('status');
@@ -271,6 +312,82 @@
   function fileUrl(p){
     return SITE + String(p).split('/').map(encodeURIComponent).join('/');
   }
+  // 同一个文件在 jsDelivr 上的地址：国内比 GitHub Pages 快一个数量级
+  function cdnUrl(base, p){
+    return base + String(p).split('/').map(encodeURIComponent).join('/');
+  }
+
+  // 带进度的读取，回调 (已下载字节, 总字节)
+  function readWithProgress(res, cb){
+    var total = parseInt(res.headers.get('content-length') || '0', 10);
+    if(!res.body || !total){
+      return res.arrayBuffer().then(function(b){ return new Uint8Array(b); });
+    }
+    var reader = res.body.getReader(), chunks = [], got = 0;
+    return new Promise(function(resolve, reject){
+      (function pump(){
+        reader.read().then(function(r){
+          if(r.done){
+            var out = new Uint8Array(got), off = 0;
+            chunks.forEach(function(c){ out.set(c, off); off += c.length; });
+            resolve(out);
+            return;
+          }
+          chunks.push(r.value); got += r.value.length;
+          if(cb) cb(got, total);
+          pump();
+        }).catch(reject);
+      })();
+    });
+  }
+
+  // 依次尝试多个地址，第一个成功的胜出；全部失败才报错。
+  // expectSize 用来识别加速节点上的旧缓存：大小对不上就换下一条线路；
+  // 注意不能只靠它死判——清单里的 size 万一不准，还要能用宽松模式把文件拿下来。
+  function fetchBinary(urls, expectSize, onProgress){
+    function run(strict){
+      var i = 0;
+      function attempt(){
+        if(i >= urls.length) return Promise.reject(new Error('所有线路都失败'));
+        var url = urls[i++];
+        return fetch(url, {cache:'no-store'})
+          .then(function(r){
+            if(!r.ok) throw new Error('HTTP ' + r.status);
+            var total = parseInt(r.headers.get('content-length') || '0', 10);
+            if(strict && expectSize && total && total !== expectSize) throw new Error('缓存版本不一致');
+            return readWithProgress(r, onProgress);
+          })
+          .catch(function(e){
+            if(i < urls.length) return attempt();
+            throw e;
+          });
+      }
+      return attempt();
+    }
+    return run(true).catch(function(){ return run(false); });
+  }
+
+  // 下载：20MB 以内优先走加速节点，失败自动回退本站；大文件直接走本站
+  function downloadFile(it){
+    var gz = !!it.gz, path = it.path || ('uploads/' + (gz ? it.name + '.gz' : it.name));
+    var urls = [];
+    if((it.size || 0) <= CDN_MAX){
+      CDN_LIST.forEach(function(b){ urls.push(cdnUrl(b, path)); });   // 加速节点不加时间戳，保住它的缓存
+    }
+    urls.push(fileUrl(path) + '?_=' + Date.now());                    // 本站加时间戳，绕过 Pages 缓存
+    setStatus('正在下载「' + it.name + '」…', 'info');
+    fetchBinary(urls, it.size || 0, function(got, total){
+      var pct = Math.round(got / total * 100);
+      setStatus('正在下载「' + it.name + '」 ' + pct + '%（' + fmtSize(got) + ' / ' + fmtSize(total) + '）', 'info');
+    }).then(function(bytes){
+      var out = gz ? fflate.gunzipSync(bytes) : bytes;
+      downloadBytes(out, it.name);
+      setStatus('✅ 已开始保存「' + it.name + '」（' + fmtSize(out.length) + '）', 'ok');
+    }).catch(function(e){
+      setStatus('下载失败：' + (e && e.message ? e.message : '未知错误') +
+                '（刚上传的文件需等 10–60 秒发布后再试）', 'err');
+    });
+  }
 
   function downloadBytes(bytes, name){
     var blob = new Blob([bytes], {type:'application/octet-stream'});
@@ -282,21 +399,6 @@
       URL.revokeObjectURL(u);
       if(a.parentNode) a.parentNode.removeChild(a);
     }, 4000);
-  }
-
-  // 压缩存储的文件（含疑似密钥被 GitHub 拦截的）：下载时在浏览器里还原
-  function downloadPacked(it){
-    setStatus('正在准备「' + it.name + '」…', 'info');
-    fetch(fileUrl(it.path) + '?_=' + Date.now(), {cache:'no-store'}).then(function(r){
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      return r.arrayBuffer();
-    }).then(function(buf){
-      downloadBytes(fflate.gunzipSync(new Uint8Array(buf)), it.name);
-      setStatus('已开始下载「' + it.name + '」', 'ok');
-    }).catch(function(e){
-      setStatus('下载失败：' + (e && e.message ? e.message : '未知错误') +
-                '（刚上传的文件需等 10–60 秒发布后再试）', 'err');
-    });
   }
 
   // 列表项：{name, path, size, gz, time}
@@ -322,24 +424,20 @@
         tag.className = 'tag'; tag.textContent = '压缩存储';
         n.appendChild(tag);
       }
+      if((it.size || 0) > CDN_MAX){
+        var big = document.createElement('span');
+        big.className = 'tag'; big.textContent = '大文件 · 无加速';
+        n.appendChild(big);
+      }
       var s = document.createElement('td');
       s.className = 'size'; s.textContent = fmtSize(it.size || 0);
       var a = document.createElement('td');
       a.className = 'act';
-      if(it.gz){
-        var btn = document.createElement('button');
-        btn.className = 'dl'; btn.textContent = '下载';
-        btn.onclick = function(){ downloadPacked(it); };
-        a.appendChild(btn);
-      }else{
-        var link = document.createElement('a');
-        link.className = 'dl';
-        link.textContent = '下载';
-        // 同源链接 + download 属性，点击直接下载（跨设备共享同一地址，无需令牌）
-        link.href = fileUrl(it.path);
-        link.setAttribute('download', it.name);
-        a.appendChild(link);
-      }
+      var btn = document.createElement('button');
+      btn.className = 'dl'; btn.textContent = '下载';
+      btn.title = (it.size || 0) > CDN_MAX ? '超过 20MB，只能走本站线路' : '优先走加速节点';
+      btn.onclick = function(){ downloadFile(it); };
+      a.appendChild(btn);
       // 删除按钮紧跟在「下载」后面；只读模式（没令牌）不显示，避免点了没反应
       if(getToken()){
         var del = document.createElement('button');
@@ -481,7 +579,7 @@
 
   function uploadOne(file){
     var name = safeName(file.name);
-    if(file.size > MAX) return Promise.resolve({ ok:false, msg:name + '：超过 20MB' });
+    if(file.size > MAX) return Promise.resolve({ ok:false, msg:name + '：超过 ' + fmtSize(MAX) });
     return readBuffer(file).then(function(buf){
       var bytes = new Uint8Array(buf);
       return readManifestForWrite().then(function(m){
@@ -657,47 +755,94 @@
     });
   }
 
+  // 从源索引 Packages 解析插件：双架构两条 stanza 合并成一条
+  function parsePackages(text){
+    var map = {}, order = [];
+    RP.splitStanzas(text || '').forEach(function(st){
+      var f = RP.controlFields(st);
+      var id = f.Package || f.Name || '';
+      if(!id) return;
+      if(!map[id]){
+        map[id] = { id:id, name:f.Name || id, version:'', archs:[], files:[], size:0 };
+        order.push(id);
+      }
+      var p = map[id];
+      if(f.Version) p.version = f.Version;
+      if(f.Architecture && p.archs.indexOf(f.Architecture) < 0) p.archs.push(f.Architecture);
+      var fn = RP.stanzaFilename(st);
+      if(fn) p.files.push(fn);
+      p.size += parseInt(f.Size || '0', 10) || 0;
+    });
+    return order.map(function(k){ return map[k]; }).sort(function(a, b){
+      return String(a.name).localeCompare(String(b.name));
+    });
+  }
+  function archLabel(a){
+    if(a === 'iphoneos-arm64')  return 'rootless · arm64';
+    if(a === 'iphoneos-arm64e') return 'roothide · arm64e';
+    if(a === 'iphoneos-arm')    return 'rootful · arm';
+    return a;
+  }
+
   function renderPlugins(items){
     pluginBody.innerHTML = '';
     if(!items.length){
       var tr = document.createElement('tr'), td = document.createElement('td');
-      td.colSpan = 3;
+      td.colSpan = 4;
       td.style.cssText = 'text-align:center;padding:26px;color:var(--mut)';
-      td.textContent = '暂无插件，点上方按钮上传 zip';
+      td.textContent = '源里还没有插件，上传 zip 后会自动收录并显示在这里';
       tr.appendChild(td); pluginBody.appendChild(tr); return;
     }
-    items.sort(function(a, b){ return a.name.localeCompare(b.name); });
-    items.forEach(function(it){
-      var name = RP.pluginName(it.name);
+    items.forEach(function(p){
       var tr = document.createElement('tr');
-      var n = document.createElement('td'); n.className = 'pname'; n.textContent = name;
-      var s = document.createElement('td'); s.className = 'size'; s.textContent = fmtSize(it.size || 0);
-      var a = document.createElement('td'); a.className = 'act';
-      var btn = document.createElement('button');
-      btn.className = 'danger'; btn.textContent = '删除';
-      btn.onclick = function(){ deletePlugin(it.name, name); };
-      a.appendChild(btn);
-      tr.appendChild(n); tr.appendChild(s); tr.appendChild(a);
+      var n = document.createElement('td');
+      n.className = 'pname';
+      n.textContent = p.name || p.id;
+      if(p.id !== p.name){
+        var idEl = document.createElement('span');
+        idEl.className = 'pkgid'; idEl.textContent = p.id;
+        n.appendChild(idEl);
+      }
+      var v = document.createElement('td');
+      v.className = 'pver'; v.textContent = p.version || '—';
+      var ar = document.createElement('td');
+      ar.className = 'parch';
+      var vIn = document.createElement('span');
+      vIn.className = 'pver-inline'; vIn.textContent = 'v' + (p.version || '—');
+      ar.appendChild(vIn);
+      (p.archs.length ? p.archs : ['—']).forEach(function(a){
+        var s = document.createElement('span');
+        s.className = 'arch'; s.textContent = archLabel(a);
+        ar.appendChild(s);
+      });
+      var a = document.createElement('td');
+      a.className = 'act';
+      if(getToken()){
+        var btn = document.createElement('button');
+        btn.className = 'danger'; btn.textContent = '删除';
+        btn.onclick = function(){ deletePlugin(p); };
+        a.appendChild(btn);
+      }
+      tr.appendChild(n); tr.appendChild(v); tr.appendChild(ar); tr.appendChild(a);
       pluginBody.appendChild(tr);
     });
   }
+
+  // 插件列表直接读源索引：有令牌走 API 拿最新，没令牌读 Pages 上的公开 Packages
   function loadPluginList(){
-    pluginBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">读取中…</td></tr>';
-    if(!getToken()){ renderPlugins([]); return; }
-    gh(CONTENTS + 'zips?ref=main&_=' + Date.now()).then(function(res){
-      if(res.status === 404){ renderPlugins([]); return; }
-      if(res.status === 401 || res.status === 403){
-        showSetup('令牌无效或权限不足，请重新填写'); renderPlugins([]); return;
-      }
-      if(!res.ok){
-        pluginBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">读取失败（HTTP ' + res.status + '）</td></tr>';
-        return;
-      }
-      renderPlugins((res.data || []).filter(function(x){
-        return x.type === 'file' && /\.zip$/i.test(x.name);
-      }));
+    pluginBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:26px;color:var(--mut)">读取中…</td></tr>';
+    var p = getToken()
+      ? readRepoFile('Packages').then(function(b){ return b ? RP.bytesToUtf8(b) : ''; })
+      : fetch(SITE + 'Packages?_=' + Date.now(), {cache:'no-store'}).then(function(r){
+          if(r.status === 404) return '';
+          if(!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        });
+    p.then(function(text){
+      renderPlugins(parsePackages(text));
     }).catch(function(e){
-      pluginBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">网络错误，请点「刷新列表」重试</td></tr>';
+      pluginBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:26px;color:var(--mut)">' +
+        '读取失败（' + ((e && e.message) || '网络错误') + '），点「刷新列表」重试</td></tr>';
       console.warn(e);
     });
   }
@@ -723,7 +868,7 @@
       setPluginStatus('组件加载失败，请刷新页面重试', 'err'); return;
     }
     if(!/\.zip$/i.test(file.name)){ setPluginStatus('请选择 .zip 压缩包', 'err'); return; }
-    if(file.size > MAX){ setPluginStatus('文件超过 20MB：' + file.name, 'err'); return; }
+    if(file.size > MAX){ setPluginStatus('文件超过 ' + fmtSize(MAX) + '：' + file.name, 'err'); return; }
     if(!getToken()){ showSetup('请先连接存储再上传插件'); return; }
     var name = RP.safeName((pluginNameIn.value || '').trim() || RP.pluginName(file.name));
     var zipBytes = null;
@@ -761,18 +906,23 @@
     });
   }
 
-  function deletePlugin(zipName, name){
-    if(!confirm('确定删除插件「' + name + '」？这会从源里移除它的两个 deb 并重建索引。')) return;
+  function deletePlugin(p){
+    var label = p.name || p.id;
+    if(!confirm('确定删除插件「' + label + '」？这会从源里移除它的全部 deb 并重建索引。')) return;
     if(!getToken()){ showSetup('请先连接存储'); return; }
-    setPluginStatus('正在删除「' + name + '」并重建索引…', 'info');
-    var prefix = 'debs/' + name + '_';
+    setPluginStatus('正在删除「' + label + '」并重建索引…', 'info');
+    var prefix = 'debs/' + p.id + '_';
     rebuildIndex(prefix, []).then(function(idx){
       var changes = { 'Packages':idx.packages, 'Packages.gz':idx.gz, 'Release':idx.release };
-      return commitTree(changes,
-        ['zips/' + zipName, prefix + 'arm64.deb', prefix + 'arm64e.deb'],
-        'plugin remove: ' + name);
+      var candidates = p.files.slice();
+      ['zips/' + (p.name || p.id) + '.zip', 'zips/' + p.id + '.zip'].forEach(function(z){
+        if(candidates.indexOf(z) < 0) candidates.push(z);
+      });
+      return existingPaths(candidates).then(function(del){
+        return commitTree(changes, del, 'plugin remove: ' + p.id);
+      });
     }).then(function(){
-      setPluginStatus('✅ 已删除「' + name + '」，约 10–60 秒后刷新源生效。', 'ok');
+      setPluginStatus('✅ 已删除「' + label + '」，约 10–60 秒后刷新源生效。', 'ok');
       loadPluginList();
     }).catch(function(e){
       setPluginStatus('❌ ' + (e && e.message ? e.message : '删除失败'), 'err');
