@@ -1,0 +1,112 @@
+{
+  "class": "DepictionTabView",
+  "minVersion": "0.1",
+  "tintColor": "#4a9dff",
+  "tabs": [
+    {
+      "class": "DepictionStackView",
+      "tabname": "更新内容",
+      "views": [
+        {
+          "class": "DepictionMarkdownView",
+          "useSpacing": true,
+          "markdown": "#### ScreenTimeSpoofer 1.0\n\n修改「屏幕使用时间」界面显示的时长。只接管渲染层读数，系统数据库与真实统计不受影响。\n\n**兼容** iOS 15 – 16 · rootless / roothide 双架构"
+        },
+        {
+          "class": "DepictionSeparatorView"
+        },
+        {
+          "class": "DepictionHeaderView",
+          "title": "本次更新"
+        },
+        {
+          "class": "DepictionMarkdownView",
+          "useSpacing": true,
+          "markdown": "- **新增包内详情页**：在包管理器里直接查看完整更新内容与安装说明\n- **新增 Sileo 原生详情**：原生卡片渲染，深色主题不闪白、加载更快\n- **版本号升到 1.0**：作为稳定版基线，设置页 / 开机日志 / 包信息三处统一\n- **双架构同步发布**：`iphoneos-arm64`（rootless）与 `iphoneos-arm64e`（roothide）\n- **升级即覆盖**：自动清理历史 dylib 残留，无需先卸载"
+        },
+        {
+          "class": "DepictionSeparatorView"
+        },
+        {
+          "class": "DepictionHeaderView",
+          "title": "使用方式"
+        },
+        {
+          "class": "DepictionMarkdownView",
+          "useSpacing": true,
+          "markdown": "1. 安装后**完全退出「设置」App** 再重新打开\n2. 进入 **设置 → ScreenTimeSpoofer**\n3. 填入想要的分钟数，点「应用」\n4. 点「打开屏幕使用时间」即可看到改动后的显示时长"
+        },
+        {
+          "class": "DepictionMarkdownView",
+          "useSpacing": true,
+          "markdown": "> 修改只影响界面显示，不改变家长控制、应用限额等系统策略的实际判定。"
+        },
+        {
+          "class": "DepictionSeparatorView"
+        },
+        {
+          "class": "DepictionMarkdownView",
+          "useSpacing": true,
+          "markdown": "[在浏览器中查看完整详情页](https://evandersun.github.io/depiction/screentimespoofer.html)"
+        }
+      ]
+    },
+    {
+      "class": "DepictionStackView",
+      "tabname": "包信息",
+      "views": [
+        {
+          "class": "DepictionHeaderView",
+          "title": "包信息"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "包名",
+          "text": "com.evander.screentimespoofer"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "版本",
+          "text": "1.0"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "架构",
+          "text": "iphoneos-arm64 / iphoneos-arm64e"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "系统要求",
+          "text": "iOS / iPadOS 15.0 – 16.x"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "依赖",
+          "text": "mobilesubstrate, firmware (>= 15.0)"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "分区",
+          "text": "Tweaks"
+        },
+        {
+          "class": "DepictionTableTextView",
+          "title": "维护者",
+          "text": "evander"
+        },
+        {
+          "class": "DepictionSeparatorView"
+        },
+        {
+          "class": "DepictionHeaderView",
+          "title": "历史版本"
+        },
+        {
+          "class": "DepictionMarkdownView",
+          "useSpacing": true,
+          "markdown": "**0.6.4** · 设置页新增 QQ 群入口；修正源侧精选横幅；插件图标改回几何时钟\n\n**0.6.3** · 一键跳转从 20 多秒压到约 0.75 秒（改纯异步深链 + 回首页触发目标行）\n\n**0.6.2** · 修复「打开屏幕使用时间」按钮无反应（多阶段跳转协调器）\n\n**0.6.1** · 框架懒加载实时 dump，设置页与 dylib 统一写同一份日志\n\n**0.5.x / 0.4.x** · 修复设置页闪退、日志路径、旧 dylib 残留覆盖，以及时长缩放异常"
+        }
+      ]
+    }
+  ]
+}

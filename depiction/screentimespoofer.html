@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScreenTimeSpoofer 1.0 · 详情</title>
+<meta name="description" content="ScreenTimeSpoofer 1.0 —— 修改「屏幕使用时间」界面显示时长的越狱插件，支持 rootless / roothide，更新内容与安装说明。">
+<style>
+  :root{color-scheme:dark;--bg:#0a0f1e;--card:#131d33;--bd:#26365a;--tx:#eaf1ff;--mut:#93a7cd;--acc:#4a9dff;--ok:#42d392;--warn:#ffb454}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1b2c55 0%,var(--bg) 60%);
+       color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+       line-height:1.68;min-height:100vh;-webkit-text-size-adjust:100%}
+  .wrap{max-width:760px;margin:0 auto;padding:34px 18px 64px}
+  a{color:var(--acc)}
+  code{background:#0c1730;padding:2px 7px;border-radius:5px;font-size:12.5px;color:#a9d2ff;
+       font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+
+  /* 头部 */
+  .hero{display:flex;align-items:center;gap:16px}
+  .hero svg{width:78px;height:78px;border-radius:19px;flex:none;box-shadow:0 10px 30px #0009}
+  .hero .meta{min-width:0}
+  h1{font-size:24px;margin:0;letter-spacing:.3px;word-break:break-all}
+  .pkgid{font-size:12.5px;color:var(--mut);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+         word-break:break-all;margin-top:3px}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+  .tag{font-size:11px;color:#9ecbff;background:#0c1730;border:1px solid var(--bd);border-radius:7px;
+       padding:2px 9px;white-space:nowrap}
+  .tag.new{color:#04180e;background:var(--ok);border-color:var(--ok);font-weight:700}
+
+  /* 版本横幅 */
+  .banner{margin-top:22px;background:linear-gradient(135deg,#1b3a6b 0%,#12203c 70%);
+          border:1px solid #2f4b7d;border-radius:16px;padding:18px 20px;
+          display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .banner .num{font-size:34px;font-weight:700;letter-spacing:-.5px;line-height:1;color:#bfe0ff}
+  .banner .num small{font-size:13px;font-weight:600;color:var(--mut);display:block;letter-spacing:1px;margin-bottom:6px}
+  .banner .desc{flex:1;min-width:190px;font-size:13.5px;color:var(--mut)}
+  .banner .desc b{color:var(--tx);display:block;font-size:15px;margin-bottom:3px}
+
+  /* 卡片 */
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px 20px;margin-top:16px}
+  .card h2{font-size:16px;margin:0 0 12px;color:#9ecbff;display:flex;align-items:center;gap:8px}
+  .card h2 .pulse{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none;
+                  box-shadow:0 0 0 4px #42d39222}
+  .card p{margin:0;font-size:14px}
+  .card p + p{margin-top:10px}
+  .m{color:var(--mut)}
+
+  /* 更新内容 */
+  ul.log{margin:0;padding-left:0;list-style:none;font-size:14px}
+  ul.log li{position:relative;padding:9px 0 9px 24px;border-bottom:1px solid #1f2c4a}
+  ul.log li:last-child{border-bottom:0;padding-bottom:0}
+  ul.log li::before{content:"";position:absolute;left:5px;top:17px;width:6px;height:6px;border-radius:50%;
+                    background:var(--acc);box-shadow:0 0 0 3px #4a9dff22}
+  ul.log li b{color:#dce9ff}
+  ul.log li .k{display:inline-block;font-size:11px;color:#04122a;background:var(--acc);
+               border-radius:5px;padding:0 6px;margin-right:7px;vertical-align:1px;font-weight:700}
+  ul.log li .k.rest{background:#2f4b7d;color:#cfe4ff}
+
+  /* 表格 */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:4px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+  th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px}
+  tr:last-child td{border-bottom:0}
+
+  /* 安装 */
+  ol.steps{margin:0;padding-left:20px;font-size:14px}
+  ol.steps li{margin:8px 0}
+  .note{font-size:13px;color:var(--mut);background:#101a2e;border-left:3px solid var(--warn);
+        padding:12px 14px;border-radius:0 10px 10px 0;margin-top:14px}
+  .note.blue{border-left-color:var(--acc)}
+
+  .repo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .repo .u{flex:1;min-width:200px;font-size:13.5px;font-weight:600;color:#bfe0ff;
+           font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+  button{cursor:pointer;border:0;border-radius:9px;padding:8px 15px;font-size:13px;font-weight:600;
+         background:var(--acc);color:#04122a;transition:.15s}
+  button:hover{filter:brightness(1.12)}
+  button.copied{background:var(--ok);color:#04180e}
+
+  /* 历史 */
+  details.hist{margin-top:16px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:0 20px}
+  details.hist summary{cursor:pointer;list-style:none;padding:16px 0;font-size:14px;font-weight:600;color:#9ecbff}
+  details.hist summary::-webkit-details-marker{display:none}
+  details.hist summary::after{content:"展开";float:right;font-size:12px;color:var(--mut);font-weight:400}
+  details.hist[open] summary::after{content:"收起"}
+  details.hist .body{padding:0 0 18px;border-top:1px solid var(--bd);margin-top:-1px;padding-top:14px}
+  .ver{font-size:13px;margin:0 0 6px;color:#cfe4ff}
+  .ver span{color:var(--mut);font-weight:400;margin-left:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .ver-body{font-size:13px;color:var(--mut);margin:0 0 16px;padding-left:2px}
+
+  footer{margin-top:34px;text-align:center;color:var(--mut);font-size:12.5px;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <!-- 内联时钟图标：与设置页/包图标一致，不额外依赖图片文件 -->
+    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ScreenTimeSpoofer">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1b3054"/><stop offset="1" stop-color="#3b5c96"/>
+        </linearGradient>
+      </defs>
+      <rect width="120" height="120" rx="26" fill="url(#g)"/>
+      <circle cx="60" cy="60" r="33" fill="none" stroke="#ebf2ff" stroke-width="4.5"/>
+      <g stroke="#96b4eb" stroke-width="1.6">
+        <line x1="60" y1="32" x2="60" y2="37"/><line x1="60" y1="83" x2="60" y2="88"/>
+        <line x1="32" y1="60" x2="37" y2="60"/><line x1="83" y1="60" x2="88" y2="60"/>
+        <line x1="40" y1="40" x2="43.5" y2="43.5"/><line x1="76.5" y1="76.5" x2="80" y2="80"/>
+        <line x1="80" y1="40" x2="76.5" y2="43.5"/><line x1="43.5" y1="76.5" x2="40" y2="80"/>
+      </g>
+      <line x1="60" y1="60" x2="77" y2="46" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
+      <line x1="60" y1="60" x2="60" y2="83" stroke="#69c8ff" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="60" cy="60" r="3.2" fill="#fff"/>
+    </svg>
+    <div class="meta">
+      <h1>ScreenTimeSpoofer</h1>
+      <div class="pkgid">com.evander.screentimespoofer</div>
+      <div class="tags">
+        <span class="tag new">v1.0 正式版</span>
+        <span class="tag">Tweaks</span>
+        <span class="tag">iOS 15 – 16</span>
+        <span class="tag">rootless + roothide</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="banner">
+    <div class="num"><small>当前版本</small>1.0</div>
+    <div class="desc"><b>首个正式版 · 新增包内详情页</b>
+      修改「屏幕使用时间」界面显示的时长，只改渲染层，不动系统数据库。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="pulse"></span>更新内容 · v1.0</h2>
+    <ul class="log">
+      <li><span class="k">新增</span><b>包内详情页</b>：在 Sileo / Zebra / Cydia 里点开插件即可看到本页，包含完整更新内容与安装说明，不用再跳到外部网页。</li>
+      <li><span class="k">新增</span><b>Sileo 原生详情</b>：<code>SileoDepiction</code> 走原生卡片渲染，深色主题下不闪白、加载更快；其他客户端自动回落到网页详情。</li>
+      <li><span class="k">变更</span>版本号由 <code>0.6.4</code> 正式升到 <code>1.0</code>，作为稳定版基线；设置页、开机日志、包信息三处版本统一。</li>
+      <li><span class="k rest">优化</span>设置页三大入口保持不变：目标时长输入 + 「应用」、一键进入屏幕使用时间、QQ 群入口。</li>
+      <li><span class="k rest">优化</span>继续同时发布 <b>rootless</b>（<code>iphoneos-arm64</code>）与 <b>roothide</b>（<code>iphoneos-arm64e</code>）两个包，客户端按设备自动选包。</li>
+      <li><span class="k rest">优化</span>升级安装会覆盖旧版本并清理历史 dylib 残留，无需先卸载。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>功能说明</h2>
+    <p>安装后打开 <b>设置 → ScreenTimeSpoofer</b>，填入想要的分钟数并点「应用」，再点「打开屏幕使用时间」即可看到改动后的显示时长。</p>
+    <p class="m">实现方式是在运行期接管 ScreenTimeUI 的渲染层读数（<code>totalScreenTime</code> 等），系统数据库与真实统计不受影响，重启设备后配置依然生效。</p>
+    <div class="note blue">修改只影响「屏幕使用时间」界面的显示，不会改变家长控制、应用限额等系统策略的实际判定。</div>
+  </div>
+
+  <div class="card">
+    <h2>包信息</h2>
+    <table>
+      <tr><th>项目</th><th>内容</th></tr>
+      <tr><td>包名</td><td><code>com.evander.screentimespoofer</code></td></tr>
+      <tr><td>版本</td><td><code>1.0</code></td></tr>
+      <tr><td>架构</td><td><code>iphoneos-arm64</code>（rootless）<br><code>iphoneos-arm64e</code>（roothide）</td></tr>
+      <tr><td>系统要求</td><td>iOS / iPadOS 15.0 – 16.x，已越狱（Dopamine / palera1n 等）</td></tr>
+      <tr><td>依赖</td><td><code>mobilesubstrate</code>、<code>firmware (&gt;= 15.0)</code></td></tr>
+      <tr><td>分区</td><td>Tweaks</td></tr>
+      <tr><td>维护者</td><td>evander</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>安装步骤</h2>
+    <ol class="steps">
+      <li>在包管理器里添加本源（地址见下方），刷新。</li>
+      <li>搜索 <b>ScreenTimeSpoofer</b>，点安装 —— 会自动匹配你设备的架构。</li>
+      <li>安装完成后<b>完全退出「设置」App</b>（上滑杀掉）再重新打开。</li>
+      <li>进入 <b>设置 → ScreenTimeSpoofer</b>，填时长 → 点「应用」→ 点「打开屏幕使用时间」查看效果。</li>
+    </ol>
+    <div class="note">若装完看不到设置项，请确认「设置」已重启；若数字没变化，先在插件页点一次「应用」，再进入屏幕使用时间页面。</div>
+  </div>
+
+  <div class="card">
+    <h2>源地址</h2>
+    <div class="repo">
+      <span class="u" id="repoUrl">https://evandersun.github.io/</span>
+      <button id="copyBtn" type="button">复制</button>
+    </div>
+    <p class="m" style="font-size:12.5px;margin-top:12px">支持 Sileo / Zebra / Cydia / Installer；添加后刷新一次即可看到本插件与后续更新。</p>
+  </div>
+
+  <details class="hist">
+    <summary>历史版本</summary>
+    <div class="body">
+      <p class="ver">v0.6.4 <span>2026-11-07</span></p>
+      <p class="ver-body">设置页 footer 新增「QQ群：1135135953」按钮（橙色，异步打开，不阻塞主线程）；修正源侧置顶精选横幅格式；插件图标改回几何时钟。</p>
+
+      <p class="ver">v0.6.3 <span>2026-11-07</span></p>
+      <p class="ver-body">一键跳转从 20 多秒压到约 0.75 秒：去掉阻塞主线程的同步 openURL 与 AppDelegate 直投，改为纯异步深链 + 回首页后触发目标行；日志带相对耗时。建立官方源，提供双架构包。</p>
+
+      <p class="ver">v0.6.2 <span>2026-11-07</span></p>
+      <p class="ver-body">修复「打开屏幕使用时间」按钮无反应：改为多阶段跳转协调器（深链 → pop 回首页 → 首页激活后 didSelect → 校验 → 兜底提示）。</p>
+
+      <p class="ver">v0.6.1 <span>2026-11-07</span></p>
+      <p class="ver-body">每 0.5 秒轮询新载入的 ScreenTime / UsageTracking / FamilyControls 等框架并 dump 关键方法，便于定位；设置页与 dylib 写同一份 boot 日志。</p>
+
+      <p class="ver">v0.5.x – v0.4.x <span>2026-11</span></p>
+      <p class="ver-body">修复设置页闪退（桩头 NSObject 缺 isa、提前填充 specifiers、bundle 加载）、日志路径、旧 dylib 残留覆盖冲突；「固定 15 分钟」「变成一秒」等时长缩放问题定位并修正。</p>
+    </div>
+  </details>
+
+  <footer>
+    ScreenTimeSpoofer 1.0 · Evander's Repo<br>
+    仅供学习与研究，请自行承担使用风险
+  </footer>
+</div>
+
+<script>
+(function(){
+  var btn = document.getElementById('copyBtn');
+  var url = document.getElementById('repoUrl');
+  if(!btn || !url) return;
+  function fallback(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
+  btn.addEventListener('click', function(){
+    var text = url.textContent.trim();
+    var done = function(){
+      btn.textContent = '已复制 ✓'; btn.className = 'copied';
+      setTimeout(function(){ btn.textContent = '复制'; btn.className = ''; }, 1600);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ fallback(text); done(); });
+    } else { fallback(text); done(); }
+  });
+})();
+</script>
+</body>
+</html>

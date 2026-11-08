@@ -13,7 +13,8 @@
 ├── sileo-featured.json                                   Sileo / Zebra 精选页配置
 ├── index.html                                            源首页（浏览器访问，含已上传插件列表）
 ├── admin.html                                            管理页（本页输入密码 → 上传文件 / 上传插件）
-├── debs/                                                 .deb 文件（当前收录 ScreenTimeSpoofer 两个架构）
+├── debs/                                                 .deb 文件（当前收录 ScreenTimeSpoofer 1.0 两个架构）
+├── depiction/                                            包详情页（网页版 HTML + Sileo 原生 JSON）
 ├── zips/                                                 管理页上传的插件原始 zip
 ├── uploads/                                              管理页上传的任意文件 + manifest.json 清单
 ├── js/                                                   浏览器端 JS 库（fflate / fzstd / repo-pack / repo-list）
@@ -40,9 +41,18 @@
 
 | 包 | 版本 | 架构 | 说明 |
 |---|---|---|---|
-| `com.evander.screentimespoofer`（ScreenTimeSpoofer） | 0.6.4 | `iphoneos-arm64`（rootless）、`iphoneos-arm64e`（roothide） | 修改「屏幕使用时间」界面显示的时长；装完重启「设置」 |
+| `com.evander.screentimespoofer`（ScreenTimeSpoofer） | 1.0 | `iphoneos-arm64`（rootless）、`iphoneos-arm64e`（roothide） | 修改「屏幕使用时间」界面显示的时长；装完重启「设置」 |
 
 两个 deb 都在 `debs/`，包管理器里同一条目会按设备架构自动选包。
+
+包的 `control` 里带两个详情页字段，装之前就能在客户端里看到更新内容：
+
+| 字段 | 地址 | 用于 |
+|---|---|---|
+| `Depiction` | `depiction/screentimespoofer.html` | Cydia / Zebra / Sileo 网页详情 |
+| `SileoDepiction` | `depiction/screentimespoofer.json` | Sileo 原生详情卡片 |
+
+改版本或更新内容时：先改 `depiction/` 下两个文件，再替换 `debs/` 里的包并重跑 `tools/build_repo.py`。
 
 ## 管理页上传插件
 
