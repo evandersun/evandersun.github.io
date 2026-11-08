@@ -442,7 +442,7 @@
       a.className = 'act';
       var btn = document.createElement('button');
       btn.className = 'dl'; btn.textContent = '下载';
-      btn.title = (it.size || 0) > CDN_MAX ? '超过 20MB，只能走本站线路' : '优先走加速节点';
+      btn.title = cdnOk(it) ? '优先走加速节点' : '本站直连，速度较慢';
       btn.onclick = function(){ downloadFile(it); };
       a.appendChild(btn);
       // 删除按钮紧跟在「下载」后面；只读模式（没令牌）不显示，避免点了没反应
