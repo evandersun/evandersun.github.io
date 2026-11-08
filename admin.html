@@ -654,6 +654,7 @@
   }
   function submitLogin(){
     if(adminPwd.value === ADMIN_PASSWORD){
+      adminErr.hidden = true;
       sessionStorage.setItem('repo_admin','1');
       startApp();
       setStatus('已登录，正在读取文件列表…', 'info');

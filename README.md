@@ -45,6 +45,8 @@
 
 提交后约 10–60 秒 GitHub Pages 发布完成，包管理器刷新源即可看到新插件。上传同名 zip 会覆盖该插件的两个 deb（用于更新版本）；下方「已收录插件」列表可查看或删除已上传的插件，删除后索引同样自动重建。整个过程不需要服务器，也不需要 `workflow` 权限的令牌。
 
+> `js/repo-pack.js` 在浏览器里同时挂载 `window.RepoPack` 与别名 `window.RP`（管理页统一用 `RP.*` 调用），Node 下走 `module.exports` 便于跑测试；三个浏览器库都不依赖 CDN。
+
 > 换域名时改 `tools/build_repo.py` 顶部的 `BASE_URL`，以及 `index.html` 里的绝对 URL。
 
 ## 源图标

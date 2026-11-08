@@ -278,5 +278,9 @@
     updateRelease: updateRelease, pluginName: pluginName, safeName: safeName
   };
   if (typeof module === 'object' && module.exports) module.exports = api;
-  else global.RepoPack = api;
+  else {
+    // admin.html 里统一用 RP.* 调用；RepoPack 为完整名，RP 为兼容别名，两者指向同一对象
+    global.RepoPack = api;
+    global.RP = api;
+  }
 })(typeof globalThis !== 'undefined' ? globalThis : this);
