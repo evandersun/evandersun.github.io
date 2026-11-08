@@ -164,7 +164,7 @@
   <div class="note">
     <b>关于存储：</b>文件保存在网站仓库的 <code>uploads/</code> 目录，并登记在公开的 <code>uploads/manifest.json</code> 里，因此<strong>任何设备（手机/电脑）打开本页都能看到并下载，不需要填令牌</strong>；只有上传、删除需要令牌。<br>
     <b>上传后：</b>GitHub Pages 通常需要 10–60 秒发布新文件，若在别的设备上还看不到，稍等后点「刷新列表」即可。<br>
-    <b>含密钥的文件：</b>GitHub 会拦截含疑似密钥（如 <code>ghp_...</code>、私钥）的明文文件。遇到这种拒绝时，本页会自动把文件压缩后存储，列表标注「压缩存储」，点「下载」时在浏览器里自动还原成原文件。<br>
+    <b>含密钥的文件：</b>检测到疑似密钥（<code>ghp_...</code>、<code>github_pat_...</code>、私钥、<code>AKIA...</code> 等）时不会明文入库，本页会自动压缩存储并标注「压缩存储」，点「下载」时在浏览器里还原成原文件；若服务器仍以「Secret detected」拒绝，也会自动回退到压缩存储。<br>
     <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器。删除插件同样会自动重建索引。<br>
     <b>限制：</b>GitHub 接口对单文件有体积限制，这里上限设为 20MB；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
     <b>安全：</b>本页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
@@ -422,28 +422,49 @@
     return RP.utf8ToBytes(JSON.stringify({ updated: time, files: files }, null, 2));
   }
 
+  // 常见密钥特征：命中即压缩存储，避免明文进公开仓库被 GitHub 规则拒绝
+  var SECRET_RE = /gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}/;
+  function looksSecret(bytes){
+    if(!bytes || !bytes.length) return false;
+    var head = Math.min(bytes.length, 262144);
+    for(var i = 0; i < Math.min(head, 4096); i++){
+      if(bytes[i] === 0) return false;           // 含 NUL，按二进制处理
+    }
+    var s = '', CH = 8192;
+    for(var j = 0; j < head; j += CH){
+      s += String.fromCharCode.apply(null, bytes.subarray(j, Math.min(j + CH, head)));
+    }
+    return SECRET_RE.test(s);
+  }
+
+  function commitPacked(m, name, bytes, time){
+    var entry = { name:name, path:'uploads/' + name + '.gz', size:bytes.length,
+                  gz:true, time:time };
+    var c = {};
+    c[entry.path] = fflate.gzipSync(bytes, {level:6});
+    c[MANIFEST] = writeManifest(upsertFile(m.files, entry), time);
+    return commitTree(c, [], 'upload (packed): ' + name).then(function(){
+      return { packed:true };
+    });
+  }
+
   function uploadOne(file){
     var name = safeName(file.name);
     if(file.size > MAX) return Promise.resolve({ ok:false, msg:name + '：超过 20MB' });
     return readBuffer(file).then(function(buf){
       var bytes = new Uint8Array(buf);
       return readManifestForWrite().then(function(m){
+        var time = new Date().toISOString();
+        if(looksSecret(bytes)) return commitPacked(m, name, bytes, time);
         var entry = { name:name, path:'uploads/' + name, size:bytes.length,
-                      gz:false, time:new Date().toISOString() };
+                      gz:false, time:time };
         var changes = {};
         changes[entry.path] = bytes;
-        changes[MANIFEST] = writeManifest(upsertFile(m.files, entry), entry.time);
+        changes[MANIFEST] = writeManifest(upsertFile(m.files, entry), time);
         return commitTree(changes, [], 'upload: ' + name).catch(function(e){
           if(!isSecretBlock(e)) throw e;
-          // 被判定含密钥：压缩成二进制后再提交（内容不变，下载时自动还原）
-          var packed = { name:name, path:'uploads/' + name + '.gz', size:bytes.length,
-                         gz:true, time:entry.time };
-          var c2 = {};
-          c2[packed.path] = fflate.gzipSync(bytes, {level:6});
-          c2[MANIFEST] = writeManifest(upsertFile(m.files, packed), packed.time);
-          return commitTree(c2, [], 'upload (packed): ' + name).then(function(){
-            return { packed:true };
-          });
+          // 被服务器规则拒绝：压缩成二进制后再提交（内容不变，下载时自动还原）
+          return commitPacked(m, name, bytes, time);
         });
       });
     }).then(function(r){
@@ -462,7 +483,7 @@
     function next(){
       if(i >= files.length){
         var msg = '完成：成功 ' + ok + ' 个' + (fail ? '，失败 ' + fail + ' 个' : '');
-        if(packed) msg += '（其中 ' + packed + ' 个含疑似密钥被 GitHub 拦截，已压缩存储，下载时自动还原）';
+        if(packed) msg += '（其中 ' + packed + ' 个含疑似密钥，已压缩存储，下载时自动还原）';
         if(errs.length) msg += '（' + errs.slice(0, 2).join('；') + (errs.length > 2 ? ' …' : '') + '）';
         msg += '。网页发布约需 10–60 秒，稍后点「刷新列表」再下载。';
         setStatus(msg, fail ? 'warn' : 'ok');
