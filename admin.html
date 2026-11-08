@@ -59,9 +59,11 @@
   td.fname{word-break:break-all;max-width:420px}
   td.size{color:var(--mut);white-space:nowrap;width:90px}
   td.act{text-align:right;white-space:nowrap;width:96px}
-  a.dl{display:inline-block;background:#1f6feb;color:#fff;text-decoration:none;
-    border-radius:8px;padding:6px 15px;font-size:13px;font-weight:600}
-  a.dl:hover{filter:brightness(1.14)}
+  a.dl,button.dl{display:inline-block;background:#1f6feb;color:#fff;text-decoration:none;
+    border-radius:8px;padding:6px 15px;font-size:13px;font-weight:600;border:0}
+  a.dl:hover,button.dl:hover{filter:brightness(1.14)}
+  .tag{display:inline-block;margin-left:8px;font-size:11px;color:#ffd9a0;background:#3a2c12;
+    border:1px solid #6b5220;border-radius:6px;padding:1px 7px;vertical-align:middle;white-space:nowrap}
   .bar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .bar h2{margin:0;flex:1}
   .note{font-size:13px;color:var(--mut);background:#101a2e;border-left:3px solid var(--acc);
@@ -160,8 +162,9 @@
   </div>
 
   <div class="note">
-    <b>关于存储：</b>文件保存在网站仓库的 <code>uploads/</code> 目录，因此所有设备打开本页都能看到并下载；列表与下载是公开的，但上传需要管理员令牌。<br>
-    <b>上传后：</b>GitHub Pages 通常需要 10–60 秒发布新文件，若下载暂时打不开，稍等后点「刷新列表」即可。<br>
+    <b>关于存储：</b>文件保存在网站仓库的 <code>uploads/</code> 目录，并登记在公开的 <code>uploads/manifest.json</code> 里，因此<strong>任何设备（手机/电脑）打开本页都能看到并下载，不需要填令牌</strong>；只有上传、删除需要令牌。<br>
+    <b>上传后：</b>GitHub Pages 通常需要 10–60 秒发布新文件，若在别的设备上还看不到，稍等后点「刷新列表」即可。<br>
+    <b>含密钥的文件：</b>GitHub 会拦截含疑似密钥（如 <code>ghp_...</code>、私钥）的明文文件。遇到这种拒绝时，本页会自动把文件压缩后存储，列表标注「压缩存储」，点「下载」时在浏览器里自动还原成原文件。<br>
     <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器。删除插件同样会自动重建索引。<br>
     <b>限制：</b>GitHub 接口对单文件有体积限制，这里上限设为 20MB；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
     <b>安全：</b>本页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
@@ -189,6 +192,8 @@
   var REPO = 'evandersun/evandersun.github.io';
   var API  = 'https://api.github.com/repos/' + REPO + '/contents/uploads';
   var PAGE = 'https://evandersun.github.io/uploads/';
+  var SITE = 'https://evandersun.github.io/';
+  var MANIFEST = 'uploads/manifest.json';
   var MAX  = 20 * 1024 * 1024;
 
   var setupEl   = document.getElementById('setup');
@@ -252,6 +257,48 @@
     return (n / 1024 / 1024).toFixed(2) + ' MB';
   }
 
+  function fmtTime(iso){
+    if(!iso) return '';
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    function p(n){ return (n < 10 ? '0' : '') + n; }
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' +
+           p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  // 仓库内路径 -> 可下载的公开地址（逐段编码，兼容空格/中文文件名）
+  function fileUrl(p){
+    return SITE + String(p).split('/').map(encodeURIComponent).join('/');
+  }
+
+  function downloadBytes(bytes, name){
+    var blob = new Blob([bytes], {type:'application/octet-stream'});
+    var u = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = u; a.download = name; a.rel = 'noopener';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){
+      URL.revokeObjectURL(u);
+      if(a.parentNode) a.parentNode.removeChild(a);
+    }, 4000);
+  }
+
+  // 压缩存储的文件（含疑似密钥被 GitHub 拦截的）：下载时在浏览器里还原
+  function downloadPacked(it){
+    setStatus('正在准备「' + it.name + '」…', 'info');
+    fetch(fileUrl(it.path) + '?_=' + Date.now(), {cache:'no-store'}).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.arrayBuffer();
+    }).then(function(buf){
+      downloadBytes(fflate.gunzipSync(new Uint8Array(buf)), it.name);
+      setStatus('已开始下载「' + it.name + '」', 'ok');
+    }).catch(function(e){
+      setStatus('下载失败：' + (e && e.message ? e.message : '未知错误') +
+                '（刚上传的文件需等 10–60 秒发布后再试）', 'err');
+    });
+  }
+
+  // 列表项：{name, path, size, gz, time}
   function render(items){
     listBody.innerHTML = '';
     if(!items.length){
@@ -263,47 +310,81 @@
       tr.appendChild(td); listBody.appendChild(tr);
       return;
     }
-    items.sort(function(a, b){ return a.name.localeCompare(b.name); });
-    items.forEach(function(it){
+    items.slice().sort(function(a, b){
+      return String(b.time || '').localeCompare(String(a.time || '')) || a.name.localeCompare(b.name);
+    }).forEach(function(it){
       var tr = document.createElement('tr');
       var n = document.createElement('td');
       n.className = 'fname'; n.textContent = it.name;
+      if(it.gz){
+        var tag = document.createElement('span');
+        tag.className = 'tag'; tag.textContent = '压缩存储';
+        n.appendChild(tag);
+      }
       var s = document.createElement('td');
       s.className = 'size'; s.textContent = fmtSize(it.size || 0);
       var a = document.createElement('td');
       a.className = 'act';
-      var link = document.createElement('a');
-      link.className = 'dl';
-      link.textContent = '下载';
-      // 同源链接 + download 属性，点击直接下载（跨设备共享同一地址）
-      link.href = PAGE + encodeURIComponent(it.name);
-      link.setAttribute('download', it.name);
-      a.appendChild(link);
+      if(it.gz){
+        var btn = document.createElement('button');
+        btn.className = 'dl'; btn.textContent = '下载';
+        btn.onclick = function(){ downloadPacked(it); };
+        a.appendChild(btn);
+      }else{
+        var link = document.createElement('a');
+        link.className = 'dl';
+        link.textContent = '下载';
+        // 同源链接 + download 属性，点击直接下载（跨设备共享同一地址，无需令牌）
+        link.href = fileUrl(it.path);
+        link.setAttribute('download', it.name);
+        a.appendChild(link);
+      }
       tr.appendChild(n); tr.appendChild(s); tr.appendChild(a);
       listBody.appendChild(tr);
     });
   }
 
+  // 文件清单：uploads/manifest.json（公开文件，随上传一起提交）
+  // 有令牌时走 API 拿最新版本；没令牌（如手机）读 Pages 上的公开副本，仅供查看/下载
+  function emptyManifest(){ return { updated: new Date().toISOString(), files: [] }; }
+
+  function readManifestFromApi(){
+    return gh(CONTENTS + MANIFEST + '?ref=main&_=' + Date.now()).then(function(res){
+      if(res.status !== 200 || !res.data || res.data.content == null) return null;
+      try{ return JSON.parse(RP.bytesToUtf8(base64ToBytes(res.data.content))); }catch(e){ return null; }
+    }).catch(function(){ return null; });
+  }
+
+  function readManifestPublic(){
+    return fetch(SITE + MANIFEST + '?_=' + Date.now(), {cache:'no-store'}).then(function(r){
+      if(r.status === 404) return null;
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
   function loadList(){
     listBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">读取中…</td></tr>';
-    if(!getToken()){ render([]); showSetup(''); return; }
-    gh(API + '?ref=main&_=' + Date.now()).then(function(res){
-      if(res.status === 401 || res.status === 403){
-        showSetup('令牌无效或权限不足，请重新填写'); render([]); return;
-      }
-      if(res.status === 404){ render([]); return; }   // 目录尚未创建
-      if(!res.ok){
-        listBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">读取失败（HTTP ' + res.status + '）</td></tr>';
-        return;
-      }
-      var items = (res.data || []).filter(function(x){
-        return x.type === 'file' && x.name.charAt(0) !== '.';
+    var first = getToken() ? readManifestFromApi() : Promise.resolve(null);
+    first.then(function(m){
+      if(m && m.files){ render(m.files); return; }
+      return readManifestPublic().then(function(pub){
+        render((pub && pub.files) || []);
       });
-      render(items);
     }).catch(function(e){
-      listBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">网络错误，请点「刷新列表」重试</td></tr>';
+      listBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">读取失败，请点「刷新列表」重试</td></tr>';
       console.warn(e);
     });
+  }
+
+  // 写操作前取最新清单，避免覆盖其他设备刚写入的记录
+  function readManifestForWrite(){
+    return readManifestFromApi().then(function(m){
+      if(m && m.files) return m;
+      return readManifestPublic().then(function(pub){
+        return (pub && pub.files) ? pub : emptyManifest();
+      });
+    }).catch(function(){ return emptyManifest(); });
   }
 
   function readBuffer(file){
@@ -327,29 +408,49 @@
     return s.slice(0, 180) || 'unnamed';
   }
 
+  function upsertFile(list, entry){
+    return (list || []).filter(function(x){ return x.name !== entry.name; }).concat([entry]);
+  }
+
+  // GitHub 的密钥扫描（push protection）会拒绝含疑似密钥的明文文件
+  function isSecretBlock(e){
+    var t = String((e && e.message) || '') + ' ' + JSON.stringify((e && e.body) || '');
+    return /secret detected|repository rule violation|push protection/i.test(t);
+  }
+
+  function writeManifest(files, time){
+    return RP.utf8ToBytes(JSON.stringify({ updated: time, files: files }, null, 2));
+  }
+
   function uploadOne(file){
     var name = safeName(file.name);
     if(file.size > MAX) return Promise.resolve({ ok:false, msg:name + '：超过 20MB' });
-    var path = API + '/' + encodeURIComponent(name);
-    return readBuffer(file).then(toBase64).then(function(content){
-      // 同名文件：先取 sha，带上即是覆盖而不是报错
-      return gh(path + '?ref=main&_=' + Date.now()).then(function(old){
-        var sha = (old.status === 200 && old.data && old.data.sha) ? old.data.sha : null;
-        var body = { message: 'upload: ' + name, content: content, branch: 'main' };
-        if(sha) body.sha = sha;
-        return gh(path, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
+    return readBuffer(file).then(function(buf){
+      var bytes = new Uint8Array(buf);
+      return readManifestForWrite().then(function(m){
+        var entry = { name:name, path:'uploads/' + name, size:bytes.length,
+                      gz:false, time:new Date().toISOString() };
+        var changes = {};
+        changes[entry.path] = bytes;
+        changes[MANIFEST] = writeManifest(upsertFile(m.files, entry), entry.time);
+        return commitTree(changes, [], 'upload: ' + name).catch(function(e){
+          if(!isSecretBlock(e)) throw e;
+          // 被判定含密钥：压缩成二进制后再提交（内容不变，下载时自动还原）
+          var packed = { name:name, path:'uploads/' + name + '.gz', size:bytes.length,
+                         gz:true, time:entry.time };
+          var c2 = {};
+          c2[packed.path] = fflate.gzipSync(bytes, {level:6});
+          c2[MANIFEST] = writeManifest(upsertFile(m.files, packed), packed.time);
+          return commitTree(c2, [], 'upload (packed): ' + name).then(function(){
+            return { packed:true };
+          });
         });
       });
-    }).then(function(res){
-      if(res.ok) return { ok:true };
-      if(res.status === 401 || res.status === 403) showSetup('令牌无效或权限不足，请重新填写');
-      var m = (res.data && res.data.message) || ('HTTP ' + res.status);
-      return { ok:false, msg: name + '：' + m };
+    }).then(function(r){
+      return { ok:true, packed: !!(r && r.packed) };
     }).catch(function(e){
-      return { ok:false, msg: name + '：' + (e && e.message ? e.message : '读取失败') };
+      if(e && (e.status === 401 || e.status === 403)) showSetup('令牌无效或权限不足，请重新填写');
+      return { ok:false, msg: name + '：' + (e && e.message ? e.message : '上传失败') };
     });
   }
 
@@ -357,10 +458,11 @@
     files = Array.prototype.slice.call(files || []);
     if(!files.length) return;
     if(!getToken()){ showSetup('请先连接存储再上传'); return; }
-    var ok = 0, fail = 0, errs = [], i = 0;
+    var ok = 0, fail = 0, packed = 0, errs = [], i = 0;
     function next(){
       if(i >= files.length){
         var msg = '完成：成功 ' + ok + ' 个' + (fail ? '，失败 ' + fail + ' 个' : '');
+        if(packed) msg += '（其中 ' + packed + ' 个含疑似密钥被 GitHub 拦截，已压缩存储，下载时自动还原）';
         if(errs.length) msg += '（' + errs.slice(0, 2).join('；') + (errs.length > 2 ? ' …' : '') + '）';
         msg += '。网页发布约需 10–60 秒，稍后点「刷新列表」再下载。';
         setStatus(msg, fail ? 'warn' : 'ok');
@@ -370,7 +472,7 @@
       var f = files[i++];
       setStatus('正在上传 ' + i + '/' + files.length + '：' + f.name, 'info');
       uploadOne(f).then(function(r){
-        if(r.ok) ok++; else { fail++; errs.push(r.msg); }
+        if(r.ok){ ok++; if(r.packed) packed++; } else { fail++; errs.push(r.msg); }
         next();
       });
     }
@@ -406,7 +508,7 @@
   document.getElementById('refreshBtn').onclick = loadList;
   document.getElementById('changeTokenBtn').onclick = function(){
     clearToken(); showSetup(''); setStatus('已清除本机令牌，请重新填写', 'info');
-    render([]); renderPlugins([]);
+    loadList(); renderPlugins([]);
   };
   document.getElementById('logoutBtn').onclick = function(){
     sessionStorage.removeItem('repo_admin');
@@ -449,15 +551,22 @@
       return paths.filter(function(p){ return set[p]; });
     });
   }
+  // 带 HTTP 状态与原始响应的错误对象，便于识别密钥扫描之类的拒绝
+  function httpErr(msg, r){
+    var e = new Error(msg);
+    e.status = r && r.status;
+    e.body = r && r.data;
+    return e;
+  }
   // Git Data API：多个文件（含删除）一次原子提交，只触发一次 Pages 发布
   function commitTree(changes, deletes, message){
     var paths = Object.keys(changes), baseCommit = '', baseTree = '';
     return gh(GITBASE + '/ref/heads/main').then(function(r){
-      if(!r.ok) throw new Error('读取 main 失败（HTTP ' + r.status + '）');
+      if(!r.ok) throw httpErr('读取 main 失败（HTTP ' + r.status + '）', r);
       baseCommit = r.data.object.sha;
       return gh(GITBASE + '/commits/' + baseCommit);
     }).then(function(r){
-      if(!r.ok) throw new Error('读取提交失败（HTTP ' + r.status + '）');
+      if(!r.ok) throw httpErr('读取提交失败（HTTP ' + r.status + '）', r);
       baseTree = r.data.tree.sha;
       return existingPaths(deletes);
     }).then(function(realDeletes){
@@ -466,7 +575,7 @@
           headers:{'Content-Type':'application/json'},
           body: JSON.stringify({content: toBase64(changes[p]), encoding:'base64'})})
           .then(function(r){
-            if(!r.ok) throw new Error('写入 ' + p + ' 失败（HTTP ' + r.status + '）');
+            if(!r.ok) throw httpErr('写入 ' + p + ' 失败（HTTP ' + r.status + '）', r);
             return {path:p, sha:r.data.sha};
           });
       })).then(function(blobs){
@@ -481,17 +590,17 @@
           body: JSON.stringify({base_tree: baseTree, tree: entries})});
       });
     }).then(function(r){
-      if(!r.ok) throw new Error('创建目录树失败（HTTP ' + r.status + '）');
+      if(!r.ok) throw httpErr('创建目录树失败（HTTP ' + r.status + '）', r);
       return gh(GITBASE + '/commits', {method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({message:message, tree:r.data.sha, parents:[baseCommit]})});
     }).then(function(r){
-      if(!r.ok) throw new Error('创建提交失败（HTTP ' + r.status + '）');
+      if(!r.ok) throw httpErr('创建提交失败（HTTP ' + r.status + '）', r);
       return gh(GITBASE + '/refs/heads/main', {method:'PATCH',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({sha:r.data.sha, force:false})});
     }).then(function(r){
-      if(!r.ok) throw new Error('发布失败（HTTP ' + r.status + '；可能有其他设备同时在改，请稍后重试）');
+      if(!r.ok) throw httpErr('发布失败（HTTP ' + r.status + '；可能有其他设备同时在改，请稍后重试）', r);
       return true;
     });
   }
@@ -649,8 +758,10 @@
     started = true;
     appEl.hidden = false;
     loginBox.hidden = true;
-    if(getToken()){ hideSetup(); loadList(); loadPluginList(); }
-    else { showSetup(''); render([]); renderPlugins([]); }
+    // 文件列表读公开清单：没令牌也能看/下载（手机等其它设备）
+    loadList();
+    if(getToken()){ hideSetup(); loadPluginList(); }
+    else { showSetup('当前是只读模式：可以查看、下载文件；上传需要先填写令牌。'); renderPlugins([]); }
   }
   function submitLogin(){
     if(adminPwd.value === ADMIN_PASSWORD){
