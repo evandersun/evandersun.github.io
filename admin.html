@@ -5,10 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>文件管理 · Evander's Repo</title>
 <meta name="robots" content="noindex,nofollow">
-<script>
-  // 未登录直接访问时回到首页，避免页面内容闪现
-  if (sessionStorage.getItem('repo_admin') !== '1') { location.replace('index.html'); }
-</script>
 <style>
   :root{color-scheme:dark;--bg:#0a0f1e;--card:#131d33;--bd:#26365a;--tx:#eaf1ff;--mut:#93a7cd;--acc:#4a9dff;--ok:#42d392}
   *{box-sizing:border-box}
@@ -72,13 +68,28 @@
     padding:12px 16px;border-radius:0 10px 10px 0;margin-top:18px}
   .note b{color:var(--tx)}
   footer{margin-top:32px;text-align:center;color:var(--mut);font-size:12px}
+  /* 登录门禁：管理区默认隐藏，密码验证通过后才显示 */
+  .wrap[hidden]{display:none}
+  .overlay{position:fixed;inset:0;background:#050a16e8;display:flex;align-items:center;
+           justify-content:center;padding:20px;z-index:50}
+  .overlay[hidden]{display:none}
+  .modal{width:100%;max-width:360px;background:var(--card);border:1px solid var(--bd);
+         border-radius:16px;padding:24px;box-shadow:0 24px 60px #000a}
+  .modal h3{margin:0 0 6px;font-size:18px}
+  .modal p{margin:0 0 16px;font-size:13px;color:var(--mut)}
+  .modal input{width:100%;box-sizing:border-box;background:#0c1730;border:1px solid var(--bd);
+               border-radius:10px;color:var(--tx);font-size:15px;padding:11px 13px;outline:none}
+  .modal input:focus{border-color:var(--acc)}
+  .err{color:#ff8f8f;font-size:13px;margin-top:10px}
+  .err[hidden]{display:none}
+  .modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 </style>
 <script src="js/fflate.min.js"></script>
 <script src="js/fzstd.min.js"></script>
 <script src="js/repo-pack.js"></script>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="app" hidden>
   <div class="top">
     <h1>文件管理</h1>
     <a class="back" href="index.html">← 返回首页</a>
@@ -153,10 +164,23 @@
     <b>上传后：</b>GitHub Pages 通常需要 10–60 秒发布新文件，若下载暂时打不开，稍等后点「刷新列表」即可。<br>
     <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器。删除插件同样会自动重建索引。<br>
     <b>限制：</b>GitHub 接口对单文件有体积限制，这里上限设为 20MB；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
-    <b>安全：</b>首页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
+    <b>安全：</b>本页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
   </div>
 
   <footer>Evander's Repo · Powered by GitHub Pages</footer>
+</div>
+
+<div class="overlay" id="loginOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <h3 id="loginTitle">管理员登录</h3>
+    <p>请输入管理员密码</p>
+    <input type="password" id="adminPwd" placeholder="密码" autocomplete="off">
+    <div class="err" id="adminErr" hidden>密码错误</div>
+    <div class="modal-btns">
+      <button class="ghost" id="adminCancel">取消</button>
+      <button id="adminOk">登录</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -612,8 +636,40 @@
   });
   document.getElementById('refreshPluginBtn').onclick = loadPluginList;
 
-  if(getToken()){ hideSetup(); loadList(); loadPluginList(); }
-  else { showSetup(''); render([]); renderPlugins([]); }
+  /* ===== 登录门禁：密码在本页校验，通过后才启动管理功能 ===== */
+  var ADMIN_PASSWORD = 'hX126288@@';
+  var appEl    = document.getElementById('app');
+  var loginBox = document.getElementById('loginOverlay');
+  var adminPwd = document.getElementById('adminPwd');
+  var adminErr = document.getElementById('adminErr');
+  var started  = false;
+
+  function startApp(){
+    if(started) return;
+    started = true;
+    appEl.hidden = false;
+    loginBox.hidden = true;
+    if(getToken()){ hideSetup(); loadList(); loadPluginList(); }
+    else { showSetup(''); render([]); renderPlugins([]); }
+  }
+  function submitLogin(){
+    if(adminPwd.value === ADMIN_PASSWORD){
+      sessionStorage.setItem('repo_admin','1');
+      startApp();
+      setStatus('已登录，正在读取文件列表…', 'info');
+    }else{
+      adminErr.hidden = false;
+      adminPwd.select();
+    }
+  }
+  document.getElementById('adminOk').onclick = submitLogin;
+  document.getElementById('adminCancel').onclick = function(){ location.href = 'index.html'; };
+  adminPwd.onkeydown = function(e){ if(e.key === 'Enter') submitLogin(); };
+  adminPwd.oninput = function(){ adminErr.hidden = true; };
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !loginBox.hidden) location.href = 'index.html';
+  });
+  setTimeout(function(){ adminPwd.focus(); }, 50);
 })();
 </script>
 </body>

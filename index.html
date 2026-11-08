@@ -58,23 +58,25 @@
   button.mini.copied{background:var(--ok);color:#04180e;border-color:var(--ok)}
   footer{margin-top:44px;text-align:center;color:var(--mut);font-size:13px}
   .admin-entry{margin-top:26px;text-align:center}
-  button.admin-btn{background:#1f6feb;color:#fff;border:1px solid #3b86ff;padding:11px 28px;
-                   font-size:14px;letter-spacing:.5px;box-shadow:0 6px 20px #1f6feb44}
-  button.admin-btn:hover{filter:brightness(1.14)}
-  .overlay{position:fixed;inset:0;background:#050a16cc;display:flex;align-items:center;
-           justify-content:center;padding:20px;z-index:50}
-  .overlay[hidden]{display:none}
-  .modal{width:100%;max-width:360px;background:var(--card);border:1px solid var(--bd);
-         border-radius:16px;padding:24px;box-shadow:0 24px 60px #000a}
-  .modal h3{margin:0 0 6px;font-size:18px}
-  .modal p{margin:0 0 16px;font-size:13px}
-  .modal input{width:100%;box-sizing:border-box;background:#0c1730;border:1px solid var(--bd);
-               border-radius:10px;color:var(--tx);font-size:15px;padding:11px 13px;outline:none}
-  .modal input:focus{border-color:var(--acc)}
-  .err{color:#ff8f8f;font-size:13px;margin-top:10px}
-  .err[hidden]{display:none}
-  .modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
-  button.ghost{background:#1c335c;color:#cfe4ff;border:1px solid var(--bd)}
+  a.admin-btn{display:inline-block;text-decoration:none;background:#1f6feb;color:#fff;
+              border:1px solid #3b86ff;border-radius:10px;padding:11px 28px;
+              font-size:14px;font-weight:600;letter-spacing:.5px;box-shadow:0 6px 20px #1f6feb44}
+  a.admin-btn:hover{filter:brightness(1.14)}
+  /* 已上传插件列表 */
+  .bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .bar .m{font-size:13px;flex:1;min-width:180px}
+  .pl-item{padding:13px 0;border-bottom:1px solid var(--bd)}
+  .pl-item:first-child{padding-top:2px}
+  .pl-item:last-child{border-bottom:0;padding-bottom:2px}
+  .pl-name{font-size:16px;font-weight:600;color:#bfe0ff;word-break:break-all}
+  .pl-ver{display:inline-block;font-size:11px;color:var(--mut);border:1px solid var(--bd);
+          border-radius:99px;padding:1px 8px;margin-left:8px;vertical-align:2px;
+          font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .pl-desc{font-size:13px;color:var(--mut);margin-top:4px;word-break:break-all}
+  .pl-tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+  .pl-tag{font-size:11px;color:#9ecbff;background:#0c1730;border:1px solid var(--bd);
+          border-radius:6px;padding:2px 8px}
+  .pl-empty{text-align:center;padding:26px;color:var(--mut);font-size:13px}
 </style>
 </head>
 <body>
@@ -129,6 +131,17 @@
   </div>
 
   <div class="sec">
+    <h2>已上传插件</h2>
+    <div class="card">
+      <div class="bar">
+        <span class="m">数据来自源的 <code>Packages</code> 索引，上传后约 10–60 秒更新</span>
+        <button class="mini" id="refreshPlugins">刷新</button>
+      </div>
+      <div id="pluginList"><div class="pl-empty">读取中…</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
     <h2>联系我</h2>
     <div class="card">
       <div class="contact-row">
@@ -149,23 +162,11 @@
   </footer>
 
   <div class="admin-entry">
-    <button class="admin-btn" id="adminBtn">admin登录</button>
+    <a class="admin-btn" id="adminBtn" href="admin.html">admin登录</a>
   </div>
 </div>
 
-<div class="overlay" id="loginOverlay" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-    <h3 id="loginTitle">管理员登录</h3>
-    <p class="m">请输入管理员密码</p>
-    <input type="password" id="adminPwd" placeholder="密码" autocomplete="off">
-    <div class="err" id="adminErr" hidden>密码错误</div>
-    <div class="modal-btns">
-      <button class="ghost" id="adminCancel">取消</button>
-      <button id="adminOk">登录</button>
-    </div>
-  </div>
-</div>
-
+<script src="js/repo-list.js"></script>
 <script>
   function bindCopy(btn, getText){
     btn.onclick=function(){
@@ -185,29 +186,58 @@
     bindCopy(btn, function(){return btn.getAttribute('data-copy');});
   });
 
-  // 管理员入口：前端简易门禁，写权限由管理页的 GitHub 令牌控制
-  var ADMIN_PASSWORD = 'hX126288@@';
-  var overlay=document.getElementById('loginOverlay');
-  var pwd=document.getElementById('adminPwd');
-  var err=document.getElementById('adminErr');
-  function openLogin(){overlay.hidden=false;pwd.value='';err.hidden=true;
-    setTimeout(function(){pwd.focus();},50);}
-  function closeLogin(){overlay.hidden=true;}
-  function submitLogin(){
-    if(pwd.value===ADMIN_PASSWORD){
-      sessionStorage.setItem('repo_admin','1');
-      location.href='admin.html';
-    }else{err.hidden=false;pwd.select();}
-  }
-  document.getElementById('adminBtn').onclick=openLogin;
-  document.getElementById('adminCancel').onclick=closeLogin;
-  document.getElementById('adminOk').onclick=submitLogin;
-  overlay.onclick=function(e){if(e.target===overlay)closeLogin();};
-  pwd.onkeydown=function(e){if(e.key==='Enter')submitLogin();};
-  pwd.oninput=function(){err.hidden=true;};
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'&&!overlay.hidden)closeLogin();
-  });
+  /* 已上传插件列表：同源读取 Packages，不需要令牌或 GitHub API */
+  (function(){
+    var box = document.getElementById('pluginList');
+    function el(tag, cls, text){
+      var e = document.createElement(tag);
+      if(cls) e.className = cls;
+      if(text != null) e.textContent = text;
+      return e;
+    }
+    function render(items){
+      box.innerHTML = '';
+      if(!items.length){
+        box.appendChild(el('div','pl-empty','暂无插件，源里还没有上传的插件'));
+        return;
+      }
+      items.forEach(function(p){
+        var row = el('div','pl-item');
+        var head = el('div','pl-name', p.name);
+        if(p.version) head.appendChild(el('span','pl-ver','v' + p.version));
+        row.appendChild(head);
+        if(p.packageId && p.packageId !== p.name)
+          row.appendChild(el('div','pl-desc', p.packageId));
+        if(p.description) row.appendChild(el('div','pl-desc', p.description));
+        if(p.archs.length){
+          var tags = el('div','pl-tags');
+          p.archs.sort().forEach(function(a){
+            tags.appendChild(el('span','pl-tag', RepoList.archLabel(a)));
+          });
+          row.appendChild(tags);
+        }
+        box.appendChild(row);
+      });
+    }
+    function load(){
+      box.innerHTML = '<div class="pl-empty">读取中…</div>';
+      // 时间戳穿透 Pages / CDN 缓存，拿到最新索引
+      fetch('Packages?t=' + Date.now(), {cache:'no-store'}).then(function(r){
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      }).then(function(txt){
+        if(typeof RepoList === 'undefined'){
+          box.innerHTML = '<div class="pl-empty">组件加载失败，请刷新页面重试</div>';
+          return;
+        }
+        render(RepoList.parsePackages(txt));
+      }).catch(function(){
+        box.innerHTML = '<div class="pl-empty">暂时无法读取插件列表，请稍后点「刷新」重试</div>';
+      });
+    }
+    document.getElementById('refreshPlugins').onclick = load;
+    load();
+  })();
 </script>
 </body>
 </html>

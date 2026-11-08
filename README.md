@@ -11,11 +11,11 @@
 ├── Release                                              索引校验和（MD5/SHA1/SHA256/SHA512）
 ├── CydiaIcon.png                                         源图标（猫图，全套 6 个文件名）
 ├── sileo-featured.json                                   Sileo / Zebra 精选页配置
-├── index.html                                            源首页（浏览器访问）
-├── admin.html                                            管理页（上传文件 / 上传插件）
+├── index.html                                            源首页（浏览器访问，含已上传插件列表）
+├── admin.html                                            管理页（本页输入密码 → 上传文件 / 上传插件）
 ├── debs/                                                 .deb 文件
 ├── zips/                                                 管理页上传的插件原始 zip
-├── js/                                                   浏览器端打包库（fflate + repo-pack）
+├── js/                                                   浏览器端 JS 库（fflate / fzstd / repo-pack / repo-list）
 ├── assets/                                               源头像原图
 ├── .nojekyll                                             让 GitHub Pages 原样发布
 └── tools/build_repo.py                                   重新生成索引与图标
@@ -37,7 +37,7 @@
 
 ## 管理页上传插件
 
-打开 `admin.html`（首页底部的 admin登录），在「上传插件」卡片里选一个 **zip**：
+点击首页底部的 **admin登录** 会先跳转到 `admin.html`，在该页输入管理员密码后才会显示管理功能；然后在「上传插件」卡片里选一个 **zip**：
 
 - zip 的**文件名即插件名**，例如 `MyTweak.zip`
 - zip 内固定两个文件：`arm64.deb`（rootless 包）和 `arm64e.deb`（roothide 包）；放在一层子目录里也能识别，`__MACOSX` 等垃圾文件会自动忽略
@@ -66,6 +66,12 @@
 > `Release` 里记录了各图标的 MD5/SHA1/SHA256/SHA512，只替换图片不刷新索引会导致校验和不匹配。
 >
 > **客户端会长期缓存源图标**。脚本顶部的 `ASSET_VER`（当前 `v=3`）是图片 URL 版本戳，换头像时递增这个值可穿透缓存。若包管理器里仍显示旧图标，最彻底的办法是**删除该源后重新添加** —— 新加的 `@2x` 等文件名没有历史缓存，会直接拉到新图。
+
+## 首页「已上传插件」列表
+
+首页会同源读取 `Packages` 索引，把每个插件的 arm64 / arm64e 两条记录合并成一行，展示插件名、版本、包名、简介与支持的架构。列表不需要令牌，也不调用 GitHub API；上传插件后约 10–60 秒 Pages 发布新索引，点列表右上角「刷新」即可看到。索引为空时显示「暂无插件」。解析逻辑在 `js/repo-list.js`，是浏览器 / Node 双用的纯函数，无网络请求与 DOM 依赖。
+
+> 管理员密码只在 `admin.html` 内校验；首页的 admin登录 按钮只是一个跳转链接，页面里不含任何密码。
 
 ## 精选页
 
