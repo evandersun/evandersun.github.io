@@ -9,11 +9,16 @@ build_repo.py —— 生成/刷新 iOS 越狱源（flat APT repo）的 Packages 
 流程：
   1. 扫描 debs/*.deb，读每个包的 control 字段
   2. 追加 Filename / Size / MD5sum / SHA1 / SHA256 / SHA512
-  3. 写出 Packages 及 .gz / .bz2 / .xz 四种格式（debs/ 为空时写出空索引）
+  3. 写出 Packages 及 Packages.gz（debs/ 为空时写出空索引）
   4. 计算各索引文件与图标的校验和，写出 Release
   5. 由 assets/repo-avatar-source.jpg 生成全套源图标（仅需 Pillow）
 
-新增或更新 deb 时：把新 deb 丢进 debs/，删掉旧 deb，重跑本脚本即可。
+索引压缩格式统一为「明文 + gzip 两种」：管理页 admin.html 在浏览器里上传插件时
+也按同样格式重建索引，而浏览器无法生成 bzip2 / xz，因此这里也不生成 .bz2 / .xz。
+客户端按 Release 里列出的文件取索引，只有 Packages / Packages.gz 完全够用。
+
+新增或更新 deb 时：把新 deb 丢进 debs/，删掉旧 deb，重跑本脚本即可；
+也可以直接在管理页上传 zip，由前端自动完成同样的工作。
 control 里自带的 Depiction / Icon / Tag 等字段会原样保留，本脚本不硬编码
 任何包专属 URL，因此对任意包都通用。
 只依赖：dpkg-deb、Python 3 标准库、Pillow。无 iOS SDK 也能在任意 Linux 上跑。
@@ -21,8 +26,6 @@ control 里自带的 Depiction / Icon / Tag 等字段会原样保留，本脚本
 import sys
 import io
 import gzip
-import bz2
-import lzma
 import hashlib
 import subprocess
 import email.utils
@@ -99,15 +102,13 @@ def write_packages():
     with (ROOT / "Packages.gz").open("wb") as f:
         with gzip.GzipFile(fileobj=f, mode="wb", mtime=0) as g:
             g.write(pkg)
-    (ROOT / "Packages.bz2").write_bytes(bz2.compress(pkg, 9))
-    (ROOT / "Packages.xz").write_bytes(lzma.compress(pkg, format=lzma.FORMAT_XZ, preset=9))
-    print("  -> Packages / .gz / .bz2 / .xz  (%d bytes 明文)" % len(pkg))
+    print("  -> Packages / Packages.gz  (%d bytes 明文)" % len(pkg))
     return debs
 
 
 def write_release(debs):
     # 只记录实际存在的文件；增删页面/图标后无需改这里
-    candidates = ["Packages", "Packages.gz", "Packages.bz2", "Packages.xz",
+    candidates = ["Packages", "Packages.gz",
                   "CydiaIcon.png", "CydiaIcon@1x.png", "CydiaIcon@2x.png",
                   "CydiaIcon@3x.png", "RepoIcon.png", "icon.png",
                   "sileo-featured.json"]

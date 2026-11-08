@@ -7,12 +7,15 @@
 ## 目录结构（flat APT repo）
 
 ```
-├── Packages / Packages.gz / Packages.bz2 / Packages.xz   包索引（四种格式）
+├── Packages / Packages.gz                               包索引（明文 + gzip 两种格式）
 ├── Release                                              索引校验和（MD5/SHA1/SHA256/SHA512）
 ├── CydiaIcon.png                                         源图标（猫图，全套 6 个文件名）
 ├── sileo-featured.json                                   Sileo / Zebra 精选页配置
 ├── index.html                                            源首页（浏览器访问）
+├── admin.html                                            管理页（上传文件 / 上传插件）
 ├── debs/                                                 .deb 文件
+├── zips/                                                 管理页上传的插件原始 zip
+├── js/                                                   浏览器端打包库（fflate + repo-pack）
 ├── assets/                                               源头像原图
 ├── .nojekyll                                             让 GitHub Pages 原样发布
 └── tools/build_repo.py                                   重新生成索引与图标
@@ -27,8 +30,20 @@
    python3 tools/build_repo.py
    ```
 
-   脚本会扫描 `debs/*.deb`，重新生成 `Packages`（含 `Filename`/`Size`/`MD5sum`/`SHA1`/`SHA256`/`SHA512`）、四种压缩格式、`Release` 校验和，以及源图标。`debs/` 为空时会写出一份空索引。只依赖 `dpkg-deb`、Python 3 标准库和 Pillow，无需 iOS SDK。
+   脚本会扫描 `debs/*.deb`，重新生成 `Packages`（含 `Filename`/`Size`/`MD5sum`/`SHA1`/`SHA256`/`SHA512`）、`Packages.gz`、`Release` 校验和，以及源图标。`debs/` 为空时会写出一份空索引。只依赖 `dpkg-deb`、Python 3 标准库和 Pillow，无需 iOS SDK。
 3. 提交并推送；GitHub Pages 自动发布。用户在包管理器里刷新源即可。
+
+> 索引压缩格式是「明文 + gzip 两种」。管理页 `admin.html` 在浏览器里重建索引时无法生成 bzip2 / xz，因此脚本也不生成 `.bz2` / `.xz`，两边保持完全一致的 `Release` 结构，客户端不会读到过期索引。
+
+## 管理页上传插件
+
+打开 `admin.html`（首页底部的 admin登录），在「上传插件」卡片里选一个 **zip**：
+
+- zip 的**文件名即插件名**，例如 `MyTweak.zip`
+- zip 内固定两个文件：`arm64.deb`（rootless 包）和 `arm64e.deb`（roothide 包）；放在一层子目录里也能识别，`__MACOSX` 等垃圾文件会自动忽略
+- 管理页在浏览器本地解压、读取两个 deb 的 control，然后把 deb 放进 `debs/`、原 zip 存进 `zips/`，并**自动重建** `Packages` / `Packages.gz` / `Release`，所有文件一次原子提交到仓库
+
+提交后约 10–60 秒 GitHub Pages 发布完成，包管理器刷新源即可看到新插件。上传同名 zip 会覆盖该插件的两个 deb（用于更新版本）；下方「已收录插件」列表可查看或删除已上传的插件，删除后索引同样自动重建。整个过程不需要服务器，也不需要 `workflow` 权限的令牌。
 
 > 换域名时改 `tools/build_repo.py` 顶部的 `BASE_URL`，以及 `index.html` 里的绝对 URL。
 

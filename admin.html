@@ -23,6 +23,15 @@
          background:var(--acc);color:#04122a;transition:.15s}
   button:hover{filter:brightness(1.14)}
   button.ghost{background:#1c335c;color:#cfe4ff;border:1px solid var(--bd)}
+  button.danger{background:#8f2f3f;color:#fff;border:1px solid #c04a5b}
+  button.danger:hover{filter:brightness(1.14)}
+  td.pname{word-break:break-all;font-weight:600}
+  .plugin-form{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .plugin-form label{font-size:13px;color:var(--mut)}
+  .plugin-form input[type=text]{flex:1;min-width:180px;background:#0c1730;border:1px solid var(--bd);
+    border-radius:9px;color:var(--tx);font-size:14px;padding:9px 12px;outline:none}
+  .plugin-form input[type=text]:focus{border-color:var(--acc)}
+  .drop-hint code{background:#0c1730;padding:2px 6px;border-radius:5px;font-size:12px;color:#a9d2ff}
   .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;margin-bottom:18px}
   .card h2{font-size:16px;margin:0 0 14px;color:#9ecbff}
   .upload{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -64,6 +73,9 @@
   .note b{color:var(--tx)}
   footer{margin-top:32px;text-align:center;color:var(--mut);font-size:12px}
 </style>
+<script src="js/fflate.min.js"></script>
+<script src="js/fzstd.min.js"></script>
+<script src="js/repo-pack.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -96,6 +108,34 @@
     <div class="status" id="status" hidden></div>
   </div>
 
+  <div class="card" id="pluginCard">
+    <h2>上传插件</h2>
+    <div class="upload">
+      <label class="upload-btn" for="pluginInput">
+        选择插件 zip
+        <input type="file" id="pluginInput" accept=".zip,application/zip">
+      </label>
+      <span class="drop-hint">zip 文件名即插件名 · 包内需含 <code>arm64.deb</code>（rootless）与 <code>arm64e.deb</code>（roothide）· 可拖到这里 · 单文件 &lt; 20MB</span>
+    </div>
+    <div class="plugin-form">
+      <label for="pluginNameInput">插件名</label>
+      <input type="text" id="pluginNameInput" placeholder="留空则取 zip 文件名" maxlength="120">
+      <span class="drop-hint" style="flex:1">同名上传会覆盖该插件的两个包（用于更新版本）</span>
+    </div>
+    <div class="status" id="pluginStatus" hidden></div>
+  </div>
+
+  <div class="card">
+    <div class="bar">
+      <h2>已收录插件</h2>
+      <button class="ghost" id="refreshPluginBtn">刷新列表</button>
+    </div>
+    <table>
+      <thead><tr><th>插件名</th><th>上传包</th><th style="text-align:right">操作</th></tr></thead>
+      <tbody id="pluginBody"></tbody>
+    </table>
+  </div>
+
   <div class="card">
     <div class="bar">
       <h2>文件列表</h2>
@@ -111,7 +151,8 @@
   <div class="note">
     <b>关于存储：</b>文件保存在网站仓库的 <code>uploads/</code> 目录，因此所有设备打开本页都能看到并下载；列表与下载是公开的，但上传需要管理员令牌。<br>
     <b>上传后：</b>GitHub Pages 通常需要 10–60 秒发布新文件，若下载暂时打不开，稍等后点「刷新列表」即可。<br>
-    <b>限制：</b>GitHub 接口对单文件有体积限制，这里上限设为 20MB；同名文件会覆盖旧版本。<br>
+    <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器。删除插件同样会自动重建索引。<br>
+    <b>限制：</b>GitHub 接口对单文件有体积限制，这里上限设为 20MB；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
     <b>安全：</b>首页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
   </div>
 
@@ -335,19 +376,243 @@
     hideSetup();
     setStatus('已连接存储，正在读取文件列表…', 'info');
     loadList();
+    loadPluginList();
   };
   tokenIn.onkeydown = function(e){ if(e.key === 'Enter') document.getElementById('connectBtn').click(); };
   document.getElementById('refreshBtn').onclick = loadList;
   document.getElementById('changeTokenBtn').onclick = function(){
-    clearToken(); showSetup(''); setStatus('已清除本机令牌，请重新填写', 'info'); render([]);
+    clearToken(); showSetup(''); setStatus('已清除本机令牌，请重新填写', 'info');
+    render([]); renderPlugins([]);
   };
   document.getElementById('logoutBtn').onclick = function(){
     sessionStorage.removeItem('repo_admin');
     location.href = 'index.html';
   };
 
-  if(getToken()){ hideSetup(); loadList(); }
-  else { showSetup(''); render([]); }
+  /* ================= 上传插件：zip -> deb -> APT 索引 ================= */
+  var GITBASE  = 'https://api.github.com/repos/' + REPO + '/git';
+  var CONTENTS = 'https://api.github.com/repos/' + REPO + '/contents/';
+  var pluginCard   = document.getElementById('pluginCard');
+  var pluginInput  = document.getElementById('pluginInput');
+  var pluginNameIn = document.getElementById('pluginNameInput');
+  var pluginStatus = document.getElementById('pluginStatus');
+  var pluginBody   = document.getElementById('pluginBody');
+
+  function setPluginStatus(msg, kind){
+    pluginStatus.hidden = false;
+    pluginStatus.textContent = msg;
+    pluginStatus.className = 'status ' + (kind || 'info');
+  }
+  function base64ToBytes(b64){
+    var bin = atob(String(b64).replace(/\s/g, '')), out = new Uint8Array(bin.length), i;
+    for(i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  function readRepoFile(path){
+    return gh(CONTENTS + path + '?ref=main&_=' + Date.now()).then(function(res){
+      if(res.status === 404) return null;
+      if(!res.ok) throw new Error('读取 ' + path + ' 失败（HTTP ' + res.status + '）');
+      if(!res.data || !res.data.content) throw new Error('读取 ' + path + ' 失败（内容为空）');
+      return base64ToBytes(res.data.content);
+    });
+  }
+  function existingPaths(paths){
+    if(!paths.length) return Promise.resolve([]);
+    return gh(GITBASE + '/trees/main?recursive=1').then(function(r){
+      var set = {};
+      ((r.data && r.data.tree) || []).forEach(function(e){ if(e.type === 'blob') set[e.path] = 1; });
+      return paths.filter(function(p){ return set[p]; });
+    });
+  }
+  // Git Data API：多个文件（含删除）一次原子提交，只触发一次 Pages 发布
+  function commitTree(changes, deletes, message){
+    var paths = Object.keys(changes), baseCommit = '', baseTree = '';
+    return gh(GITBASE + '/ref/heads/main').then(function(r){
+      if(!r.ok) throw new Error('读取 main 失败（HTTP ' + r.status + '）');
+      baseCommit = r.data.object.sha;
+      return gh(GITBASE + '/commits/' + baseCommit);
+    }).then(function(r){
+      if(!r.ok) throw new Error('读取提交失败（HTTP ' + r.status + '）');
+      baseTree = r.data.tree.sha;
+      return existingPaths(deletes);
+    }).then(function(realDeletes){
+      return Promise.all(paths.map(function(p){
+        return gh(GITBASE + '/blobs', {method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({content: toBase64(changes[p]), encoding:'base64'})})
+          .then(function(r){
+            if(!r.ok) throw new Error('写入 ' + p + ' 失败（HTTP ' + r.status + '）');
+            return {path:p, sha:r.data.sha};
+          });
+      })).then(function(blobs){
+        var entries = blobs.map(function(b){
+          return {path:b.path, mode:'100644', type:'blob', sha:b.sha};
+        });
+        realDeletes.forEach(function(p){
+          entries.push({path:p, mode:'100644', type:'blob', sha:null});
+        });
+        return gh(GITBASE + '/trees', {method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({base_tree: baseTree, tree: entries})});
+      });
+    }).then(function(r){
+      if(!r.ok) throw new Error('创建目录树失败（HTTP ' + r.status + '）');
+      return gh(GITBASE + '/commits', {method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({message:message, tree:r.data.sha, parents:[baseCommit]})});
+    }).then(function(r){
+      if(!r.ok) throw new Error('创建提交失败（HTTP ' + r.status + '）');
+      return gh(GITBASE + '/refs/heads/main', {method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({sha:r.data.sha, force:false})});
+    }).then(function(r){
+      if(!r.ok) throw new Error('发布失败（HTTP ' + r.status + '；可能有其他设备同时在改，请稍后重试）');
+      return true;
+    });
+  }
+
+  function renderPlugins(items){
+    pluginBody.innerHTML = '';
+    if(!items.length){
+      var tr = document.createElement('tr'), td = document.createElement('td');
+      td.colSpan = 3;
+      td.style.cssText = 'text-align:center;padding:26px;color:var(--mut)';
+      td.textContent = '暂无插件，点上方按钮上传 zip';
+      tr.appendChild(td); pluginBody.appendChild(tr); return;
+    }
+    items.sort(function(a, b){ return a.name.localeCompare(b.name); });
+    items.forEach(function(it){
+      var name = RP.pluginName(it.name);
+      var tr = document.createElement('tr');
+      var n = document.createElement('td'); n.className = 'pname'; n.textContent = name;
+      var s = document.createElement('td'); s.className = 'size'; s.textContent = fmtSize(it.size || 0);
+      var a = document.createElement('td'); a.className = 'act';
+      var btn = document.createElement('button');
+      btn.className = 'danger'; btn.textContent = '删除';
+      btn.onclick = function(){ deletePlugin(it.name, name); };
+      a.appendChild(btn);
+      tr.appendChild(n); tr.appendChild(s); tr.appendChild(a);
+      pluginBody.appendChild(tr);
+    });
+  }
+  function loadPluginList(){
+    pluginBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">读取中…</td></tr>';
+    if(!getToken()){ renderPlugins([]); return; }
+    gh(CONTENTS + 'zips?ref=main&_=' + Date.now()).then(function(res){
+      if(res.status === 404){ renderPlugins([]); return; }
+      if(res.status === 401 || res.status === 403){
+        showSetup('令牌无效或权限不足，请重新填写'); renderPlugins([]); return;
+      }
+      if(!res.ok){
+        pluginBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">读取失败（HTTP ' + res.status + '）</td></tr>';
+        return;
+      }
+      renderPlugins((res.data || []).filter(function(x){
+        return x.type === 'file' && /\.zip$/i.test(x.name);
+      }));
+    }).catch(function(e){
+      pluginBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:26px;color:var(--mut)">网络错误，请点「刷新列表」重试</td></tr>';
+      console.warn(e);
+    });
+  }
+
+  // 按现有 Packages / Release 重建索引（新增和删除插件都走这里）
+  function rebuildIndex(removePrefix, newStanzas){
+    return Promise.all([readRepoFile('Packages'), readRepoFile('Release')]).then(function(res){
+      var oldPkg = res[0] ? RP.bytesToUtf8(res[0]) : '';
+      var oldRel = res[1] ? RP.bytesToUtf8(res[1]) : '';
+      if(!oldRel) throw new Error('源索引 Release 不存在，无法更新');
+      var newPkg = RP.mergePackages(oldPkg, newStanzas || [], removePrefix);
+      var pkgBytes = RP.utf8ToBytes(newPkg), gz = RP.gzipPackages(newPkg);
+      return Promise.all([RP.hashes(pkgBytes), RP.hashes(gz)]).then(function(h){
+        var newRel = RP.updateRelease(oldRel, pkgBytes.length, h[0], gz.length, h[1],
+                                      RP.collectArchs(oldRel, newPkg));
+        return { packages: pkgBytes, gz: gz, release: RP.utf8ToBytes(newRel) };
+      });
+    });
+  }
+
+  function handlePluginZip(file){
+    if(typeof RP === 'undefined'){
+      setPluginStatus('组件加载失败，请刷新页面重试', 'err'); return;
+    }
+    if(!/\.zip$/i.test(file.name)){ setPluginStatus('请选择 .zip 压缩包', 'err'); return; }
+    if(file.size > MAX){ setPluginStatus('文件超过 20MB：' + file.name, 'err'); return; }
+    if(!getToken()){ showSetup('请先连接存储再上传插件'); return; }
+    var name = RP.safeName((pluginNameIn.value || '').trim() || RP.pluginName(file.name));
+    var zipBytes = null;
+    setPluginStatus('正在解析 ' + file.name + '（插件名：' + name + '）…', 'info');
+    readBuffer(file).then(function(buf){
+      zipBytes = new Uint8Array(buf);
+      var debs = RP.unzipDebs(zipBytes);
+      var c1 = RP.debControl(debs.arm64), c2 = RP.debControl(debs.arm64e);
+      return Promise.all([RP.hashes(debs.arm64), RP.hashes(debs.arm64e)]).then(function(h){
+        var prefix = 'debs/' + name + '_';
+        return { debs:debs, name:name, prefix:prefix, stanzas:[
+          RP.makeStanza(c1, prefix + 'arm64.deb',  debs.arm64,  h[0], name),
+          RP.makeStanza(c2, prefix + 'arm64e.deb', debs.arm64e, h[1], name)
+        ]};
+      });
+    }).then(function(r){
+      setPluginStatus('正在重建索引…', 'info');
+      return rebuildIndex(r.prefix, r.stanzas).then(function(idx){ return {r:r, idx:idx}; });
+    }).then(function(o){
+      setPluginStatus('正在提交到源…', 'info');
+      var changes = {};
+      changes[o.r.prefix + 'arm64.deb']  = o.r.debs.arm64;
+      changes[o.r.prefix + 'arm64e.deb'] = o.r.debs.arm64e;
+      changes['zips/' + o.r.name + '.zip'] = zipBytes;
+      changes['Packages'] = o.idx.packages;
+      changes['Packages.gz'] = o.idx.gz;
+      changes['Release'] = o.idx.release;
+      return commitTree(changes, ['Packages.bz2', 'Packages.xz'], 'plugin add: ' + o.r.name);
+    }).then(function(){
+      setPluginStatus('✅ 已把「' + name + '」添加到源：两个 deb 已入库，索引已重建。网页发布约需 10–60 秒，之后在包管理器刷新源即可看到。', 'ok');
+      loadPluginList();
+    }).catch(function(e){
+      setPluginStatus('❌ ' + (e && e.message ? e.message : '上传失败'), 'err');
+      console.warn(e);
+    });
+  }
+
+  function deletePlugin(zipName, name){
+    if(!confirm('确定删除插件「' + name + '」？这会从源里移除它的两个 deb 并重建索引。')) return;
+    if(!getToken()){ showSetup('请先连接存储'); return; }
+    setPluginStatus('正在删除「' + name + '」并重建索引…', 'info');
+    var prefix = 'debs/' + name + '_';
+    rebuildIndex(prefix, []).then(function(idx){
+      var changes = { 'Packages':idx.packages, 'Packages.gz':idx.gz, 'Release':idx.release };
+      return commitTree(changes,
+        ['zips/' + zipName, prefix + 'arm64.deb', prefix + 'arm64e.deb'],
+        'plugin remove: ' + name);
+    }).then(function(){
+      setPluginStatus('✅ 已删除「' + name + '」，约 10–60 秒后刷新源生效。', 'ok');
+      loadPluginList();
+    }).catch(function(e){
+      setPluginStatus('❌ ' + (e && e.message ? e.message : '删除失败'), 'err');
+      console.warn(e);
+    });
+  }
+
+  pluginInput.onchange = function(){
+    var f = pluginInput.files && pluginInput.files[0];
+    pluginInput.value = '';
+    if(f) handlePluginZip(f);
+  };
+  ['dragenter','dragover'].forEach(function(ev){
+    pluginCard.addEventListener(ev, function(e){ e.preventDefault(); pluginCard.classList.add('drag'); });
+  });
+  ['dragleave','drop'].forEach(function(ev){
+    pluginCard.addEventListener(ev, function(e){ e.preventDefault(); pluginCard.classList.remove('drag'); });
+  });
+  pluginCard.addEventListener('drop', function(e){
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) handlePluginZip(f);
+  });
+  document.getElementById('refreshPluginBtn').onclick = loadPluginList;
+
+  if(getToken()){ hideSetup(); loadList(); loadPluginList(); }
+  else { showSetup(''); render([]); renderPlugins([]); }
 })();
 </script>
 </body>

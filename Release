@@ -7,12 +7,10 @@ Architectures: iphoneos-arm
 Components: main
 Description: Evander's Repo — iOS 越狱源
 Icon: file://CydiaIcon.png
-Date: Sat, 07 Nov 2026 15:14:52 GMT
+Date: Sun, 08 Nov 2026 04:09:12 GMT
 MD5Sum:
  d41d8cd98f00b204e9800998ecf8427e                0 Packages
  35c270444aff1698297b818b9823bb7a               29 Packages.gz
- 4059d198768f9f8dc9372dc1c54bc3c3               14 Packages.bz2
- 8dc5aea5b03dff8595f096f9e368e888               32 Packages.xz
  98c918c16a0818bcc2e28597ddd48d66           106171 CydiaIcon.png
  d6f557192bab1afa9c9f0058a85247b0             9061 CydiaIcon@1x.png
  24c49f3f9f2ac71db65b3e2239826e9c            31220 CydiaIcon@2x.png
@@ -23,8 +21,6 @@ MD5Sum:
 SHA1:
  da39a3ee5e6b4b0d3255bfef95601890afd80709                0 Packages
  f45f0e8d967294c2999064da10a02d661abd0d6c               29 Packages.gz
- 64a543afbb5f4bf728636bdcbbe7a2ed0804adc2               14 Packages.bz2
- 9746882f4236fa1c3a8f86be2f1d9c46680c0b10               32 Packages.xz
  4e286ca0efbc7d0a2ec022e1eba0ef79c42b55a6           106171 CydiaIcon.png
  5bb99da26ab245c0493dd94f63d07b910b7fa539             9061 CydiaIcon@1x.png
  7450346d7d696826a889ff73c64ddaf283c6701f            31220 CydiaIcon@2x.png
@@ -35,8 +31,6 @@ SHA1:
 SHA256:
  e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855                0 Packages
  6d800e59ca41dddf7c8435ac74029513bc8ee65af025cb0e4e8ce077d30f80f5               29 Packages.gz
- d3dda84eb03b9738d118eb2be78e246106900493c0ae07819ad60815134a8058               14 Packages.bz2
- 0040f94d11d0039505328a90b2ff48968db873e9e7967307631bf40ef5679275               32 Packages.xz
  8e4557dec86f977ec3e4491634a9567722f376ddef39ab699209a7ad9a0a9acf           106171 CydiaIcon.png
  6f4e4eb10ce48e820a9c6a23585fdbd187e7919bb75940465bf2d662f087cafe             9061 CydiaIcon@1x.png
  544042ab457d77a27f3c8e88605201a7949db0ca4b082c35f2f80a4a37a2c564            31220 CydiaIcon@2x.png
@@ -47,8 +41,6 @@ SHA256:
 SHA512:
  cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e                0 Packages
  295b3d695df2acaae485c052360fe68a7602b8bca712965d260a517fd4ab070dceebfa1b3b0e8e3ae2d2f3a86dbc69dd4d6dabdbe35b0dcad9b9ae8eb02e3ee7               29 Packages.gz
- 6de201dfed1d45412509c65deb34690dc2d09c6aafccfe491fd2f440f92842b9c755b61dc7bcdd4cc0c9f18cf46c2b3a1241e99c4c2a33fff5555e7b2f0b6348               14 Packages.bz2
- 034b32f1138322638c7a5b7949a3b184c6a4cdfd003360a496c08c56c2cc645c94fbe9cdf9d84c963af6dda6c442717cd61d7e1cecf7024bd463f6f5196c5527               32 Packages.xz
  b42017a40828fc41452e9715d2cb6eaeae2c5e79b3902aca2c237e79847685adfc565506efe52b2bc61a168d9a0c1e81c1300b501f6f8c1fdaff6d754bc4fbb7           106171 CydiaIcon.png
  78747f268cb7c0ca93a1d873ae64ba6ea01a17bc3a8a5a6f26b180b240ad4f217fdfb7bdcaa353af5fc8458b193abdfa6fbe1b5cb645f551eb4c0c14e91ea1d5             9061 CydiaIcon@1x.png
  426193de294abcb745d0bb3006a8c20104b8bcb64729d1869e0277a8796dc92b5868b0b8c1aaf7cfe30bbffe575b5ffacdbb7cc7ae29646f3d4820eb672aa738            31220 CydiaIcon@2x.png
