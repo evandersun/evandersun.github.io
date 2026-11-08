@@ -63,6 +63,8 @@
           version: f.Version || '',
           description: String(f.Description || '').split('\n')[0].trim(),
           section: f.Section || '',
+          depiction: String(f.Depiction || '').trim(),
+          sileoDepiction: String(f.SileoDepiction || '').trim(),
           archs: [],
           files: []
         };
@@ -71,6 +73,8 @@
       var p = map[key];
       if (!p.version && f.Version) p.version = f.Version;
       if (!p.description && f.Description) p.description = String(f.Description).split('\n')[0].trim();
+      if (!p.depiction && f.Depiction) p.depiction = String(f.Depiction).trim();
+      if (!p.sileoDepiction && f.SileoDepiction) p.sileoDepiction = String(f.SileoDepiction).trim();
       var a = String(f.Architecture || '');
       if (a && p.archs.indexOf(a) < 0) p.archs.push(a);
       if (f.Filename && p.files.indexOf(f.Filename) < 0) p.files.push(f.Filename);

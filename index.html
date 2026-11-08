@@ -57,6 +57,8 @@
   button.mini:hover{filter:brightness(1.25)}
   button.mini.copied{background:var(--ok);color:#04180e;border-color:var(--ok)}
   footer{margin-top:44px;text-align:center;color:var(--mut);font-size:13px}
+  a.egg-link{color:inherit;text-decoration:none;cursor:pointer;border-bottom:1px dotted transparent;transition:.15s}
+  a.egg-link:hover{color:#bfe0ff;border-bottom-color:var(--acc)}
   .admin-entry{margin-top:26px;text-align:center}
   a.admin-btn{display:inline-block;text-decoration:none;background:#1f6feb;color:#fff;
               border:1px solid #3b86ff;border-radius:10px;padding:11px 28px;
@@ -65,13 +67,18 @@
   /* 已上传插件列表 */
   .bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
   .bar .m{font-size:13px;flex:1;min-width:180px}
-  .pl-item{padding:13px 0;border-bottom:1px solid var(--bd)}
+  .pl-item{display:block;padding:13px 0;border-bottom:1px solid var(--bd);text-decoration:none;color:inherit}
   .pl-item:first-child{padding-top:2px}
   .pl-item:last-child{border-bottom:0;padding-bottom:2px}
+  a.pl-item{cursor:pointer;border-radius:10px;padding-left:10px;padding-right:10px;margin:0 -10px;transition:background .15s}
+  a.pl-item:hover{background:#0f1a2e}
+  a.pl-item:hover .pl-go{color:#bfe0ff}
+  .pl-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
   .pl-name{font-size:16px;font-weight:600;color:#bfe0ff;word-break:break-all}
   .pl-ver{display:inline-block;font-size:11px;color:var(--mut);border:1px solid var(--bd);
-          border-radius:99px;padding:1px 8px;margin-left:8px;vertical-align:2px;
+          border-radius:99px;padding:1px 8px;vertical-align:2px;
           font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .pl-go{margin-left:auto;font-size:12.5px;color:var(--mut);white-space:nowrap;transition:color .15s}
   .pl-desc{font-size:13px;color:var(--mut);margin-top:4px;word-break:break-all}
   .pl-tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
   .pl-tag{font-size:11px;color:#9ecbff;background:#0c1730;border:1px solid var(--bd);
@@ -134,7 +141,7 @@
     <h2>已上传插件</h2>
     <div class="card">
       <div class="bar">
-        <span class="m">数据来自源的 <code>Packages</code> 索引，上传后约 10–60 秒更新</span>
+        <span class="m">点条目查看详情 · 数据来自源的 <code>Packages</code> 索引，上传后约 10–60 秒更新</span>
         <button class="mini" id="refreshPlugins">刷新</button>
       </div>
       <div id="pluginList"><div class="pl-empty">读取中…</div></div>
@@ -158,7 +165,7 @@
   </div>
 
   <footer>
-    Evander's Repo · Powered by GitHub Pages
+    Evander's Repo · <a class="egg-link" href="egg.html">Powered by GitHub Pages</a>
   </footer>
 
   <div class="admin-entry">
@@ -195,6 +202,21 @@
       if(text != null) e.textContent = text;
       return e;
     }
+    /* 详情页地址：control 里的 Depiction 字段；站内地址转成相对路径，本地预览也不会跳到线上 */
+    var SITE_ROOT = 'https://evandersun.github.io/';
+    function detailUrl(p){
+      var raw = p.depiction || p.sileoDepiction || '';
+      if(!raw) return '';
+      if(/\.json($|\?)/i.test(raw) && p.depiction) raw = p.depiction;
+      if(raw.indexOf(SITE_ROOT) === 0) return raw.slice(SITE_ROOT.length).replace(/^\//, '');
+      var base = (typeof location !== 'undefined' && location.href) ? location.href : SITE_ROOT;
+      try{
+        var abs = new URL(raw, base);
+        if(typeof location !== 'undefined' && abs.origin === location.origin)
+          return abs.pathname.replace(/^\//, '') + abs.search + abs.hash;
+        return abs.href;
+      }catch(e){ return ''; }
+    }
     function render(items){
       box.innerHTML = '';
       if(!items.length){
@@ -202,9 +224,13 @@
         return;
       }
       items.forEach(function(p){
-        var row = el('div','pl-item');
-        var head = el('div','pl-name', p.name);
+        var href = detailUrl(p);
+        var row = el(href ? 'a' : 'div', 'pl-item');
+        if(href){ row.href = href; row.title = p.name + ' 详情'; }
+        var head = el('div','pl-head');
+        head.appendChild(el('span','pl-name', p.name));
         if(p.version) head.appendChild(el('span','pl-ver','v' + p.version));
+        if(href) head.appendChild(el('span','pl-go','详情 ›'));
         row.appendChild(head);
         if(p.packageId && p.packageId !== p.name)
           row.appendChild(el('div','pl-desc', p.packageId));

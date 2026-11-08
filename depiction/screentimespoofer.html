@@ -90,10 +90,27 @@
   .ver-body{font-size:13px;color:var(--mut);margin:0 0 16px;padding-left:2px}
 
   footer{margin-top:34px;text-align:center;color:var(--mut);font-size:12.5px;line-height:1.9}
+
+  /* 返回首页 */
+  .crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:16px}
+  .crumb a{color:var(--acc);text-decoration:none;font-weight:600}
+  .crumb a:hover{text-decoration:underline}
+  .crumb .sep{color:#33456b}
+  .back-row{margin-top:18px;text-align:center}
+  .back-row a{display:inline-block;text-decoration:none;font-size:13.5px;font-weight:600;
+              color:#cfe4ff;background:#1c335c;border:1px solid var(--bd);border-radius:10px;
+              padding:10px 22px;transition:.15s}
+  .back-row a:hover{filter:brightness(1.25)}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <nav class="crumb">
+    <a href="../">← 返回首页</a>
+    <span class="sep">/</span>
+    <span>插件详情</span>
+  </nav>
 
   <div class="hero">
     <!-- 内联时钟图标：与设置页/包图标一致，不额外依赖图片文件 -->
@@ -205,6 +222,10 @@
       <p class="ver-body">修复设置页闪退（桩头 NSObject 缺 isa、提前填充 specifiers、bundle 加载）、日志路径、旧 dylib 残留覆盖冲突；「固定 15 分钟」「变成一秒」等时长缩放问题定位并修正。</p>
     </div>
   </details>
+
+  <div class="back-row">
+    <a href="../">← 返回首页 · 查看其他插件</a>
+  </div>
 
   <footer>
     ScreenTimeSpoofer 1.0 · Evander's Repo<br>
