@@ -52,6 +52,24 @@
   button.mini:hover{filter:brightness(1.25)}
   button.mini.copied{background:var(--ok);color:#04180e;border-color:var(--ok)}
   footer{margin-top:44px;text-align:center;color:var(--mut);font-size:13px}
+  .admin-entry{margin-top:26px;text-align:center}
+  button.admin-btn{background:#1f6feb;color:#fff;border:1px solid #3b86ff;padding:11px 28px;
+                   font-size:14px;letter-spacing:.5px;box-shadow:0 6px 20px #1f6feb44}
+  button.admin-btn:hover{filter:brightness(1.14)}
+  .overlay{position:fixed;inset:0;background:#050a16cc;display:flex;align-items:center;
+           justify-content:center;padding:20px;z-index:50}
+  .overlay[hidden]{display:none}
+  .modal{width:100%;max-width:360px;background:var(--card);border:1px solid var(--bd);
+         border-radius:16px;padding:24px;box-shadow:0 24px 60px #000a}
+  .modal h3{margin:0 0 6px;font-size:18px}
+  .modal p{margin:0 0 16px;font-size:13px}
+  .modal input{width:100%;box-sizing:border-box;background:#0c1730;border:1px solid var(--bd);
+               border-radius:10px;color:var(--tx);font-size:15px;padding:11px 13px;outline:none}
+  .modal input:focus{border-color:var(--acc)}
+  .err{color:#ff8f8f;font-size:13px;margin-top:10px}
+  .err[hidden]{display:none}
+  .modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+  button.ghost{background:#1c335c;color:#cfe4ff;border:1px solid var(--bd)}
 </style>
 </head>
 <body>
@@ -122,7 +140,25 @@
   <footer>
     Evander's Repo · Powered by GitHub Pages
   </footer>
+
+  <div class="admin-entry">
+    <button class="admin-btn" id="adminBtn">admin登录</button>
+  </div>
 </div>
+
+<div class="overlay" id="loginOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <h3 id="loginTitle">管理员登录</h3>
+    <p class="m">请输入管理员密码</p>
+    <input type="password" id="adminPwd" placeholder="密码" autocomplete="off">
+    <div class="err" id="adminErr" hidden>密码错误</div>
+    <div class="modal-btns">
+      <button class="ghost" id="adminCancel">取消</button>
+      <button id="adminOk">登录</button>
+    </div>
+  </div>
+</div>
+
 <script>
   function bindCopy(btn, getText){
     btn.onclick=function(){
@@ -140,6 +176,30 @@
   bindCopy(urlBtn, function(){return urlEl.textContent.trim();});
   Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function(btn){
     bindCopy(btn, function(){return btn.getAttribute('data-copy');});
+  });
+
+  // 管理员入口：前端简易门禁，写权限由管理页的 GitHub 令牌控制
+  var ADMIN_PASSWORD = 'hX126288@@';
+  var overlay=document.getElementById('loginOverlay');
+  var pwd=document.getElementById('adminPwd');
+  var err=document.getElementById('adminErr');
+  function openLogin(){overlay.hidden=false;pwd.value='';err.hidden=true;
+    setTimeout(function(){pwd.focus();},50);}
+  function closeLogin(){overlay.hidden=true;}
+  function submitLogin(){
+    if(pwd.value===ADMIN_PASSWORD){
+      sessionStorage.setItem('repo_admin','1');
+      location.href='admin.html';
+    }else{err.hidden=false;pwd.select();}
+  }
+  document.getElementById('adminBtn').onclick=openLogin;
+  document.getElementById('adminCancel').onclick=closeLogin;
+  document.getElementById('adminOk').onclick=submitLogin;
+  overlay.onclick=function(e){if(e.target===overlay)closeLogin();};
+  pwd.onkeydown=function(e){if(e.key==='Enter')submitLogin();};
+  pwd.oninput=function(){err.hidden=true;};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!overlay.hidden)closeLogin();
   });
 </script>
 </body>
