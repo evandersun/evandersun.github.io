@@ -32,6 +32,11 @@
   .card ul{margin:0;padding-left:18px;font-size:14px;color:var(--tx)}
   .card li{margin:7px 0}
   .card .m{color:var(--mut)}
+  .pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  a.pm-btn{display:block;text-align:center;text-decoration:none;background:var(--acc);color:#04122a;
+           border-radius:10px;padding:11px 8px;font-size:14px;font-weight:600;transition:.15s}
+  a.pm-btn:hover{filter:brightness(1.12)}
+  @media(max-width:380px){.pm-grid{grid-template-columns:1fr}}
   table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
   th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--bd)}
   th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
@@ -91,13 +96,15 @@
   <div class="grid">
     <div class="card">
       <h2>怎么添加</h2>
-      <ul>
-        <li><b>Sileo</b>：源 → ＋ → 粘贴地址 → 添加源</li>
-        <li><b>Zebra</b>：Sources → Add → 粘贴地址</li>
-        <li><b>Cydia</b>：源 → 编辑 → 添加 → 输入地址</li>
-        <li><b>Installer</b>：Sources → ＋ → 粘贴地址</li>
-      </ul>
-      <p class="m" style="font-size:13px;margin:12px 0 0">添加后刷新一次源即可浏览收录内容。</p>
+      <p class="m" style="font-size:13px;margin:0 0 12px">点击对应客户端，直接跳转并添加本源；未安装该客户端则不会响应。</p>
+      <div class="pm-grid">
+        <a class="pm-btn" href="cydia://url/https://cydia.saurik.com/api/share#?source=https://evandersun.github.io/">Cydia</a>
+        <a class="pm-btn" href="sileo://source/https://evandersun.github.io/">Sileo</a>
+        <a class="pm-btn" href="zbra://sources/add/https://evandersun.github.io/">Zebra</a>
+        <a class="pm-btn" href="installer://add/repo=https://evandersun.github.io/">Installer</a>
+        <a class="pm-btn" href="irisin://repository/add?url=https://evandersun.github.io/">Irisin</a>
+        <a class="pm-btn" href="apt-repo://https://evandersun.github.io/">Saily</a>
+      </div>
     </div>
     <div class="card">
       <h2>源信息</h2>
