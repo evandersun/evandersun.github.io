@@ -412,7 +412,8 @@
     return gh(CONTENTS + path + '?ref=main&_=' + Date.now()).then(function(res){
       if(res.status === 404) return null;
       if(!res.ok) throw new Error('读取 ' + path + ' 失败（HTTP ' + res.status + '）');
-      if(!res.data || !res.data.content) throw new Error('读取 ' + path + ' 失败（内容为空）');
+      // content 允许为空字符串：源还没有插件时 Packages 就是 0 字节
+      if(!res.data || res.data.content == null) throw new Error('读取 ' + path + ' 失败（无内容字段）');
       return base64ToBytes(res.data.content);
     });
   }
@@ -526,7 +527,7 @@
       var pkgBytes = RP.utf8ToBytes(newPkg), gz = RP.gzipPackages(newPkg);
       return Promise.all([RP.hashes(pkgBytes), RP.hashes(gz)]).then(function(h){
         var newRel = RP.updateRelease(oldRel, pkgBytes.length, h[0], gz.length, h[1],
-                                      RP.collectArchs(oldRel, newPkg));
+                                      RP.collectArchs(newPkg));
         return { packages: pkgBytes, gz: gz, release: RP.utf8ToBytes(newRel) };
       });
     });

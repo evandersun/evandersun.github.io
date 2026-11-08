@@ -211,14 +211,15 @@
     var all = keep.concat(newStanzas.map(function (s) { return String(s).replace(/\n+$/, ''); }));
     return all.length ? all.join('\n\n') + '\n' : '';
   }
-  function collectArchs(releaseText, packagesText) {
+  // 架构只由当前 Packages 决定，与 tools/build_repo.py 一致：删掉插件后
+  // Packages 为空时自动收缩回 iphoneos-arm，不会残留旧架构。
+  function collectArchs(packagesText) {
     var archs = [];
-    var m = String(releaseText).match(/^Architectures:[ \t]*(.+)$/mi);
-    if (m) m[1].split(/\s+/).forEach(function (a) { if (a && archs.indexOf(a) < 0) archs.push(a); });
     splitStanzas(packagesText).forEach(function (s) {
       var am = s.match(/^Architecture:[ \t]*(.+)$/mi);
       if (am && am[1].trim() && archs.indexOf(am[1].trim()) < 0) archs.push(am[1].trim());
     });
+    archs.sort();
     if (archs.indexOf('iphoneos-arm') < 0) archs.unshift('iphoneos-arm');
     else { archs.splice(archs.indexOf('iphoneos-arm'), 1); archs.unshift('iphoneos-arm'); }
     return archs;
