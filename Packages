@@ -1,0 +1,29 @@
+Package: com.example.testtweak
+Name: TestTweak
+Version: 1.0
+Architecture: iphoneos-arm64
+Description: neutral test package for repo pipeline
+Maintainer: repo-admin
+Section: Tweaks
+Depends: mobilesubstrate
+Filename: debs/TestTweak_arm64.deb
+Size: 578
+MD5sum: 581bd3c01c4c2c98629b6a4624f55a19
+SHA1: 4011f4032c0e794a18f3482dd2508c79266ff9d0
+SHA256: 492d974b649393ffb83ca30e2a0b3077b6a4b06461eb35dc59c7a3a416c25adc
+SHA512: c516720024b406f0c869152f1cde80fa2f8eb13026977751203c863bc9d7928f56f4c641648a803bb07a7608f3b9a106162866facd429ca2c8c491aedaeea42b
+
+Package: com.example.testtweak
+Name: TestTweak
+Version: 1.0
+Architecture: iphoneos-arm64e
+Description: neutral test package for repo pipeline
+Maintainer: repo-admin
+Section: Tweaks
+Depends: mobilesubstrate
+Filename: debs/TestTweak_arm64e.deb
+Size: 578
+MD5sum: 0588274c39650c94e0d0c1b8b32e064f
+SHA1: be5a9854527ce10a93c8ad14ea225372a2bee80c
+SHA256: 9519cc07988921b053f8bfdfbbdafa9d2d33dd74cf4c45fb467dd87257e82516
+SHA512: 0b1d45bca00f084bdfbc42eff2961ca16741aa438b0e2b791b46337d6787796f63198e76cd362e59919b81f7a78af62cb89add7c8d9b46d0218862432d88bcdc
