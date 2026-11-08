@@ -52,7 +52,16 @@
 
   .stage{margin-top:30px;background:var(--card);border:1px solid var(--bd);border-radius:18px;
          padding:12px;box-shadow:0 24px 70px #0009,0 0 0 1px #ffffff08 inset}
-  video{display:block;width:100%;aspect-ratio:1136/640;background:#000;border-radius:11px;outline:0}
+  .vwrap{position:relative}
+  video{display:block;width:100%;aspect-ratio:720/406;background:#000;border-radius:11px;outline:0}
+  /* 首次加载时盖在海报上的一层，避免用户以为页面卡住了 */
+  .vload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:9px;
+         background:#04080f99;border-radius:11px;color:#cfe4ff;font-size:13px;font-weight:500;
+         transition:opacity .35s ease;pointer-events:none}
+  .vload.hide{opacity:0;visibility:hidden}
+  .spin{width:15px;height:15px;border:2px solid #ffffff2e;border-top-color:#7ee8ff;border-radius:50%;
+        animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .hint{margin-top:14px;font-size:13px;color:var(--mut);min-height:20px}
 
   .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
@@ -83,13 +92,14 @@
   <p class="sub">你是少数会去点<b>页脚</b>的人，那就看个视频吧。</p>
 
   <div class="stage">
-    <video id="eggVideo" controls autoplay muted loop playsinline preload="auto"
-           poster="assets/egg-poster.jpg">
-      <source src="assets/egg.mp4" type="video/mp4">
-      你的浏览器不支持 HTML5 视频，<a href="assets/egg.mp4">点此下载观看</a>。
-    </video>
+    <div class="vwrap">
+      <video id="eggVideo" autoplay muted loop playsinline preload="none"
+             poster="assets/egg-poster.jpg"></video>
+      <div class="vload" id="vload"><span class="spin"></span><span id="vloadText">正在加载视频…</span></div>
+    </div>
   </div>
   <div class="hint" id="hint">默认静音播放 · 点播放器上的音量键开声音</div>
+  <noscript><p class="hint"><a href="assets/egg-720.mp4">点此下载观看视频</a></p></noscript>
 
   <div class="actions">
     <a href="./">← 返回首页</a>
@@ -107,18 +117,95 @@
   var v = document.getElementById('eggVideo');
   var hint = document.getElementById('hint');
   var stamp = document.getElementById('stamp');
+  var vload = document.getElementById('vload');
+  var vloadText = document.getElementById('vloadText');
   if(!v) return;
+
+  /* GitHub Pages 在国内常常只有 20 KB/s，所以视频优先走 jsDelivr 的加速节点，
+     哪个先应答就用哪个，都不行再回落到本站 */
+  var LOCAL_SRC = 'assets/egg-720.mp4';
+  var CDN_SRC = [
+    'https://gcore.jsdelivr.net/gh/evandersun/evandersun.github.io@main/assets/egg-720.mp4',
+    'https://cdn.jsdelivr.net/gh/evandersun/evandersun.github.io@main/assets/egg-720.mp4'
+  ];
 
   var d = new Date();
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   stamp.textContent = '解锁于 ' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
                     + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 
-  // 自动播放若被浏览器策略拦截，给出可操作的提示而不是静默失败
-  var p = v.play();
-  if(p && typeof p.catch === 'function'){
-    p.catch(function(){ hint.textContent = '浏览器拦了自动播放，点一下播放键就好'; });
+  function probe(url, ms){
+    return new Promise(function(resolve, reject){
+      var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+      var timer = setTimeout(function(){
+        if(ctrl) ctrl.abort();
+        reject(new Error('timeout'));
+      }, ms);
+      var t0 = Date.now();
+      var opt = { headers: { 'Range': 'bytes=0-2047' }, cache: 'no-store' };
+      if(ctrl) opt.signal = ctrl.signal;
+      fetch(url, opt).then(function(r){
+        if(!r.ok && r.status !== 206){ clearTimeout(timer); reject(new Error('http ' + r.status)); return; }
+        return r.arrayBuffer().then(function(){
+          clearTimeout(timer);
+          resolve({ url: url, ms: Date.now() - t0 });
+        });
+      }).catch(function(e){ clearTimeout(timer); reject(e); });
+    });
   }
+
+  function pickSource(){
+    return new Promise(function(resolve){
+      var settled = false;
+      var pending = CDN_SRC.length;
+      function win(url){ if(!settled){ settled = true; resolve(url); } }
+      CDN_SRC.forEach(function(u){
+        probe(u, 2000).then(function(r){ win(r.url); }, function(){
+          pending--;
+          if(pending === 0) win(LOCAL_SRC);   /* 节点都不通，立刻用本站，不干等 */
+        });
+      });
+      setTimeout(function(){ win(LOCAL_SRC); }, 2100);   /* 兜底 */
+    });
+  }
+
+  var triedFallback = false;
+  function attach(src){
+    v.src = src;
+    try{ v.load(); }catch(e){}
+    var p = v.play();
+    if(p && typeof p.catch === 'function'){
+      p.catch(function(){ /* 自动播放被拦时不提示，用户点播放键即可 */ });
+    }
+  }
+
+  function hideLoading(){
+    if(vload.classList.contains('hide')) return;
+    vload.classList.add('hide');
+    v.controls = true;          /* 能播了再把原生控制条放出来，加载时不挡海报 */
+  }
+
+  v.addEventListener('canplay', hideLoading);
+  v.addEventListener('playing', hideLoading);
+  v.addEventListener('loadeddata', hideLoading);
+
+  v.addEventListener('error', function(){
+    if(!triedFallback){
+      triedFallback = true;
+      if(vloadText) vloadText.textContent = '换个线路重试…';
+      attach(LOCAL_SRC);
+    }else{
+      if(vloadText) vloadText.textContent = '视频加载失败，点这里下载';
+      vload.style.pointerEvents = 'auto';
+      vload.style.cursor = 'pointer';
+      vload.onclick = function(){ window.location.href = LOCAL_SRC; };
+    }
+  });
+
+  pickSource().then(function(src){
+    attach(src);
+  });
+
   v.addEventListener('volumechange', function(){
     hint.textContent = (v.muted || v.volume === 0)
       ? '默认静音播放 · 点播放器上的音量键开声音'
