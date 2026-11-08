@@ -202,7 +202,7 @@
     <b>含密钥的文件：</b>检测到疑似密钥（<code>ghp_...</code>、<code>github_pat_...</code>、私钥、<code>AKIA...</code> 等）时不会明文入库，本页会自动压缩存储并标注「压缩存储」，点「下载」时在浏览器里还原成原文件；若服务器仍以「Secret detected」拒绝，也会自动回退到压缩存储。<br>
     <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器，<strong>上传完就直接进源</strong>。删除插件同样会自动重建索引。<br>
     <b>已收录插件：</b>这张表读的是源里的 <code>Packages</code> 索引，所以<strong>列出来的就是包管理器里能装到的</strong>；不用令牌（如手机）也能看到，只是不能删除。<br>
-    <b>下载加速：</b>20MB 以内的文件会优先从 jsDelivr 加速节点取回，实测比 GitHub Pages 快一个数量级，下载时显示实时进度；节点不通会自动回退本站。<strong>超过 20MB 的文件只能走本站</strong>（加速节点有单文件上限），列表里会标「大文件 · 无加速」。<br>
+    <b>下载加速：</b>20MB 以内的文件会优先从 jsDelivr 加速节点取回，实测比 GitHub Pages 快一个数量级，下载时显示实时进度；节点不通会自动回退本站。<strong>两种情况下没有加速</strong>：超过 20MB（加速节点有单文件上限），以及 Office 文档（<code>xlsx</code> / <code>docx</code> / <code>pptx</code>，被 jsDelivr 直接 403 屏蔽）——这两种会在列表里标「无加速」，走本站会慢一些；Office 文件可以先压成 zip 再上传，就能享受加速。<br>
     <b>限制：</b>单文件上限 <strong>40MB</strong>（GitHub 写入接口实测可传 40MB，45MB 起会被拒绝）；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
     <b>安全：</b>本页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
   </div>
@@ -237,6 +237,12 @@
     'https://gcore.jsdelivr.net/gh/evandersun/evandersun.github.io@main/',
     'https://cdn.jsdelivr.net/gh/evandersun/evandersun.github.io@main/'
   ];
+  // jsDelivr 直接 403 的文件类型（Office 文档被当作宏风险屏蔽），别再白试
+  var NO_CDN = /\.(?:xlsx?|xlsm|docx?|docm|pptx?|pptm)$/i;
+  function cdnOk(it){
+    var p = it.path || it.name || '';
+    return (it.size || 0) <= CDN_MAX && (it.gz || !NO_CDN.test(p));
+  }
 
   var setupEl   = document.getElementById('setup');
   var statusEl  = document.getElementById('status');
@@ -371,7 +377,7 @@
   function downloadFile(it){
     var gz = !!it.gz, path = it.path || ('uploads/' + (gz ? it.name + '.gz' : it.name));
     var urls = [];
-    if((it.size || 0) <= CDN_MAX){
+    if(cdnOk(it)){
       CDN_LIST.forEach(function(b){ urls.push(cdnUrl(b, path)); });   // 加速节点不加时间戳，保住它的缓存
     }
     urls.push(fileUrl(path) + '?_=' + Date.now());                    // 本站加时间戳，绕过 Pages 缓存
@@ -424,9 +430,10 @@
         tag.className = 'tag'; tag.textContent = '压缩存储';
         n.appendChild(tag);
       }
-      if((it.size || 0) > CDN_MAX){
+      if(!cdnOk(it)){
         var big = document.createElement('span');
-        big.className = 'tag'; big.textContent = '大文件 · 无加速';
+        big.className = 'tag';
+        big.textContent = NO_CDN.test(it.path || it.name || '') ? '本站直连 · 无加速' : '大文件 · 无加速';
         n.appendChild(big);
       }
       var s = document.createElement('td');
@@ -658,7 +665,7 @@
   document.getElementById('refreshBtn').onclick = loadList;
   document.getElementById('changeTokenBtn').onclick = function(){
     clearToken(); showSetup(''); setStatus('已清除本机令牌，请重新填写', 'info');
-    loadList(); renderPlugins([]);
+    loadList(); loadPluginList();
   };
   document.getElementById('logoutBtn').onclick = function(){
     sessionStorage.removeItem('repo_admin');
@@ -962,8 +969,10 @@
     loginBox.hidden = true;
     // 文件列表读公开清单：没令牌也能看/下载（手机等其它设备）
     loadList();
-    if(getToken()){ hideSetup(); loadPluginList(); }
-    else { showSetup('当前是只读模式：可以查看、下载文件；上传需要先填写令牌。'); renderPlugins([]); }
+    // 插件列表读源索引，没令牌时读 Pages 上的公开 Packages，同样能看
+    loadPluginList();
+    if(getToken()){ hideSetup(); }
+    else { showSetup('当前是只读模式：可以查看、下载文件与已收录插件；上传需要先填写令牌。'); }
   }
   function submitLogin(){
     if(adminPwd.value === ADMIN_PASSWORD){
