@@ -638,7 +638,8 @@
 
   // 点击按钮 / 拖拽，都会走系统文件选择器或系统拖放
   fileInput.onchange = function(){
-    var fs = fileInput.files;
+    // 必须先复制成数组：清空 input.value 会让 FileList 立刻变空，等于什么都没选
+    var fs = Array.prototype.slice.call(fileInput.files || []);
     fileInput.value = '';
     startUpload(fs);
   };

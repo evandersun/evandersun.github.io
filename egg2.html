@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>恭喜你解锁彩蛋 · Evander's Repo</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon-egg.svg">
-<meta name="description" content="Evander's Repo 的第二个隐藏页面。">
+<meta name="description" content="Evander's Repo 的隐藏页面。">
 <style>
   :root{color-scheme:dark;--bg:#0a0f1e;--card:#131d33;--bd:#26365a;--tx:#eaf1ff;--mut:#93a7cd;--acc:#4a9dff}
   *{box-sizing:border-box}
@@ -64,17 +64,23 @@
   .photo-wrap{display:flex;justify-content:center;align-items:center;background:#060b16;
               border-radius:11px;overflow:hidden;min-height:180px}
   @media(min-width:600px){.photo-wrap{padding:10px}}
-  #eggPhoto{display:block;width:auto;height:auto;max-width:100%;max-height:min(74vh,760px);
-            border-radius:8px;cursor:zoom-in;animation:reveal .7s ease both;
-            box-shadow:0 12px 40px #0008}
+  /* 用背景图展示：长按不会出现「存储图像」，从根上少一条保存路径 */
+  .photo{width:100%;max-width:calc(min(74vh,760px) * 0.6352);aspect-ratio:780/1228;
+         background-image:url("assets/egg2-1160.jpg");background-size:cover;background-position:center;
+         border-radius:8px;cursor:zoom-in;animation:reveal .7s ease both;box-shadow:0 12px 40px #0008;
+         -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  @media(max-width:600px){.photo{background-image:url("assets/egg2-780.jpg")}}
   @keyframes reveal{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
-  /* 点一下看大图：独立层，z-index 高于页面所有内容，不会被遮罩压住 */
+
+  /* 点开大图：独立层，比页面所有内容都高 */
   .lb{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;
-      padding:18px;background:#02060ff5;cursor:zoom-out;animation:lbin .22s ease both}
+      padding:18px;background:#02060ff5;cursor:zoom-out;animation:lbin .22s ease both;
+      -webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   .lb.on{display:flex}
-  .lb img{max-width:100%;max-height:100%;width:auto;height:auto;border-radius:10px;
-          box-shadow:0 30px 90px #000d}
+  .lb-img{width:100%;height:100%;max-width:1000px;background:url("assets/egg2-1160.jpg") center/contain no-repeat;
+          pointer-events:none}
   @keyframes lbin{from{opacity:0}to{opacity:1}}
+
   .hint{margin-top:14px;font-size:13px;color:var(--mut);min-height:20px}
 
   .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
@@ -84,11 +90,28 @@
   .actions button{background:var(--acc);color:#04122a;border-color:var(--acc)}
   .actions a:hover,.actions button:hover{filter:brightness(1.18)}
 
+  /* 下载原图：先要密码 */
+  .dlbox{display:none;gap:9px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:14px}
+  .dlbox.on{display:flex}
+  .dlbox input{width:190px;max-width:60vw;font-size:14px;color:var(--tx);background:#0c1730;
+               border:1px solid var(--bd);border-radius:10px;padding:9px 13px;outline:0;
+               transition:border-color .15s,box-shadow .15s}
+  .dlbox input:focus{border-color:var(--acc);box-shadow:0 0 0 3px #4a9dff22}
+  .dlbox input.bad{border-color:#ff6b81;box-shadow:0 0 0 3px #ff6b8122;animation:shake .3s}
+  @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  .dlbox button{background:#213a63;color:#cfe4ff;border:1px solid #33507f;border-radius:10px;
+                padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
+  .dlbox button:hover{filter:brightness(1.2)}
+  .dlmsg{margin:10px 0 0;font-size:12.5px;color:var(--mut);min-height:17px}
+  .dlmsg.ok{color:#42d392}
+  .dlmsg.bad{color:#ff8a9b}
+
   footer{position:relative;z-index:1;margin-top:40px;text-align:center;color:#5e7197;font-size:12px;line-height:2}
   #stamp{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.3px}
   @media(prefers-reduced-motion:reduce){
     .confetti span{animation:none;opacity:.2}
-    h1,#eggPhoto{animation:none}
+    h1,.photo{animation:none}
+    .dlbox input.bad{animation:none}
   }
 </style>
 </head>
@@ -100,50 +123,56 @@
 </div>
 
 <main class="wrap">
-  <div class="eyebrow">Hidden page · 02</div>
+  <div class="eyebrow">Hidden page · 01</div>
   <h1>恭喜你解锁彩蛋</h1>
-  <p class="sub">你是少数会把<b>页脚</b>点第二遍的人，那张照片就当奖励。</p>
+  <p class="sub">你是少数会去点<b>页脚</b>的人，那张照片就当奖励。</p>
   <p class="whisper">不要告诉别人哦🙄</p>
   <p class="whoami">Guest whoami</p>
 
   <div class="stage">
     <div class="photo-wrap">
-      <img id="eggPhoto" src="assets/egg2-780.jpg"
-           srcset="assets/egg2-780.jpg 780w, assets/egg2-1160.jpg 1160w"
-           sizes="(max-width:840px) calc(100vw - 64px), 776px"
-           width="780" height="1228" alt="彩蛋照片 · 点一下看大图" decoding="async">
+      <div class="photo" id="eggPhoto" role="button" tabindex="0" aria-label="点开看大图"></div>
     </div>
   </div>
-  <div class="hint" id="hint">点照片看大图 · 再点一下收起来</div>
-
-  <div class="lb" id="lightbox" aria-hidden="true"><img alt="彩蛋照片大图"></div>
+  <div class="hint" id="hint">点照片看大图 · 想保存得先解锁</div>
 
   <div class="actions">
     <a href="./">← 返回首页</a>
-    <a href="egg.html">看看第一个彩蛋</a>
+    <button type="button" id="dlBtn">下载原图</button>
   </div>
+
+  <div class="dlbox" id="dlBox">
+    <input type="password" id="dlPwd" placeholder="输入下载密码" autocomplete="off"
+           autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="40">
+    <button type="button" id="dlOk">解锁下载</button>
+  </div>
+  <p class="dlmsg" id="dlMsg"></p>
+
+  <div class="lb" id="lightbox" aria-hidden="true"><div class="lb-img"></div></div>
 </main>
 
 <footer>
   <div id="stamp"></div>
-  第二个入口藏在 WorkBuddy 那一行，别告诉别人 · <a href="./">Evander's Repo</a>
+  这个页面没有放进任何导航里，别告诉别人 · <a href="./">Evander's Repo</a>
 </footer>
 
 <script>
 (function(){
   var photo = document.getElementById('eggPhoto');
   var stamp = document.getElementById('stamp');
-  var hint = document.getElementById('hint');
+  var hint  = document.getElementById('hint');
+  var lb    = document.getElementById('lightbox');
+  var dlBox = document.getElementById('dlBox');
+  var dlPwd = document.getElementById('dlPwd');
+  var dlMsg = document.getElementById('dlMsg');
 
   var d = new Date();
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   stamp.textContent = '解锁于 ' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate())
                     + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 
-  var lb = document.getElementById('lightbox');
-  var lbImg = lb.querySelector('img');
+  /* ---- 查看大图 ---- */
   function openLB(){
-    lbImg.src = 'assets/egg2-1160.jpg';
     lb.classList.add('on');
     lb.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -153,12 +182,77 @@
     lb.classList.remove('on');
     lb.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
-    hint.textContent = '点照片看大图 · 再点一下收起来';
+    hint.textContent = '点照片看大图 · 想保存得先解锁';
   }
   photo.addEventListener('click', openLB);
+  photo.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openLB(); }
+  });
   lb.addEventListener('click', closeLB);
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape' && lb.classList.contains('on')) closeLB();
+  });
+
+  /* ---- 防右键 / 防拖拽（手机上靠背景图 + touch-callout 兜住） ---- */
+  ['contextmenu', 'dragstart'].forEach(function(ev){
+    document.addEventListener(ev, function(e){
+      if(e.target.closest && e.target.closest('.photo, .lb, .lb-img')) e.preventDefault();
+    });
+  });
+
+  /* ---- 下载原图：解锁后才放行 ---- */
+  var KEY = atob('ZXZhbmRlcjYyOA==');   /* 不在源码里留明文密码 */
+
+  document.getElementById('dlBtn').onclick = function(){
+    var on = dlBox.classList.toggle('on');
+    if(on){
+      dlMsg.textContent = '输入密码后可以下载原图';
+      dlMsg.className = 'dlmsg';
+      setTimeout(function(){ dlPwd.focus(); }, 30);
+    }else{
+      dlMsg.textContent = '';
+    }
+  };
+
+  function unlock(){
+    var v = dlPwd.value.trim();
+    if(!v){ dlPwd.focus(); return; }
+    if(v !== KEY){
+      dlPwd.classList.add('bad');
+      dlMsg.textContent = '密码不对，再想想';
+      dlMsg.className = 'dlmsg bad';
+      setTimeout(function(){ dlPwd.classList.remove('bad'); }, 420);
+      dlPwd.select();
+      return;
+    }
+    dlPwd.classList.remove('bad');
+    dlMsg.textContent = '密码正确，正在准备原图…';
+    dlMsg.className = 'dlmsg ok';
+    fetch('assets/egg2-original.jpg', {cache: 'force-cache'}).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.blob();
+    }).then(function(b){
+      var url = URL.createObjectURL(b);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'egg2-original.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
+      dlMsg.textContent = '已开始下载原图（1180×1858）';
+      dlMsg.className = 'dlmsg ok';
+      dlPwd.value = '';
+    }).catch(function(e){
+      dlMsg.textContent = '下载失败：' + (e && e.message ? e.message : '请稍后再试');
+      dlMsg.className = 'dlmsg bad';
+    });
+  }
+  document.getElementById('dlOk').onclick = unlock;
+  dlPwd.addEventListener('keydown', function(e){ if(e.key === 'Enter') unlock(); });
+  dlPwd.addEventListener('input', function(){
+    dlPwd.classList.remove('bad');
+    if(dlMsg.classList.contains('bad')){ dlMsg.textContent = ''; dlMsg.className = 'dlmsg'; }
   });
 })();
 </script>
