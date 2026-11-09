@@ -65,10 +65,24 @@
               border-radius:11px;overflow:hidden;min-height:180px}
   @media(min-width:600px){.photo-wrap{padding:10px}}
   /* 用背景图展示：长按不会出现「存储图像」，从根上少一条保存路径 */
-  .photo{width:100%;max-width:calc(min(74vh,760px) * 0.6352);aspect-ratio:780/1228;
+  .photo{position:relative;overflow:hidden;width:100%;max-width:calc(min(74vh,760px) * 0.6352);aspect-ratio:780/1228;
          background-image:url("assets/egg2-1160.jpg");background-size:cover;background-position:center;
          border-radius:8px;cursor:zoom-in;animation:reveal .7s ease both;box-shadow:0 12px 40px #0008;
+         transition:filter .2s ease;
          -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+
+  /* 平铺水印：截屏/拍照都会带着这行字，便于追溯 */
+  .wm{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.22;
+      background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27260%27%20height=%27150%27%3E%3Ctext%20x=%27130%27%20y=%2780%27%20text-anchor=%27middle%27%20transform=%27rotate(-26%20130%2080)%27%20font-family=%27ui-monospace,Menlo,monospace%27%20font-size=%2712%27%20letter-spacing=%271%27%20fill=%27%23ffffff%27%20stroke=%27%23000000%27%20stroke-opacity=%27.35%27%20stroke-width=%27.6%27%3EEVANDER%20·%20PRIVATE%3C/text%3E%3C/svg%3E");
+      background-repeat:repeat}
+
+  /* 切走窗口时立刻糊掉照片：桌面端截屏工具一取景页面就失焦，截到的是一片模糊 */
+  .photo-wrap{position:relative}
+  body.guard .photo{filter:blur(22px) brightness(.55)}
+  body.guard .photo-wrap::after{content:"已暂时隐藏 · 回到本页自动恢复";position:absolute;inset:0;z-index:4;
+      display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;
+      font-size:12.5px;color:#9fb4d9;background:#060b16b8;letter-spacing:.8px}
+  body.guard .lb{display:none!important}
   @media(max-width:600px){.photo{background-image:url("assets/egg2-780.jpg")}}
   @keyframes reveal{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
 
@@ -77,8 +91,12 @@
       padding:18px;background:#02060ff5;cursor:zoom-out;animation:lbin .22s ease both;
       -webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   .lb.on{display:flex}
-  .lb-img{width:100%;height:100%;max-width:1000px;background:url("assets/egg2-1160.jpg") center/contain no-repeat;
-          pointer-events:none}
+  .lb-img{width:100%;height:100%;pointer-events:none;
+          background:url("assets/egg2-1160.jpg") center/contain no-repeat}
+  /* 水印层按图片实际显示区域裁切，不会糊到两侧黑边上 */
+  .lb-wm{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;
+         opacity:.2;border-radius:6px;background-repeat:repeat;
+         background-image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27260%27%20height=%27150%27%3E%3Ctext%20x=%27130%27%20y=%2780%27%20text-anchor=%27middle%27%20transform=%27rotate(-26%20130%2080)%27%20font-family=%27ui-monospace,Menlo,monospace%27%20font-size=%2712%27%20letter-spacing=%271%27%20fill=%27%23ffffff%27%20stroke=%27%23000000%27%20stroke-opacity=%27.35%27%20stroke-width=%27.6%27%3EEVANDER%20·%20PRIVATE%3C/text%3E%3C/svg%3E")}
   @keyframes lbin{from{opacity:0}to{opacity:1}}
 
   .hint{margin-top:14px;font-size:13px;color:var(--mut);min-height:20px}
@@ -137,7 +155,9 @@
 
   <div class="stage">
     <div class="photo-wrap">
-      <div class="photo" id="eggPhoto" role="button" tabindex="0" aria-label="点开看大图"></div>
+      <div class="photo" id="eggPhoto" role="button" tabindex="0" aria-label="点开看大图">
+        <span class="wm" aria-hidden="true"></span>
+      </div>
     </div>
   </div>
   <div class="hint" id="hint">点照片看大图 · 想保存得先解锁</div>
@@ -154,7 +174,10 @@
   </div>
   <p class="dlmsg" id="dlMsg"></p>
 
-  <div class="lb" id="lightbox" aria-hidden="true"><div class="lb-img"></div></div>
+  <div class="lb" id="lightbox" aria-hidden="true">
+    <div class="lb-img"></div>
+    <span class="lb-wm" id="lbWm" aria-hidden="true"></span>
+  </div>
 </main>
 
 <footer>
@@ -172,6 +195,7 @@
   var stamp = document.getElementById('stamp');
   var hint  = document.getElementById('hint');
   var lb    = document.getElementById('lightbox');
+  var lbWm  = document.getElementById('lbWm');
   var dlBox = document.getElementById('dlBox');
   var dlPwd = document.getElementById('dlPwd');
   var dlMsg = document.getElementById('dlMsg');
@@ -182,7 +206,15 @@
                     + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 
   /* ---- 查看大图 ---- */
+  function sizeWM(){
+    /* 照片实际显示区域：比容器窄时按高度算，宽时按宽度算 */
+    var vw = window.innerWidth - 36, vh = window.innerHeight - 36, ar = 780 / 1228;
+    var w = Math.min(vw, vh * ar, 1000);
+    lbWm.style.width  = Math.round(w) + 'px';
+    lbWm.style.height = Math.round(w / ar) + 'px';
+  }
   function openLB(){
+    sizeWM();
     lb.classList.add('on');
     lb.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -199,6 +231,7 @@
     if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openLB(); }
   });
   lb.addEventListener('click', closeLB);
+  window.addEventListener('resize', function(){ if(lb.classList.contains('on')) sizeWM(); });
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape' && lb.classList.contains('on')) closeLB();
   });
@@ -210,8 +243,126 @@
     });
   });
 
-  /* ---- 下载原图：解锁后才放行 ---- */
-  var KEY = atob('ZXZhbmRlcjYyOA==');   /* 不在源码里留明文密码 */
+  /* ---- 下载原图：解锁后才放行 ----
+     源码里只放 PBKDF2 派生值（盐 + 迭代次数 + 32 字节结果），没有明文也没有 base64；
+     想反推密码只能硬撞，没有可逆路径。 */
+  var SALT = 'eb1f4a37d29c8560b7a4e19d3f26c58a';
+  var ITER = 20000;
+  var WANT = 'd07d34a0c0541d5ce861c4bcf2dede9d1e0faedb8d218af7265875dc1d5381ee';
+
+  /* 纯 JS SHA-256 / HMAC / PBKDF2 —— 用于在不暴露明文的情况下校验下载密码 */
+  var SHA = (function () {
+    var K = [
+      0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+      0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+      0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+      0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+      0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+      0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+      0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+      0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    ];
+    function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+
+    function hash(bytes) {
+      var len = bytes.length;
+      var total = (((len + 9) + 63) >> 6) << 6;
+      var buf = new Uint8Array(total);
+      buf.set(bytes);
+      buf[len] = 0x80;
+      var bitLo = (len << 3) >>> 0;
+      var bitHi = Math.floor(len / 536870912) >>> 0;
+      buf[total - 8] = (bitHi >>> 24) & 255; buf[total - 7] = (bitHi >>> 16) & 255;
+      buf[total - 6] = (bitHi >>> 8) & 255; buf[total - 5] = bitHi & 255;
+      buf[total - 4] = (bitLo >>> 24) & 255; buf[total - 3] = (bitLo >>> 16) & 255;
+      buf[total - 2] = (bitLo >>> 8) & 255; buf[total - 1] = bitLo & 255;
+
+      var dv = new DataView(buf.buffer);
+      var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+      var w = new Uint32Array(64), i, off;
+      for (off = 0; off < total; off += 64) {
+        for (i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4);
+        for (i = 16; i < 64; i++) {
+          var a15 = w[i - 15], a2 = w[i - 2];
+          var s0 = rotr(a15, 7) ^ rotr(a15, 18) ^ (a15 >>> 3);
+          var s1 = rotr(a2, 17) ^ rotr(a2, 19) ^ (a2 >>> 10);
+          w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+        }
+        var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+        for (i = 0; i < 64; i++) {
+          var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+          var ch = (e & f) ^ (~e & g);
+          var t1 = (h + S1 + ch + K[i] + w[i]) | 0;
+          var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+          var maj = (a & b) ^ (a & c) ^ (b & c);
+          var t2 = (S0 + maj) | 0;
+          h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+        }
+        H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+        H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+      }
+      var out = new Uint8Array(32);
+      for (i = 0; i < 8; i++) {
+        out[i * 4] = (H[i] >>> 24) & 255; out[i * 4 + 1] = (H[i] >>> 16) & 255;
+        out[i * 4 + 2] = (H[i] >>> 8) & 255; out[i * 4 + 3] = H[i] & 255;
+      }
+      return out;
+    }
+
+    function hmac(key, data) {
+      if (key.length > 64) key = hash(key);
+      var k = new Uint8Array(64);
+      k.set(key);
+      var inner = new Uint8Array(64 + data.length);
+      var outer = new Uint8Array(64 + 32);
+      for (var i = 0; i < 64; i++) { inner[i] = k[i] ^ 0x36; outer[i] = k[i] ^ 0x5c; }
+      inner.set(data, 64);
+      outer.set(hash(inner), 64);
+      return hash(outer);
+    }
+
+    function utf8(str) {
+      if (typeof TextEncoder !== 'undefined') return new TextEncoder().encode(str);
+      var s = unescape(encodeURIComponent(str)), out = new Uint8Array(s.length);
+      for (var i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+      return out;
+    }
+
+    function hexToBytes(hex) {
+      var out = new Uint8Array(hex.length >> 1);
+      for (var i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+      return out;
+    }
+
+    /* PBKDF2-HMAC-SHA256，输出 32 字节 */
+    function pbkdf2(pwd, salt, iter) {
+      var pw = utf8(pwd);
+      var block = new Uint8Array(salt.length + 4);
+      block.set(salt);
+      block[salt.length + 3] = 1;
+      var u = hmac(pw, block);
+      var t = new Uint8Array(u);
+      for (var i = 1; i < iter; i++) {
+        u = hmac(pw, u);
+        for (var j = 0; j < 32; j++) t[j] ^= u[j];
+      }
+      return t;
+    }
+
+    return { hash: hash, pbkdf2: pbkdf2, hexToBytes: hexToBytes, utf8: utf8 };
+  })();
+
+  function pwdHex(pwd){
+    var out = SHA.pbkdf2(pwd, SHA.hexToBytes(SALT), ITER), s = '';
+    for (var i = 0; i < out.length; i++) s += (out[i] < 16 ? '0' : '') + out[i].toString(16);
+    return s;
+  }
+  function same(a, b){          /* 常量时间比较 */
+    if (a.length !== b.length) return false;
+    var d = 0;
+    for (var i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    return d === 0;
+  }
 
   document.getElementById('dlBtn').onclick = function(){
     var on = dlBox.classList.toggle('on');
@@ -224,10 +375,22 @@
     }
   };
 
+  var busy = false;
   function unlock(){
     var v = dlPwd.value.trim();
     if(!v){ dlPwd.focus(); return; }
-    if(v !== KEY){
+    if(busy) return;
+    busy = true;
+    dlMsg.textContent = '正在校验…';
+    dlMsg.className = 'dlmsg';
+    /* 派生要占用几百毫秒，先让「正在校验」渲染出来再算 */
+    setTimeout(function(){ doUnlock(v); }, 20);
+  }
+
+  function doUnlock(v){
+    var ok = same(pwdHex(v), WANT);
+    busy = false;
+    if(!ok){
       dlPwd.classList.add('bad');
       dlMsg.textContent = '密码不对，再想想';
       dlMsg.className = 'dlmsg bad';
@@ -264,6 +427,20 @@
     dlPwd.classList.remove('bad');
     if(dlMsg.classList.contains('bad')){ dlMsg.textContent = ''; dlMsg.className = 'dlmsg'; }
   });
+
+  /* ---- 失焦/切页时把照片糊掉：桌面截屏工具一取景，页面就失焦，截到的是模糊画面 ---- */
+  var guardTimer = null;
+  function hide(){ document.body.classList.add('guard'); }
+  function show(){
+    clearTimeout(guardTimer);
+    guardTimer = setTimeout(function(){
+      if(!document.hidden && document.hasFocus()) document.body.classList.remove('guard');
+    }, 320);
+  }
+  window.addEventListener('blur', hide);
+  window.addEventListener('focus', show);
+  document.addEventListener('visibilitychange', function(){ document.hidden ? hide() : show(); });
+  if(document.hidden) hide();
 })();
 </script>
 </body>

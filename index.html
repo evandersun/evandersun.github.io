@@ -363,6 +363,13 @@
   if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){
     boot.parentNode.removeChild(boot); return;
   }
+  /* 同一个会话（同一个标签页）里只播一次：刷新、返回、前进都不再重复 */
+  try{
+    if(sessionStorage.getItem('boot_once') === '1'){
+      boot.parentNode.removeChild(boot); return;
+    }
+    sessionStorage.setItem('boot_once', '1');
+  }catch(e){ /* 隐私模式禁用存储时，照常播放一次 */ }
   var lines = document.getElementById('bootLines');
   var bar   = document.getElementById('bootBar');
   var pctEl = document.getElementById('bootPct');
