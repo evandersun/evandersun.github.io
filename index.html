@@ -100,9 +100,73 @@
   .pl-tag{font-size:11px;color:#9ecbff;background:#0c1730;border:1px solid var(--bd);
           border-radius:6px;padding:2px 8px}
   .pl-empty{text-align:center;padding:26px;color:var(--mut);font-size:13px}
+  /* ===== 打开首页时的代码滚动动画（约 5 秒，可点击跳过） ===== */
+  .boot{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;
+        justify-content:center;gap:14px;background:#05080f;
+        background-image:radial-gradient(900px 520px at 50% -8%,#16264a 0%,transparent 60%);
+        transition:opacity .45s ease}
+  .boot.done{opacity:0;pointer-events:none}
+  .boot-console{width:min(700px,91vw);height:min(440px,66vh);display:flex;flex-direction:column;
+                border:1px solid #1c2b47;border-radius:14px;background:#070d18;overflow:hidden;
+                box-shadow:0 34px 100px #000b,0 0 0 1px #ffffff06 inset}
+  .boot-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#0a1220;
+            border-bottom:1px solid #16233b;flex:none}
+  .boot-bar i{width:10px;height:10px;border-radius:50%;display:block}
+  .boot-bar i:nth-child(1){background:#ff5f57}
+  .boot-bar i:nth-child(2){background:#febc2e}
+  .boot-bar i:nth-child(3){background:#28c840}
+  .boot-title{margin-left:8px;font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;
+              color:#63799c;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .boot-body{position:relative;flex:1;overflow:hidden}
+  .boot-body::before{content:"";position:absolute;left:0;right:0;top:0;height:56px;z-index:2;
+                     background:linear-gradient(#070d18 12%,#070d1800);pointer-events:none}
+  .boot-body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:44px;z-index:2;
+                    background:linear-gradient(#070d1800,#070d18 86%);pointer-events:none}
+  .boot-lines{position:absolute;left:0;right:0;bottom:0;padding:0 16px 12px;
+              font:12.5px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;
+              font-variant-ligatures:none}
+  .boot-line{display:flex;gap:12px;white-space:pre;opacity:0;animation:bootIn .16s ease forwards}
+  .boot-line .ln{flex:none;min-width:26px;text-align:right;color:#2e4260;user-select:none}
+  .boot-line .cd{color:#b9cbe6;overflow:hidden;text-overflow:ellipsis}
+  @keyframes bootIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+  .c{color:#4a6182}
+  .k{color:#ff7b9c}
+  .s{color:#a8e6a0}
+  .f{color:#7ec9ff}
+  .n{color:#ffd166}
+  .ok{color:#42d392}
+  .warn{color:#ffb86b}
+  .boot-foot{display:flex;align-items:center;gap:12px;padding:10px 14px;flex:none;
+             background:#0a1220;border-top:1px solid #16233b}
+  .boot-track{flex:1;height:4px;border-radius:99px;background:#152238;overflow:hidden}
+  .boot-track i{display:block;width:0;height:100%;border-radius:99px;
+                background:linear-gradient(90deg,#4a9dff,#7ee8ff);box-shadow:0 0 10px #4a9dff88;
+                transition:width .18s linear}
+  #bootPct{min-width:36px;text-align:right;font:11.5px ui-monospace,Menlo,monospace;color:#7f96bb}
+  .boot-skip{margin:0;font-size:12px;color:#3f5474;letter-spacing:.6px}
+  @media(prefers-reduced-motion:reduce){.boot{display:none}}
 </style>
 </head>
 <body>
+
+<!-- 打开首页的代码滚动动画：约 5 秒，点击可跳过，动画结束自动移除 -->
+<div class="boot" id="boot">
+  <div class="boot-console">
+    <div class="boot-bar">
+      <i></i><i></i><i></i>
+      <span class="boot-title">evander@repo — bootstrap.sh</span>
+    </div>
+    <div class="boot-body">
+      <div class="boot-lines" id="bootLines"></div>
+    </div>
+    <div class="boot-foot">
+      <div class="boot-track"><i id="bootBar"></i></div>
+      <span id="bootPct">0%</span>
+    </div>
+  </div>
+  <p class="boot-skip">点击任意处跳过</p>
+</div>
+
 <div class="wrap">
   <div class="top">
     <img src="CydiaIcon.png" alt="repo icon">
@@ -290,6 +354,129 @@
     document.getElementById('refreshPlugins').onclick = load;
     load();
   })();
+</script>
+<script>
+/* 打开首页的「代码滚动」动画：约 5 秒后淡出，点击/按键可立即跳过 */
+(function(){
+  var boot = document.getElementById('boot');
+  if(!boot) return;
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){
+    boot.parentNode.removeChild(boot); return;
+  }
+  var lines = document.getElementById('bootLines');
+  var bar   = document.getElementById('bootBar');
+  var pctEl = document.getElementById('bootPct');
+  var DUR = 5000, t0 = Date.now(), n = 0, finished = false;
+
+  /* 每行一个片段，class：c 注释 / k 关键字 / s 字符串 / f 函数 / n 常量 */
+  var CODE = [
+    '<span class="c">// evandersun.github.io · 源索引构建</span>',
+    '<span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">"fflate"</span>;',
+    '<span class="k">import</span> { sha256, sha512 } <span class="k">from</span> <span class="s">"./hash.js"</span>;',
+    '<span class="k">import</span> { readFile, writeFile } <span class="k">from</span> <span class="s">"node:fs/promises"</span>;',
+    '',
+    '<span class="k">const</span> repo = {',
+    '  name: <span class="s">"Evander&#39;s Repo"</span>,',
+    '  origin: <span class="s">"https://evandersun.github.io/"</span>,',
+    '  arch: [<span class="s">"iphoneos-arm64"</span>, <span class="s">"iphoneos-arm64e"</span>],',
+    '  index: [<span class="s">"Packages"</span>, <span class="s">"Packages.gz"</span>],',
+    '  release: <span class="s">"Release"</span>',
+    '};',
+    '',
+    '<span class="k">export async function</span> <span class="f">build</span>() {',
+    '  <span class="k">const</span> raw = <span class="k">await</span> <span class="f">readFile</span>(repo.index[<span class="n">0</span>], <span class="s">"utf8"</span>);',
+    '  <span class="k">const</span> list = <span class="f">parseStanzas</span>(raw);',
+    '',
+    '  <span class="k">for</span> (<span class="k">const</span> p <span class="k">of</span> list) {',
+    '    p.sha256 = <span class="k">await</span> <span class="f">sha256</span>(p.file);',
+    '    p.sha512 = <span class="k">await</span> <span class="f">sha512</span>(p.file);',
+    '    p.size   = <span class="k">await</span> <span class="f">stat</span>(p.file);',
+    '  }',
+    '',
+    '  <span class="k">const</span> gz = <span class="f">gzipSync</span>(raw, { level: <span class="n">6</span> });',
+    '  <span class="k">await</span> <span class="f">writeFile</span>(repo.index[<span class="n">1</span>], gz);',
+    '',
+    '  <span class="k">const</span> release = [',
+    '    <span class="s">"Origin: "</span> + repo.name,',
+    '    <span class="s">"Label: "</span> + repo.name,',
+    '    <span class="s">"Suite: stable"</span>,',
+    '    <span class="s">"Architectures: "</span> + repo.arch.<span class="f">join</span>(<span class="s">" "</span>),',
+    '    <span class="s">"Date: "</span> + <span class="k">new</span> <span class="f">Date</span>().<span class="f">toUTCString</span>(),',
+    '    <span class="s">"MD5Sum:"</span>',
+    '  ].<span class="f">join</span>(<span class="s">"\\n"</span>);',
+    '',
+    '  <span class="k">await</span> <span class="f">writeFile</span>(repo.release, release);',
+    '  <span class="k">return</span> { ok: <span class="k">true</span>, count: list.length };',
+    '}',
+    '',
+    '<span class="k">function</span> <span class="f">parseStanzas</span>(text) {',
+    '  <span class="k">return</span> text.<span class="f">trim</span>().<span class="f">split</span>(<span class="s">"\\n\\n"</span>).<span class="f">map</span>(block =&gt; {',
+    '    <span class="k">const</span> out = {};',
+    '    <span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> block.<span class="f">split</span>(<span class="s">"\\n"</span>)) {',
+    '      <span class="k">const</span> i = line.<span class="f">indexOf</span>(<span class="s">":"</span>);',
+    '      <span class="k">if</span> (i &lt; <span class="n">0</span>) <span class="k">continue</span>;',
+    '      out[line.<span class="f">slice</span>(<span class="n">0</span>, i)] = line.<span class="f">slice</span>(i + <span class="n">1</span>).<span class="f">trim</span>();',
+    '    }',
+    '    <span class="k">return</span> out;',
+    '  });',
+    '}',
+    '',
+    '<span class="c">/* 构建日志 */</span>',
+    '<span class="ok">[ ok ]</span> 读取 Packages      <span class="n">1.8 KB</span>',
+    '<span class="ok">[ ok ]</span> 解析 stanza × <span class="n">2</span>',
+    '<span class="ok">[ ok ]</span> 计算 SHA256 × <span class="n">36</span>  <span class="ok">matched</span>',
+    '<span class="ok">[ ok ]</span> 生成 Packages.gz   <span class="n">0.8 KB</span>',
+    '<span class="ok">[ ok ]</span> 写入 Release        <span class="n">3.7 KB</span>',
+    '<span class="warn">[ .. ]</span> 推送 GitHub Pages',
+    '<span class="ok">[ ok ]</span> 发布完成 <span class="n">2.4s</span>',
+    '',
+    '<span class="c">/* 客户端拉取索引 */</span>',
+    'GET <span class="s">/Packages.gz</span> <span class="n">200</span> <span class="c">application/gzip</span>',
+    'GET <span class="s">/Release</span>     <span class="n">200</span> <span class="c">text/plain</span>',
+    '<span class="ok">✓</span> 签名校验通过  <span class="n">36/36</span>',
+    '<span class="ok">✓</span> 源已就绪，正在进入首页 <span class="c">…</span>'
+  ];
+
+  function two(n){ return (n < 10 ? '0' : '') + n; }
+
+  function pushLine(html){
+    var d = document.createElement('div');
+    d.className = 'boot-line';
+    d.innerHTML = '<span class="ln">' + two(++n) + '</span>' +
+                  '<span class="cd">' + (html || '&nbsp;') + '</span>';
+    lines.appendChild(d);
+    while(lines.children.length > 90) lines.removeChild(lines.firstChild);
+  }
+
+  function end(){
+    if(finished) return;
+    finished = true;
+    clearInterval(timer);
+    boot.classList.add('done');
+    document.body.style.overflow = '';
+    setTimeout(function(){ if(boot.parentNode) boot.parentNode.removeChild(boot); }, 520);
+  }
+
+  document.body.style.overflow = 'hidden';
+  boot.addEventListener('click', end);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' || e.key === 'Enter') end(); });
+
+  var i = 0;
+  var timer = setInterval(function(){
+    var el = Date.now() - t0;
+    var pct = Math.min(100, el / DUR * 100);
+    bar.style.width = pct.toFixed(1) + '%';
+    pctEl.textContent = Math.round(pct) + '%';
+
+    if(el >= DUR - 700){
+      if(el < DUR - 640) pushLine('<span class="ok">✓</span> <span class="f">启动首页</span> <span class="c">…</span>');
+      if(el >= DUR - 300) end();
+      return;
+    }
+    pushLine(CODE[i % CODE.length]);
+    i++;
+  }, 72);
+})();
 </script>
 </body>
 </html>
