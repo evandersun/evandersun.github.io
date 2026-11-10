@@ -117,9 +117,10 @@
   .nt-time{margin-left:auto;font-size:11.5px;color:var(--mut);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   .nt-time[hidden]{display:none}
   .nt-body{font-size:14px;color:#cfe0f5;white-space:pre-wrap;word-break:break-word}
-  .nt-edit{margin-left:2px;border:0;background:none;color:#4a6182;font-size:13px;line-height:1;
-           padding:4px 6px;border-radius:6px;opacity:.55}
-  .nt-edit:hover{opacity:1;background:#0c1730;color:#9ecbff}
+  .nt-edit{margin-left:7px;border:1px solid transparent;background:none;color:#6f86ab;font-size:12px;
+           line-height:1.7;padding:1px 9px;border-radius:7px;transition:.15s}
+  .nt-edit:hover{background:#0c1730;border-color:#2a3d63;color:#9ecbff}
+  .nt-time[hidden]+.nt-edit{margin-left:auto}
 
   /* 发布面板 */
   .nmodal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
@@ -245,7 +246,7 @@
       <span class="nt-tag" id="ntTag">公告</span>
       <span class="nt-title" id="ntTitle"></span>
       <span class="nt-time" id="ntTime"></span>
-      <button class="nt-edit" id="ntEdit" type="button" title="编辑公告" aria-label="编辑公告" hidden>✎</button>
+      <button class="nt-edit" id="ntEdit" type="button" title="编辑公告" aria-label="编辑公告" hidden>编辑</button>
     </div>
     <div class="nt-body" id="ntBody"></div>
   </div>
