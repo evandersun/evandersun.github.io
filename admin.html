@@ -120,6 +120,64 @@
   .err{color:#ff8f8f;font-size:13px;margin-top:10px}
   .err[hidden]{display:none}
   .modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+  /* ===== 公告管理 ===== */
+  .nlist{display:flex;flex-direction:column;gap:10px;margin:14px 0 4px}
+  .nl{position:relative;border:1px solid var(--bd);border-left:4px solid var(--acc);border-radius:10px;
+      background:#101a2e;padding:12px 14px}
+  .nl[data-level="warn"]{border-left-color:#ffb86b}
+  .nl[data-level="hot"]{border-left-color:#ff6b81}
+  .nl-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .nl-tag{font-size:11px;font-weight:700;color:#04122a;background:var(--acc);border-radius:5px;
+          padding:1px 8px;flex:none}
+  .nl[data-level="warn"] .nl-tag{background:#ffb86b;color:#2a1a04}
+  .nl[data-level="hot"] .nl-tag{background:#ff6b81;color:#2a0410}
+  .nl-title{font-size:14px;font-weight:600;color:#dceaff;word-break:break-word}
+  .nl-time{margin-left:auto;font-size:11.5px;color:var(--mut);white-space:nowrap;
+           font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .nl-body{margin-top:6px;font-size:13px;color:#c3d7ef;white-space:pre-wrap;word-break:break-word;
+           max-height:110px;overflow:auto}
+  .nl-act{display:flex;gap:8px;margin-top:10px}
+  .nl-act button{padding:5px 14px;font-size:12.5px;border-radius:8px}
+  .nl-act button.ghost{background:#1c335c;color:#cfe4ff;border:1px solid var(--bd)}
+  .nform{margin-top:16px;padding-top:16px;border-top:1px solid var(--bd)}
+  .nform input[type=text],.nform textarea{width:100%;box-sizing:border-box;background:#0c1730;
+    border:1px solid var(--bd);border-radius:9px;color:var(--tx);font:inherit;font-size:14px;
+    padding:9px 12px;outline:none}
+  .nform input[type=text]:focus,.nform textarea:focus{border-color:var(--acc)}
+  .nform textarea{min-height:96px;resize:vertical;line-height:1.6;margin-top:10px}
+  .nrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .nrow input[type=text]{flex:1;min-width:170px}
+  .lv{display:flex;gap:6px}
+  .lv-btn{background:#0c1730;color:var(--mut);border:1px solid var(--bd);border-radius:8px;
+          padding:8px 12px;font-size:12.5px;font-weight:600}
+  .lv-btn.on{background:#1c335c;color:#cfe4ff;border-color:#3f638f}
+  .lv-btn.on[data-lv="warn"]{background:#3a2a10;color:#ffcf8f;border-color:#7a5a22}
+  .lv-btn.on[data-lv="hot"]{background:#3a1220;color:#ffb0bd;border-color:#7a2740}
+  .nfoot{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .nfoot .cnt{font-size:12px;color:var(--mut);margin-right:auto;
+              font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  /* 访客统计 */
+  .stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .stat-row input{flex:1;min-width:220px;background:#0c1730;border:1px solid var(--bd);border-radius:9px;
+    color:var(--tx);font-size:14px;padding:9px 12px;outline:none;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .stat-row input:focus{border-color:var(--acc)}
+  .stat-state{margin-top:10px;font-size:12.5px;color:var(--mut);word-break:break-all}
+  .stat-state.ok{color:#9ff0c4}
+  .stat-state.err{color:#ffb0b0}
+  .ghost-link{color:#9ecbff;font-size:13px;text-decoration:none;border:1px solid #2f4d7a;
+    border-radius:9px;padding:7px 14px;font-weight:600}
+  .ghost-link:hover{background:#152b47}
+  .steps{margin:10px 0 0;padding-left:20px;font-size:12.5px;color:var(--mut);line-height:1.8}
+  .steps code{background:#0c1730;padding:1px 6px;border-radius:4px;color:#a9d2ff}
+  .muted{font-size:12.5px;color:var(--mut);margin:0}
+  @media(max-width:520px){
+    .nl-time{margin-left:0;width:100%}
+    .lv{width:100%}
+    .lv-btn{flex:1}
+    .nfoot button{flex:1}
+    .nfoot .cnt{width:100%;margin-right:0}
+  }
   /* WorkBuddy 标识：与首页保持一致 */
   .wb-badge{display:inline-flex;align-items:center;gap:7px;color:inherit;text-decoration:none;
             vertical-align:middle;transition:color .15s}
@@ -160,6 +218,51 @@
     </div>
 
     <div class="status" id="status" hidden></div>
+  </div>
+
+  <div class="card" id="noticeCard">
+    <div class="bar">
+      <h2>公告</h2>
+      <button class="ghost" id="noticeRefreshBtn">刷新</button>
+    </div>
+    <p class="muted">可以同时存在多条公告，首页按时间倒序显示，最多先列 3 条；正文里的网址会自动变成蓝色「查看链接」标签。</p>
+    <div class="nlist" id="noticeList"></div>
+
+    <div class="nform">
+      <div class="nrow">
+        <input type="text" id="nTitle" placeholder="标题（留空显示「公告」）" maxlength="40" autocomplete="off">
+        <div class="lv">
+          <button type="button" class="lv-btn on" data-lv="info">普通</button>
+          <button type="button" class="lv-btn" data-lv="warn">注意</button>
+          <button type="button" class="lv-btn" data-lv="hot">重要</button>
+        </div>
+      </div>
+      <textarea id="nBody" maxlength="600" placeholder="公告内容，可带网址，例如：1.1 已上架，更新说明见 https://evandersun.github.io/depiction/screentimespoofer.html"></textarea>
+      <div class="nfoot">
+        <span class="cnt" id="nCount">0 / 600</span>
+        <button type="button" id="nSave">发布公告</button>
+        <button type="button" class="ghost" id="nCancel" hidden>取消编辑</button>
+      </div>
+      <div class="status" id="nStatus" hidden></div>
+    </div>
+  </div>
+
+  <div class="card" id="statCard">
+    <div class="bar">
+      <h2>访客统计</h2>
+      <a class="ghost-link" href="https://tongji.baidu.com/" target="_blank" rel="noopener noreferrer">打开百度统计后台 ›</a>
+    </div>
+    <p class="muted">设备、系统、浏览器、屏幕、来源这些报表都在百度统计后台看。这里只负责把站点 ID 写进 <code>analytics.json</code>，全站页面（首页 / 彩蛋页 / 插件详情页）会自动开始上报。</p>
+    <ol class="steps">
+      <li>打开百度统计 → 管理 → 新增网站，域名填 <code>evandersun.github.io</code></li>
+      <li>进「代码获取」，复制 <code>hm.js?</code> 后面那一串 ID（32 位十六进制）</li>
+      <li>粘到下面保存，约 1 分钟后生效</li>
+    </ol>
+    <div class="stat-row">
+      <input type="text" id="hmInput" placeholder="粘贴 hm.js? 后面的站点 ID" spellcheck="false" autocomplete="off">
+      <button type="button" id="hmSave">保存并启用</button>
+    </div>
+    <div class="stat-state" id="hmState">正在读取配置…</div>
   </div>
 
   <div class="card" id="pluginCard">
@@ -209,7 +312,9 @@
     <b>上传插件：</b>zip 文件名是插件名，包内固定 <code>arm64.deb</code>（rootless）和 <code>arm64e.deb</code>（roothide）。网页在本机解压、读取 deb 的 control，自动重建 <code>Packages</code> / <code>Packages.gz</code> / <code>Release</code>，两个 deb 存进 <code>debs/</code>、原 zip 存进 <code>zips/</code>，一次提交完成，不需要服务器，<strong>上传完就直接进源</strong>。删除插件同样会自动重建索引。<br>
     <b>已收录插件：</b>这张表读的是源里的 <code>Packages</code> 索引，所以<strong>列出来的就是包管理器里能装到的</strong>；不用令牌（如手机）也能看到，只是不能删除。<br>
     <b>下载加速：</b>20MB 以内的文件会优先从 jsDelivr 加速节点取回，实测比 GitHub Pages 快一个数量级，下载时显示实时进度；节点不通会自动回退本站。<strong>两种情况下没有加速</strong>：超过 20MB（加速节点有单文件上限），以及 Office 文档（<code>xlsx</code> / <code>docx</code> / <code>pptx</code>，被 jsDelivr 直接 403 屏蔽）——这两种会在列表里标「无加速」，走本站会慢一些；Office 文件可以先压成 zip 再上传，就能享受加速。<br>
+    <b>公告：</b>本页「公告」一栏直接写仓库根目录的 <code>notice.json</code>，可以同时存在多条，首页按时间倒序显示（先列 3 条，可展开）；正文里的网址会自动变成蓝色「查看链接」标签，不会把长链接摊在页面上。编辑会覆盖同一条，删除立即从首页消失，都需要令牌。<br>
     <b>限制：</b>单文件上限 <strong>40MB</strong>（GitHub 写入接口实测可传 40MB，45MB 起会被拒绝）；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
+    <b>访客统计：</b>全站页面会读 <code>analytics.json</code> 里的百度统计 ID 并加载 <code>hm.js</code>；没填 ID 就完全不请求。设备 / 系统 / 浏览器 / 屏幕 / 地域 / 来源等报表在百度统计后台看，本页只负责配置。本页自身不上报，避免把自己的访问混进去。<br>
     <b>安全：</b>本页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
   </div>
 
@@ -966,6 +1071,294 @@
   });
   document.getElementById('refreshPluginBtn').onclick = loadPluginList;
 
+  /* ===== 公告管理：读写仓库根目录 notice.json，支持多条公告 ===== */
+  var N_FILE = 'notice.json';
+  var nItems = [], nEditing = null, nLevel = 'info', nBusy = false;
+  var nListEl   = document.getElementById('noticeList');
+  var nTitleEl  = document.getElementById('nTitle');
+  var nBodyEl   = document.getElementById('nBody');
+  var nStatusEl = document.getElementById('nStatus');
+  var nSaveBtn  = document.getElementById('nSave');
+  var nCancelBtn= document.getElementById('nCancel');
+  var nCountEl  = document.getElementById('nCount');
+  var nLvBtns   = document.querySelectorAll('.lv-btn');
+
+  function nStatus(msg, kind){
+    if(!msg){ nStatusEl.hidden = true; nStatusEl.textContent = ''; nStatusEl.className = 'status'; return; }
+    nStatusEl.hidden = false;
+    nStatusEl.className = 'status ' + (kind || 'info');
+    nStatusEl.textContent = msg;
+  }
+  function nNewId(){
+    return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+  // 兼容旧的单条格式 {title,body,level,updated} 与新的 {updated,items:[...]}
+  function nNormalize(d){
+    var arr = Array.isArray(d) ? d
+            : (d && Array.isArray(d.items) ? d.items : (d && d.body ? [d] : []));
+    return arr.filter(function(n){
+      return n && typeof n === 'object' && String(n.body || '').trim();
+    }).map(function(n){
+      return {
+        id: n.id || ('legacy-' + Math.abs(String(n.body).length) + '-' + String(n.updated || '')),
+        title: n.title || '公告',
+        body: String(n.body || ''),
+        level: n.level === 'hot' || n.level === 'warn' ? n.level : 'info',
+        updated: n.updated || ''
+      };
+    });
+  }
+
+  function nPaintLevel(){
+    Array.prototype.forEach.call(nLvBtns, function(b){
+      b.classList.toggle('on', b.getAttribute('data-lv') === nLevel);
+    });
+  }
+
+  function nRender(){
+    nListEl.textContent = '';
+    if(!nItems.length){
+      var empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = '首页现在没有公告，下面填写内容即可发布第一条。';
+      nListEl.appendChild(empty);
+      return;
+    }
+    nItems.slice().sort(function(a, b){
+      return String(b.updated || '').localeCompare(String(a.updated || ''));
+    }).forEach(function(n){
+      var lv = n.level === 'hot' ? 'hot' : (n.level === 'warn' ? 'warn' : 'info');
+      var box = document.createElement('div');
+      box.className = 'nl';
+      box.setAttribute('data-level', lv);
+
+      var head = document.createElement('div'); head.className = 'nl-head';
+      var tag = document.createElement('span'); tag.className = 'nl-tag';
+      tag.textContent = lv === 'hot' ? '重要' : (lv === 'warn' ? '注意' : '公告');
+      var ttl = document.createElement('span'); ttl.className = 'nl-title';
+      ttl.textContent = n.title || '公告';
+      head.appendChild(tag); head.appendChild(ttl);
+      var tm = fmtTime(n.updated);
+      if(tm){
+        var tmEl = document.createElement('span'); tmEl.className = 'nl-time'; tmEl.textContent = tm;
+        head.appendChild(tmEl);
+      }
+      box.appendChild(head);
+
+      var body = document.createElement('div'); body.className = 'nl-body';
+      body.textContent = n.body;
+      box.appendChild(body);
+
+      var act = document.createElement('div'); act.className = 'nl-act';
+      var ed = document.createElement('button'); ed.type = 'button';
+      ed.className = 'ghost'; ed.textContent = '编辑';
+      ed.onclick = function(){ nEdit(n.id); };
+      var del = document.createElement('button'); del.type = 'button';
+      del.className = 'danger'; del.textContent = '删除';
+      del.onclick = function(){ nDelete(n.id); };
+      act.appendChild(ed); act.appendChild(del);
+      box.appendChild(act);
+
+      nListEl.appendChild(box);
+    });
+  }
+
+  function nLoad(){
+    return fetch(N_FILE + '?t=' + Date.now(), {cache: 'no-store'}).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(d){
+      nItems = nNormalize(d);
+      nRender();
+    }).catch(function(){
+      nItems = [];
+      nRender();
+      nStatus('读取 notice.json 失败（可能还没发布过公告），可先直接发布一条。', 'warn');
+    });
+  }
+
+  function nReset(){
+    nEditing = null;
+    nTitleEl.value = '';
+    nBodyEl.value = '';
+    nLevel = 'info';
+    nPaintLevel();
+    nCountEl.textContent = '0 / 600';
+    nSaveBtn.textContent = '发布公告';
+    nCancelBtn.hidden = true;
+    nStatus('', '');
+  }
+
+  function nEdit(id){
+    var n = null;
+    nItems.forEach(function(x){ if(x.id === id) n = x; });
+    if(!n) return;
+    nEditing = id;
+    nTitleEl.value = n.title === '公告' ? '' : n.title;
+    nBodyEl.value = n.body;
+    nLevel = n.level;
+    nPaintLevel();
+    nCountEl.textContent = nBodyEl.value.length + ' / 600';
+    nSaveBtn.textContent = '保存修改';
+    nCancelBtn.hidden = false;
+    nStatus('正在编辑「' + (n.title || '公告') + '」，保存后覆盖这一条。', 'info');
+    document.getElementById('noticeCard').scrollIntoView({behavior: 'smooth', block: 'start'});
+    setTimeout(function(){ nBodyEl.focus(); }, 220);
+  }
+
+  // 一次原子提交写回 notice.json
+  function nCommit(list, message){
+    var now = new Date().toISOString();
+    var text = JSON.stringify({updated: now, items: list}, null, 2) + '\n';
+    nBusy = true;
+    nSaveBtn.disabled = true;
+    var old = nSaveBtn.textContent;
+    nSaveBtn.textContent = '提交中…';
+    return commitTree({'notice.json': RP.utf8ToBytes(text)}, [], message).then(function(){
+      nItems = list;
+      nRender();
+      nBusy = false; nSaveBtn.disabled = false; nSaveBtn.textContent = old;
+      return true;
+    }).catch(function(e){
+      nBusy = false; nSaveBtn.disabled = false; nSaveBtn.textContent = old;
+      throw e;
+    });
+  }
+
+  function nExplain(e){
+    var s = (e && e.message) ? e.message : '网络异常，请稍后重试';
+    if(e && e.status === 401) return '令牌无效或已过期，点「更换令牌」重新填写';
+    if(e && e.status === 403) return '令牌没有写权限（需要 Contents: Read and write），或触发了接口限流';
+    if(e && e.status === 404) return '仓库或分支不存在，或该令牌无权访问';
+    return s;
+  }
+
+  function nSave(){
+    if(nBusy) return;
+    if(!getToken()){
+      nStatus('发布公告需要一个有写权限的 GitHub 令牌，先在「上传文件」里填写并连接。', 'err');
+      showSetup('发布公告需要先填写令牌');
+      return;
+    }
+    var body  = nBodyEl.value.trim();
+    var title = nTitleEl.value.trim() || '公告';
+    if(!body){ nStatus('公告内容不能为空', 'err'); nBodyEl.focus(); return; }
+
+    var now = new Date().toISOString();
+    var list, msg;
+    if(nEditing){
+      list = nItems.map(function(n){
+        return n.id === nEditing
+          ? {id: n.id, title: title, body: body, level: nLevel, updated: now}
+          : n;
+      });
+      msg = '更新首页公告';
+    }else{
+      list = [{id: nNewId(), title: title, body: body, level: nLevel, updated: now}].concat(nItems);
+      msg = '发布首页公告';
+    }
+    nStatus(nEditing ? '正在保存…' : '正在发布…', 'info');
+    var wasEditing = !!nEditing;
+    nCommit(list, msg).then(function(){
+      nReset();
+      nStatus(wasEditing ? '✅ 已保存，首页约 1 分钟内更新' : '✅ 已发布，首页约 1 分钟内更新', 'ok');
+    }).catch(function(e){
+      nStatus(nExplain(e), 'err');
+    });
+  }
+
+  function nDelete(id){
+    if(nBusy) return;
+    if(!getToken()){ nStatus('删除公告需要先填写令牌', 'err'); showSetup('删除公告需要先填写令牌'); return; }
+    var target = null;
+    nItems.forEach(function(n){ if(n.id === id) target = n; });
+    if(!target) return;
+    if(!confirm('删除公告「' + (target.title || '公告') + '」？删除后首页立刻不再显示，且无法恢复。')) return;
+    var list = nItems.filter(function(n){ return n.id !== id; });
+    nStatus('正在删除…', 'info');
+    nCommit(list, '删除首页公告').then(function(){
+      if(nEditing === id) nReset();
+      nStatus('✅ 已删除，首页约 1 分钟内更新', 'ok');
+    }).catch(function(e){
+      nStatus(nExplain(e), 'err');
+    });
+  }
+
+  nLvBtns.forEach(function(b){
+    b.addEventListener('click', function(){ nLevel = b.getAttribute('data-lv'); nPaintLevel(); });
+  });
+  nBodyEl.addEventListener('input', function(){
+    nCountEl.textContent = nBodyEl.value.length + ' / 600';
+  });
+  nSaveBtn.addEventListener('click', nSave);
+  nCancelBtn.addEventListener('click', nReset);
+  document.getElementById('noticeRefreshBtn').onclick = function(){
+    nStatus('正在读取…', 'info');
+    nLoad().then(function(){ nStatus('已刷新', 'ok'); });
+  };
+
+  /* ===== 访客统计：把百度统计站点 ID 写进 analytics.json ===== */
+  var A_FILE = 'analytics.json';
+  var hmInput  = document.getElementById('hmInput');
+  var hmSave   = document.getElementById('hmSave');
+  var hmState  = document.getElementById('hmState');
+  var hmBusy   = false;
+
+  function hmMsg(msg, kind){
+    hmState.className = 'stat-state' + (kind ? ' ' + kind : '');
+    hmState.textContent = msg;
+  }
+  function hmValid(id){ return /^[0-9a-f]{16,40}$/i.test(id); }
+
+  function hmLoad(){
+    fetch(A_FILE + '?t=' + Date.now(), {cache: 'no-store'}).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(d){
+      var id = String((d && d.baidu) || '').trim();
+      hmInput.value = id;
+      if(id){
+        hmMsg('已启用 · 站点 ID：' + id + '（报表在百度统计后台看）', 'ok');
+      }else{
+        hmMsg('还没配置，全站目前不上报任何数据。');
+      }
+    }).catch(function(){
+      hmMsg('读取 analytics.json 失败，可先直接填 ID 保存。', 'err');
+    });
+  }
+
+  function hmCommit(){
+    if(hmBusy) return;
+    if(!getToken()){
+      hmMsg('保存配置需要先填写 GitHub 令牌（在上面的「上传文件」里连接）。', 'err');
+      showSetup('保存统计配置需要先填写令牌');
+      return;
+    }
+    var id = hmInput.value.trim().toLowerCase();
+    if(!hmValid(id)){
+      hmMsg('这串 ID 看起来不对：应该是 hm.js? 后面的 32 位十六进制字符。', 'err');
+      hmInput.focus();
+      return;
+    }
+    hmBusy = true; hmSave.disabled = true; hmSave.textContent = '提交中…';
+    hmMsg('正在保存…');
+    var data = {baidu: id, updated: new Date().toISOString()};
+    var text = JSON.stringify(data, null, 2) + '\n';
+    commitTree({'analytics.json': RP.utf8ToBytes(text)}, [], '配置访客统计').then(function(){
+      hmBusy = false; hmSave.disabled = false; hmSave.textContent = '保存并启用';
+      hmMsg('已保存，约 1 分钟后全站开始上报；数据要过几小时才有量。', 'ok');
+    }).catch(function(e){
+      hmBusy = false; hmSave.disabled = false; hmSave.textContent = '保存并启用';
+      var m = (e && e.message) ? e.message : '网络异常，请稍后重试';
+      if(e && e.status === 401) m = '令牌无效或已过期';
+      if(e && e.status === 403) m = '令牌没有写权限（需要 Contents: Read and write）';
+      hmMsg(m, 'err');
+    });
+  }
+
+  hmSave.addEventListener('click', hmCommit);
+  hmInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') hmCommit(); });
+
   /* ===== 登录门禁：密码在本页校验，通过后才启动管理功能 ===== */
   var ADMIN_PASSWORD = 'hX126288@@';
   var appEl    = document.getElementById('app');
@@ -983,6 +1376,8 @@
     loadList();
     // 插件列表读源索引，没令牌时读 Pages 上的公开 Packages，同样能看
     loadPluginList();
+    nLoad().then(function(){ if(!nItems.length) nStatus('', ''); });
+    hmLoad();
     if(getToken()){ hideSetup(); }
     else { showSetup('当前是只读模式：可以查看、下载文件与已收录插件；上传需要先填写令牌。'); }
   }

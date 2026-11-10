@@ -100,8 +100,10 @@
   .pl-tag{font-size:11px;color:#9ecbff;background:#0c1730;border:1px solid var(--bd);
           border-radius:6px;padding:2px 8px}
   .pl-empty{text-align:center;padding:26px;color:var(--mut);font-size:13px}
-  /* ===== 公告 ===== */
-  .notice{margin:22px 0 0;padding:14px 16px 15px 18px;position:relative;border:1px solid var(--bd);
+  /* ===== 公告：可多条，最新的排在最上面 ===== */
+  .notice-list{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+  .notice-list[hidden]{display:none}
+  .notice{padding:14px 16px 15px 18px;position:relative;border:1px solid var(--bd);
           border-radius:12px;background:#111c31;overflow:hidden}
   .notice::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
   .notice[data-level="warn"]{background:#1c1a12}
@@ -110,58 +112,25 @@
   .notice[data-level="hot"]::before{background:#ff6b81}
   .nt-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:5px}
   .nt-tag{font-size:11px;font-weight:700;letter-spacing:1px;color:#04122a;background:var(--acc);
-          border-radius:5px;padding:2px 8px}
+          border-radius:5px;padding:2px 8px;flex:none}
   .notice[data-level="warn"] .nt-tag{background:#ffb86b;color:#2a1a04}
   .notice[data-level="hot"] .nt-tag{background:#ff6b81;color:#2a0410}
-  .nt-title{font-size:15px;font-weight:700;color:#dceaff}
-  .nt-time{margin-left:auto;font-size:11.5px;color:var(--mut);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-  .nt-time[hidden]{display:none}
+  .nt-title{font-size:15px;font-weight:700;color:#dceaff;word-break:break-word}
+  .nt-time{margin-left:auto;font-size:11.5px;color:var(--mut);
+           font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
   .nt-body{font-size:14px;color:#cfe0f5;white-space:pre-wrap;word-break:break-word}
-  .nt-edit{margin-left:7px;border:1px solid transparent;background:none;color:#6f86ab;font-size:12px;
-           line-height:1.7;padding:1px 9px;border-radius:7px;transition:.15s}
-  .nt-edit:hover{background:#0c1730;border-color:#2a3d63;color:#9ecbff}
-  .nt-time[hidden]+.nt-edit{margin-left:auto}
-
-  /* 发布面板 */
-  .nmodal{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
-          padding:18px;background:#02060fdd}
-  .nmodal.on{display:flex}
-  .npanel{width:min(560px,100%);max-height:92vh;overflow:auto;background:#101a2e;border:1px solid #2a3d63;
-          border-radius:16px;padding:20px 22px 18px;box-shadow:0 30px 90px #000b;
-          animation:npop .18s ease both}
-  @keyframes npop{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
-  .npanel h3{margin:0 0 3px;font-size:17px}
-  .npanel .p-sub{margin:0 0 16px;font-size:12.5px;color:var(--mut)}
-  .npanel .p-sub code{background:#0c1730;padding:1px 6px;border-radius:4px;font-size:12px}
-  .nf{margin-bottom:13px}
-  .nf > label{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;
-              color:var(--mut);margin-bottom:6px;letter-spacing:.4px}
-  .nf .cnt{font-size:11px;color:#5b7095;font-family:ui-monospace,Menlo,monospace}
-  .nf input,.nf textarea{width:100%;font:inherit;font-size:14px;color:var(--tx);background:#0c1730;
-        border:1px solid var(--bd);border-radius:10px;padding:10px 12px;outline:0;transition:.15s}
-  .nf textarea{min-height:104px;resize:vertical;line-height:1.65}
-  .nf input:focus,.nf textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px #4a9dff22}
-  .lv{display:flex;gap:8px}
-  .lv-btn{flex:1;background:#0c1730;color:var(--mut);border:1px solid var(--bd);border-radius:9px;
-          padding:8px 0;font-size:13px;font-weight:600}
-  .lv-btn.on{background:#1c335c;color:#cfe4ff;border-color:#3f638f}
-  .lv-btn.on[data-lv="warn"]{background:#3a2a10;color:#ffcf8f;border-color:#7a5a22}
-  .lv-btn.on[data-lv="hot"]{background:#3a1220;color:#ffb0bd;border-color:#7a2740}
-  .nstatus{margin:2px 0 12px;font-size:12.5px;color:var(--mut);min-height:17px}
-  .nstatus.ok{color:var(--ok)}
-  .nstatus.bad{color:#ff8a9b}
-  .nfoot{display:flex;gap:10px;flex-wrap:wrap}
-  .nfoot button{flex:1;min-width:96px}
-  .nfoot .ghost{background:transparent;border:1px solid var(--bd);color:var(--mut)}
-  .nfoot .ghost:hover{color:var(--tx);border-color:#3f638f}
-  button.admin-btn.ghost{background:transparent;color:#9ecbff;border:1px solid #2f4d7a;
-        border-radius:10px;padding:11px 22px;font-size:14px;font-weight:600;margin-left:10px}
-  button.admin-btn.ghost:hover{background:#152b47}
+  /* 正文里的网址：自动变成蓝色「🔗 查看链接」小标签 */
+  .nt-link{display:inline-flex;align-items:center;gap:4px;vertical-align:-2px;color:#7cc0ff;
+           text-decoration:none;background:#0f2a49;border:1px solid #24507e;border-radius:6px;
+           padding:1px 8px 2px;margin:0 1px;white-space:nowrap;font-size:13px;transition:.15s}
+  .nt-link svg{width:12px;height:12px;flex:none;opacity:.9}
+  .nt-link:hover{color:#c7e4ff;background:#16395e;border-color:#3f75b0}
+  .nt-more{margin-top:12px;background:#101c33;border:1px dashed #2f4d7a;color:#9ecbff;
+           border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600}
+  .nt-more[hidden]{display:none}
+  .nt-more:hover{background:#152b47;border-color:#3f638f}
   @media(max-width:520px){
     .nt-time{margin-left:0;width:100%;order:3}
-    .npanel{padding:18px 16px 16px}
-    .nfoot button{flex:1 1 100%}
-    button.admin-btn.ghost{margin:10px 0 0}
   }
 
   /* ===== 打开首页时的代码滚动动画（约 5 秒，可点击跳过） ===== */
@@ -240,16 +209,9 @@
     </div>
   </div>
 
-  <!-- 公告：内容来自仓库根目录的 notice.json，管理员输令牌可发布 -->
-  <div class="notice" id="notice" hidden>
-    <div class="nt-head">
-      <span class="nt-tag" id="ntTag">公告</span>
-      <span class="nt-title" id="ntTitle"></span>
-      <span class="nt-time" id="ntTime"></span>
-      <button class="nt-edit" id="ntEdit" type="button" title="编辑公告" aria-label="编辑公告" hidden>编辑</button>
-    </div>
-    <div class="nt-body" id="ntBody"></div>
-  </div>
+  <!-- 公告：内容来自仓库根目录的 notice.json，可多条；发布入口在 admin 页 -->
+  <div class="notice-list" id="noticeList" hidden></div>
+  <button class="nt-more" id="ntMore" type="button" hidden></button>
 
   <div class="urlbox">
     <div class="lbl">源地址 · 复制后添加到包管理器</div>
@@ -335,44 +297,6 @@
 
   <div class="admin-entry">
     <a class="admin-btn" id="adminBtn" href="admin.html">admin登录</a>
-    <button class="admin-btn ghost" id="noticePublish" type="button">发布公告</button>
-  </div>
-</div>
-
-<!-- 发布公告面板：令牌只存在本机浏览器 -->
-<div class="nmodal" id="nModal" aria-hidden="true">
-  <div class="npanel" role="dialog" aria-modal="true" aria-labelledby="npTitle">
-    <h3 id="npTitle">发布公告</h3>
-    <p class="p-sub">内容写入仓库根目录的 <code>notice.json</code>，首页加载时读取；同一份令牌与后台通用。</p>
-
-    <div class="nf">
-      <label for="edToken">GitHub 令牌</label>
-      <input type="password" id="edToken" placeholder="ghp_… 需要 repo 权限" autocomplete="off" spellcheck="false">
-    </div>
-    <div class="nf">
-      <label for="edTitle">标题</label>
-      <input type="text" id="edTitle" placeholder="留空就显示「公告」" maxlength="40">
-    </div>
-    <div class="nf">
-      <label for="edBody">内容 <span class="cnt" id="nCount">0 / 600</span></label>
-      <textarea id="edBody" maxlength="600" placeholder="例如：ScreenTimeSpoofer 1.1 已上架，修掉了…"></textarea>
-    </div>
-    <div class="nf">
-      <label>级别</label>
-      <div class="lv">
-        <button type="button" class="lv-btn on" data-lv="info">普通</button>
-        <button type="button" class="lv-btn" data-lv="warn">注意</button>
-        <button type="button" class="lv-btn" data-lv="hot">重要</button>
-      </div>
-    </div>
-
-    <p class="nstatus" id="nStatus"></p>
-
-    <div class="nfoot">
-      <button type="button" id="nPub">发布</button>
-      <button type="button" class="ghost" id="nOff">下线公告</button>
-      <button type="button" class="ghost" id="nClose">取消</button>
-    </div>
   </div>
 </div>
 
@@ -469,33 +393,22 @@
   })();
 </script>
 <script>
-/* ===== 首页公告：读取 notice.json；管理员输入令牌后可发布 / 下线 ===== */
+/* ===== 首页公告：读取 notice.json（可多条）；正文里的网址自动变成「🔗 查看链接」 ===== */
 (function(){
-  var REPO = 'evandersun/evandersun.github.io', FILE = 'notice.json';
-  var TKEY = 'repo_admin_token';
+  var FILE = 'notice.json', MAX_SHOW = 3;
 
-  var box     = document.getElementById('notice');
-  var tagEl   = document.getElementById('ntTag');
-  var titleEl = document.getElementById('ntTitle');
-  var timeEl  = document.getElementById('ntTime');
-  var bodyEl  = document.getElementById('ntBody');
-  var editBtn = document.getElementById('ntEdit');
-  var modal   = document.getElementById('nModal');
-  var edToken = document.getElementById('edToken');
-  var edTitle = document.getElementById('edTitle');
-  var edBody  = document.getElementById('edBody');
-  var stEl    = document.getElementById('nStatus');
-  var cntEl   = document.getElementById('nCount');
-  var pubBtn  = document.getElementById('nPub');
-  var offBtn  = document.getElementById('nOff');
-  var lvBtns  = document.querySelectorAll('.lv-btn');
+  var listEl = document.getElementById('noticeList');
+  var moreEl = document.getElementById('ntMore');
+  var items  = [], expanded = false;
 
-  var cur = null, level = 'info', token = '', busy = false;
+  var URL_RE = /https?:\/\/[^\s<>"'()\[\]{}（）【】「」《》，。；：！？、]+/gi;
+  /* 链条图标（内联 SVG，任何系统都能显示，不依赖 emoji 字体） */
+  var CHAIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" '
+            + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            + '<path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07l-1.41 1.41"/>'
+            + '<path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.41-1.41"/>'
+            + '</svg>';
 
-  function getToken(){ try { return localStorage.getItem(TKEY) || ''; } catch(e){ return ''; } }
-  function setToken(v){
-    try { v ? localStorage.setItem(TKEY, v) : localStorage.removeItem(TKEY); } catch(e){}
-  }
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   function fmt(iso){
     if(!iso) return '';
@@ -504,188 +417,107 @@
     return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' '
          + pad(d.getHours()) + ':' + pad(d.getMinutes());
   }
-  function status(msg, kind){
-    stEl.textContent = msg || '';
-    stEl.className = 'nstatus' + (kind ? ' ' + kind : '');
+
+  /* 逐段拼 DOM，不用 innerHTML：既防注入，又能把网址换成短链接 */
+  function paintBody(el, text){
+    el.textContent = '';
+    var urls  = text.match(URL_RE) || [];
+    var multi = urls.length > 1;
+    var last = 0, idx = 0, m;
+    URL_RE.lastIndex = 0;
+    while((m = URL_RE.exec(text)) !== null){
+      var url = m[0].replace(/[\.,;:!?]+$/, '');
+      if(!url) continue;
+      if(m.index > last) el.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var a = document.createElement('a');
+      a.className = 'nt-link';
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.title = url;
+      a.innerHTML = CHAIN + '<span>查看链接' + (multi ? ' ' + (++idx) : '') + '</span>';
+      el.appendChild(a);
+      last = m.index + m[0].length;
+    }
+    if(last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
   }
 
-  function render(n){
-    cur = (n && typeof n === 'object' && String(n.body || '').trim()) ? n : null;
-    editBtn.hidden = !getToken();
-    if(!cur){ box.hidden = true; return; }
-    var lv = cur.level === 'hot' ? 'hot' : (cur.level === 'warn' ? 'warn' : 'info');
-    box.hidden = false;
+  function card(n){
+    var lv  = n.level === 'hot' ? 'hot' : (n.level === 'warn' ? 'warn' : 'info');
+    var box = document.createElement('div');
+    box.className = 'notice';
     box.setAttribute('data-level', lv);
-    tagEl.textContent = lv === 'hot' ? '重要' : (lv === 'warn' ? '注意' : '公告');
-    titleEl.textContent = cur.title || '公告';
-    bodyEl.textContent = cur.body;
-    timeEl.textContent = fmt(cur.updated);
-    timeEl.hidden = !timeEl.textContent;
+
+    var head = document.createElement('div'); head.className = 'nt-head';
+    var tag  = document.createElement('span'); tag.className = 'nt-tag';
+    tag.textContent = lv === 'hot' ? '重要' : (lv === 'warn' ? '注意' : '公告');
+    var ttl  = document.createElement('span'); ttl.className = 'nt-title';
+    ttl.textContent = n.title || '公告';
+    head.appendChild(tag);
+    head.appendChild(ttl);
+
+    var time = fmt(n.updated);
+    if(time){
+      var tm = document.createElement('span'); tm.className = 'nt-time'; tm.textContent = time;
+      head.appendChild(tm);
+    }
+    box.appendChild(head);
+
+    var body = document.createElement('div'); body.className = 'nt-body';
+    paintBody(body, String(n.body || ''));
+    box.appendChild(body);
+    return box;
+  }
+
+  function render(){
+    listEl.textContent = '';
+    if(!items.length){ listEl.hidden = true; moreEl.hidden = true; return; }
+
+    items.sort(function(a, b){
+      return String(b.updated || '').localeCompare(String(a.updated || ''));
+    });
+    var show = expanded ? items : items.slice(0, MAX_SHOW);
+    show.forEach(function(n){ listEl.appendChild(card(n)); });
+    listEl.hidden = false;
+
+    var rest = items.length - show.length;
+    if(rest > 0){
+      moreEl.hidden = false;
+      moreEl.textContent = '还有 ' + rest + ' 条公告 · 展开全部';
+    }else if(expanded && items.length > MAX_SHOW){
+      moreEl.hidden = false;
+      moreEl.textContent = '收起公告';
+    }else{
+      moreEl.hidden = true;
+    }
+  }
+
+  /* 兼容旧格式（单个对象）与新格式 {updated, items:[...]} */
+  function normalize(d){
+    var arr = Array.isArray(d) ? d
+            : (d && Array.isArray(d.items) ? d.items : (d && d.body ? [d] : []));
+    return arr.filter(function(n){
+      return n && typeof n === 'object' && String(n.body || '').trim();
+    });
   }
 
   function load(){
     fetch(FILE + '?t=' + Date.now(), {cache: 'no-store'}).then(function(r){
       if(!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
-    }).then(render).catch(function(){ render(null); });
-  }
-
-  /* ---- GitHub API：原子提交（blob → tree → commit → ref） ---- */
-  function api(path, opt){
-    opt = opt || {};
-    var h = {'Accept': 'application/vnd.github+json', 'Authorization': 'token ' + token};
-    if(opt.body) h['Content-Type'] = 'application/json';
-    return fetch('https://api.github.com' + path, {
-      method: opt.method || 'GET', headers: h,
-      body: opt.body ? JSON.stringify(opt.body) : undefined, cache: 'no-store'
-    }).then(function(r){
-      return r.text().then(function(t){
-        var d = {};
-        try { d = t ? JSON.parse(t) : {}; } catch(e){}
-        if(!r.ok){
-          var e = new Error((d && d.message) ? d.message : ('HTTP ' + r.status));
-          e.status = r.status;
-          throw e;
-        }
-        return d;
-      });
+    }).then(function(d){
+      items = normalize(d);
+      render();
+    }).catch(function(){
+      items = [];
+      render();
     });
   }
 
-  function commit(text, message){
-    var b64 = btoa(unescape(encodeURIComponent(text)));
-    var base = '/repos/' + REPO;
-    return api(base + '/git/ref/heads/main').then(function(ref){
-      var parent = ref.object.sha;
-      return api(base + '/git/commits/' + parent).then(function(c){
-        return api(base + '/git/blobs', {method: 'POST', body: {content: b64, encoding: 'base64'}})
-          .then(function(blob){
-            return api(base + '/git/trees', {method: 'POST', body: {
-              base_tree: c.tree.sha,
-              tree: [{path: FILE, mode: '100644', type: 'blob', sha: blob.sha}]
-            }});
-          })
-          .then(function(tree){
-            return api(base + '/git/commits', {method: 'POST', body: {
-              message: message, tree: tree.sha, parents: [parent]
-            }});
-          })
-          .then(function(nc){
-            return api(base + '/git/refs/heads/main', {method: 'PATCH', body: {sha: nc.sha, force: false}});
-          });
-      });
-    });
-  }
-
-  function explain(e){
-    if(e && e.status === 401) return '令牌无效或已过期，重新生成一个再试';
-    if(e && e.status === 403) return '令牌没有写权限（需要 repo 权限），或触发了接口限流';
-    if(e && e.status === 404) return '仓库或分支不存在，或该令牌无权访问';
-    if(e && e.status === 409) return '远端刚有新的提交，稍等几秒再点一次';
-    return (e && e.message) ? e.message : '网络异常，请稍后重试';
-  }
-
-  function lock(on){
-    pubBtn.disabled = on; offBtn.disabled = on;
-    pubBtn.textContent = on ? '提交中…' : '发布';
-  }
-
-  /* ---- 面板 ---- */
-  function paintLevel(){
-    Array.prototype.forEach.call(lvBtns, function(b){
-      b.classList.toggle('on', b.getAttribute('data-lv') === level);
-    });
-  }
-  function open(){
-    token = getToken();
-    edToken.value = token;
-    edTitle.value = (cur && cur.title) || '';
-    edBody.value  = (cur && cur.body)  || '';
-    level = (cur && (cur.level === 'hot' || cur.level === 'warn')) ? cur.level : 'info';
-    paintLevel();
-    cntEl.textContent = edBody.value.length + ' / 600';
-    status('', '');
-    lock(false);
-    modal.classList.add('on');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-    setTimeout(function(){ (token ? edTitle : edToken).focus(); }, 40);
-  }
-  function close(){
-    modal.classList.remove('on');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  function publish(){
-    if(busy) return;
-    var t = edToken.value.trim();
-    var body = edBody.value.trim();
-    if(!t){ status('先填入 GitHub 令牌', 'bad'); edToken.focus(); return; }
-    if(!body){ status('公告内容不能为空', 'bad'); edBody.focus(); return; }
-    token = t;
-    busy = true; lock(true);
-    status('正在提交…', '');
-    var data = {
-      title: edTitle.value.trim() || '公告',
-      body: body,
-      level: level,
-      updated: new Date().toISOString()
-    };
-    commit(JSON.stringify(data, null, 2) + '\n', '更新首页公告').then(function(){
-      setToken(t);
-      busy = false; lock(false);
-      render(data);
-      status('已发布，其他访客约 1 分钟内看到更新', 'ok');
-      setTimeout(close, 1100);
-    }).catch(function(e){
-      busy = false; lock(false);
-      status(explain(e), 'bad');
-    });
-  }
-
-  function unpublish(){
-    if(busy) return;
-    if(!cur){ status('当前没有公告', 'bad'); return; }
-    if(!window.confirm('把首页公告下线？')) return;
-    var t = edToken.value.trim();
-    if(!t){ status('先填入 GitHub 令牌', 'bad'); edToken.focus(); return; }
-    token = t;
-    busy = true; lock(true);
-    status('正在下线…', '');
-    var data = {title: '', body: '', level: 'info', updated: new Date().toISOString()};
-    commit(JSON.stringify(data, null, 2) + '\n', '下线首页公告').then(function(){
-      setToken(t);
-      busy = false; lock(false);
-      render(data);
-      status('公告已下线', 'ok');
-      setTimeout(close, 900);
-    }).catch(function(e){
-      busy = false; lock(false);
-      status(explain(e), 'bad');
-    });
-  }
-
-  Array.prototype.forEach.call(lvBtns, function(b){
-    b.addEventListener('click', function(){ level = b.getAttribute('data-lv'); paintLevel(); });
-  });
-  edBody.addEventListener('input', function(){ cntEl.textContent = edBody.value.length + ' / 600'; });
-
-  pubBtn.addEventListener('click', publish);
-  offBtn.addEventListener('click', unpublish);
-  document.getElementById('nClose').addEventListener('click', close);
-  document.getElementById('noticePublish').addEventListener('click', open);
-  editBtn.addEventListener('click', open);
-  modal.addEventListener('click', function(e){ if(e.target === modal) close(); });
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && modal.classList.contains('on')) close();
-  });
-
+  moreEl.addEventListener('click', function(){ expanded = !expanded; render(); });
   load();
 })();
 
-</script>
-<script>
 /* 打开首页的「代码滚动」动画：约 5 秒后淡出，点击/按键可立即跳过 */
 (function(){
   var boot = document.getElementById('boot');
@@ -815,5 +647,7 @@
   }, 72);
 })();
 </script>
+<!-- 访客统计：ID 在 analytics.json 里配（admin 页可填），没配就不加载 -->
+<script src="js/analytics.js" defer></script>
 </body>
 </html>
