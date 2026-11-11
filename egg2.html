@@ -137,6 +137,12 @@
   .wb-badge .wb-ico{width:20px;height:20px;display:block;border-radius:5px;box-shadow:0 2px 8px #0006}
   .wb-badge span{font-size:13px}
   .wb-badge:hover{color:#cfe4ff}
+
+  /* 站点访问计数：数字没回来前不占位、不显示 Loading */
+  .visit{display:none;margin:9px 0 0;font-size:11.5px;color:#6f86ab;
+         font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.2px}
+  .visit.on{display:block}
+  .visit b{font-weight:600;color:#9ecbff}
 </style>
 </head>
 <body>
@@ -187,6 +193,7 @@
     <img class="wb-ico" src="assets/workbuddy.svg?v=2" alt="" width="20" height="20" decoding="async">
     <span>Powered by WorkBuddy</span>
   </a></span>
+  <p class="visit" id="visitBox">已有 <b id="vercount_value_site_uv"></b> 位访客 · 共 <b id="vercount_value_site_pv"></b> 次浏览</p>
 </footer>
 
 <script>
@@ -443,5 +450,6 @@
   if(document.hidden) hide();
 })();
 </script>
+<script src="js/visit.js" defer></script>
 </body>
 </html>

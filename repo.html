@@ -182,6 +182,12 @@
   #bootPct{min-width:36px;text-align:right;font:11.5px ui-monospace,Menlo,monospace;color:#7f96bb}
   .boot-skip{margin:0;font-size:12px;color:#3f5474;letter-spacing:.6px}
   @media(prefers-reduced-motion:reduce){.boot{display:none}}
+
+  /* 站点访问计数：数字没回来前不占位、不显示 Loading */
+  .visit{display:none;margin:9px 0 0;font-size:11.5px;color:#6f86ab;
+         font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.2px}
+  .visit.on{display:block}
+  .visit b{font-weight:600;color:#9ecbff}
 </style>
 </head>
 <body>
@@ -298,6 +304,7 @@
         <span>Powered by WorkBuddy</span>
       </a>
     </div>
+    <p class="visit" id="visitBox">已有 <b id="vercount_value_site_uv"></b> 位访客 · 共 <b id="vercount_value_site_pv"></b> 次浏览</p>
   </footer>
 
   <div class="admin-entry">
@@ -652,5 +659,6 @@
   }, 72);
 })();
 </script>
+<script src="js/visit.js" defer></script>
 </body>
 </html>
