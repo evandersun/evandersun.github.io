@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>文章 · evander 的博客</title>
 <meta name="description" content="evander 的博客文章">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234a9dff'/%3E%3Ctext x='32' y='45' font-family='-apple-system,Segoe UI,sans-serif' font-size='38' font-weight='700' text-anchor='middle' fill='%2304122a'%3Ee%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="CydiaIcon.png">
 <style>
   :root{color-scheme:dark;--bg:#0a0f1e;--card:#131d33;--bd:#26365a;--tx:#eaf1ff;--mut:#93a7cd;--acc:#4a9dff;--ok:#42d392}
   *{box-sizing:border-box}
@@ -16,9 +16,8 @@
 
   .topbar{display:flex;align-items:center;gap:12px;padding:6px 0 26px}
   a.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}
-  .mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;
-        font-size:18px;background:linear-gradient(145deg,#4a9dff,#7b5bff);color:#04122a;
-        box-shadow:0 6px 18px #4a9dff44;flex:none}
+  .mark{width:34px;height:34px;border-radius:10px;display:block;object-fit:cover;
+        background:#131d33;box-shadow:0 6px 18px #4a9dff44;flex:none}
   .brand b{font-size:15px}
   .brand i{color:var(--mut);font-style:normal;font-size:12.5px;margin-left:2px}
   .topbar .back{margin-left:auto;color:var(--mut);text-decoration:none;font-size:13.5px;
@@ -90,7 +89,7 @@
 <div class="wrap">
   <div class="topbar">
     <a class="brand" href="index.html">
-      <span class="mark">e</span>
+      <img class="mark" src="CydiaIcon.png" alt="evander 的博客" width="34" height="34" decoding="async">
       <span><b>evander</b><i>的博客</i></span>
     </a>
     <a class="back" href="index.html">← 返回列表</a>
