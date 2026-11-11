@@ -11,13 +11,17 @@
 ├── Release                                              索引校验和（MD5/SHA1/SHA256/SHA512）
 ├── CydiaIcon.png                                         源图标（猫图，全套 6 个文件名）
 ├── sileo-featured.json                                   Sileo / Zebra 精选页配置
-├── index.html                                            源首页（浏览器访问，含已上传插件列表）
-├── admin.html                                            管理页（本页输入密码 → 上传文件 / 上传插件）
+├── index.html                                            博客首页（公告 + 文章列表）
+├── post.html                                             文章阅读页（post.html?id=…）
+├── repo.html                                             源首页（浏览器访问，含已上传插件列表）
+├── admin.html                                            管理页（本页输入密码 → 上传文件 / 插件 / 发文章 / 发公告）
+├── posts.json                                            博客文章数据
+├── notice.json                                           首页公告数据（可多条）
 ├── debs/                                                 .deb 文件（当前收录 ScreenTimeSpoofer 1.0 两个架构）
 ├── depiction/                                            包详情页（网页版 HTML + Sileo 原生 JSON）
 ├── zips/                                                 管理页上传的插件原始 zip
 ├── uploads/                                              管理页上传的任意文件 + manifest.json 清单
-├── js/                                                   浏览器端 JS 库（fflate / fzstd / repo-pack / repo-list）
+├── js/                                                   浏览器端 JS 库（fflate / fzstd / repo-pack / repo-list / blog 渲染）
 ├── assets/                                               源头像原图
 ├── .nojekyll                                             让 GitHub Pages 原样发布
 └── tools/build_repo.py                                   重新生成索引与图标

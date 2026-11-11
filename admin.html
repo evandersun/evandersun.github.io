@@ -156,28 +156,53 @@
   .nfoot{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
   .nfoot .cnt{font-size:12px;color:var(--mut);margin-right:auto;
               font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-  /* 访客统计 */
-  .stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-  .stat-row input{flex:1;min-width:220px;background:#0c1730;border:1px solid var(--bd);border-radius:9px;
-    color:var(--tx);font-size:14px;padding:9px 12px;outline:none;
-    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-  .stat-row input:focus{border-color:var(--acc)}
-  .stat-state{margin-top:10px;font-size:12.5px;color:var(--mut);word-break:break-all}
-  .stat-state.ok{color:#9ff0c4}
-  .stat-state.err{color:#ffb0b0}
-  .ghost-link{color:#9ecbff;font-size:13px;text-decoration:none;border:1px solid #2f4d7a;
-    border-radius:9px;padding:7px 14px;font-weight:600}
-  .ghost-link:hover{background:#152b47}
-  .steps{margin:10px 0 0;padding-left:20px;font-size:12.5px;color:var(--mut);line-height:1.8}
-  .steps code{background:#0c1730;padding:1px 6px;border-radius:4px;color:#a9d2ff}
-  .muted{font-size:12.5px;color:var(--mut);margin:0}
-  @media(max-width:520px){
-    .nl-time{margin-left:0;width:100%}
-    .lv{width:100%}
-    .lv-btn{flex:1}
-    .nfoot button{flex:1}
-    .nfoot .cnt{width:100%;margin-right:0}
-  }
+  /* ===== 文章管理 ===== */
+  .plist{display:flex;flex-direction:column;gap:10px;margin:14px 0 4px}
+  .pi{border:1px solid var(--bd);border-radius:10px;background:#101a2e;padding:12px 14px}
+  .pi-head{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .pi-title{font-size:14.5px;font-weight:600;color:#dceaff;word-break:break-word}
+  .pi-date{font-size:11.5px;color:var(--mut);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .pi-tag{font-size:11px;color:#9ecbff;background:#0f2a49;border:1px solid #24507e;
+          border-radius:5px;padding:1px 7px}
+  .pi-ex{margin-top:6px;font-size:12.5px;color:#a9bfdc;max-height:44px;overflow:hidden}
+  .pi-act{display:flex;gap:8px;margin-top:10px}
+  .pi-act button{padding:5px 14px;font-size:12.5px;border-radius:8px}
+  .pi-act button.ghost{background:#1c335c;color:#cfe4ff;border:1px solid var(--bd)}
+  .pform{margin-top:16px;padding-top:16px;border-top:1px solid var(--bd);
+         display:flex;flex-direction:column;gap:10px}
+  .pform input,.pform textarea{width:100%;box-sizing:border-box;background:#0c1730;
+    border:1px solid var(--bd);border-radius:9px;color:var(--tx);font:inherit;font-size:14px;
+    padding:9px 12px;outline:none}
+  .pform input:focus,.pform textarea:focus{border-color:var(--acc)}
+  .pform textarea{min-height:220px;resize:vertical;line-height:1.7;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px}
+  .prow{display:flex;gap:10px;flex-wrap:wrap}
+  .prow > *{flex:1;min-width:150px}
+  .pform .nfoot{margin-top:2px}
+
+  /* ===== 访问统计 ===== */
+  .stat-sum{font-size:13px;color:#cfe0f5;margin:14px 0 10px}
+  .stat-sum.err{color:#ffb0b0}
+  .stat-chart{display:flex;align-items:flex-end;gap:5px;height:104px;padding:6px 2px 0;
+              border-bottom:1px solid var(--bd)}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+           height:100%;gap:4px;min-width:0}
+  .bar-col i{display:block;width:100%;max-width:26px;border-radius:4px 4px 0 0;background:#1d3a5f;
+             transition:height .25s ease}
+  .bar-col i.has{background:linear-gradient(180deg,#4a9dff,#2f6fd0)}
+  .bar-day{font-size:9.5px;color:#5b7095;font-family:ui-monospace,Menlo,monospace;white-space:nowrap}
+  .stat-cols{display:flex;gap:18px;margin-top:16px;flex-wrap:wrap}
+  .stat-col{flex:1;min-width:220px}
+  .stat-col h3{font-size:12px;color:var(--mut);margin:0 0 8px;font-weight:600;
+               letter-spacing:.4px;text-transform:uppercase}
+  .stat-item{display:flex;gap:10px;align-items:baseline;padding:6px 0;
+             border-bottom:1px dashed #1d2c48;font-size:12.5px}
+  .stat-item:last-child{border-bottom:0}
+  .stat-item .name{flex:1;color:#c3d7ef;word-break:break-all}
+  .stat-item .val{color:var(--mut);white-space:nowrap;
+                  font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+  .stat-note{margin:16px 0 0;font-size:12px;color:#6f86ab;line-height:1.7}
+
   /* WorkBuddy 标识：与首页保持一致 */
   .wb-badge{display:inline-flex;align-items:center;gap:7px;color:inherit;text-decoration:none;
             vertical-align:middle;transition:color .15s}
@@ -193,7 +218,7 @@
 <div class="wrap" id="app" hidden>
   <div class="top">
     <h1>文件管理</h1>
-    <a class="back" href="index.html">← 返回首页</a>
+    <a class="back" href="index.html">← 返回博客</a>
     <button class="ghost" id="logoutBtn">退出登录</button>
   </div>
 
@@ -247,22 +272,50 @@
     </div>
   </div>
 
+  <div class="card" id="postCard">
+    <div class="bar">
+      <h2>文章</h2>
+      <button class="ghost" id="postRefresh">刷新</button>
+    </div>
+    <p class="muted">文章存在仓库根目录的 <code>posts.json</code>，首页按日期倒序显示。正文支持简单 Markdown：<code>## 标题</code>、<code>- 列表</code>、<code>**粗体**</code>、<code>`代码`</code>、<code>[文字](链接)</code>、三反引号代码块。</p>
+    <div class="plist" id="postListAdmin"></div>
+
+    <div class="pform">
+      <input type="text" id="pTitle" placeholder="文章标题" maxlength="120" autocomplete="off">
+      <div class="prow">
+        <input type="date" id="pDate">
+        <input type="text" id="pTags" placeholder="标签，用逗号分隔（可留空）" maxlength="60" autocomplete="off">
+      </div>
+      <input type="text" id="pSummary" placeholder="摘要（留空自动取正文前 110 字）" maxlength="160" autocomplete="off">
+      <textarea id="pBody" placeholder="正文，从第二行开始写就行&#10;&#10;## 小标题&#10;&#10;- 一个要点&#10;- 另一个要点"></textarea>
+      <div class="nfoot">
+        <span class="cnt" id="pCount">0 字</span>
+        <button type="button" id="pSave">发布文章</button>
+        <button type="button" class="ghost" id="pCancel" hidden>取消编辑</button>
+      </div>
+      <div class="status" id="pStatus" hidden></div>
+    </div>
+  </div>
+
   <div class="card" id="statCard">
     <div class="bar">
-      <h2>访客统计</h2>
-      <a class="ghost-link" href="https://tongji.baidu.com/" target="_blank" rel="noopener noreferrer">打开百度统计后台 ›</a>
+      <h2>访问统计</h2>
+      <button class="ghost" id="statRefresh">刷新数据</button>
     </div>
-    <p class="muted">设备、系统、浏览器、屏幕、来源这些报表都在百度统计后台看。这里只负责把站点 ID 写进 <code>analytics.json</code>，全站页面（首页 / 彩蛋页 / 插件详情页）会自动开始上报。</p>
-    <ol class="steps">
-      <li>打开百度统计 → 管理 → 新增网站，域名填 <code>evandersun.github.io</code></li>
-      <li>进「代码获取」，复制 <code>hm.js?</code> 后面那一串 ID（32 位十六进制）</li>
-      <li>粘到下面保存，约 1 分钟后生效</li>
-    </ol>
-    <div class="stat-row">
-      <input type="text" id="hmInput" placeholder="粘贴 hm.js? 后面的站点 ID" spellcheck="false" autocomplete="off">
-      <button type="button" id="hmSave">保存并启用</button>
+    <p class="muted">数据来自 GitHub 自带的流量统计，不用注册任何第三方服务，页面里也没有统计脚本，不影响国内打开速度。只保留最近 14 天。</p>
+    <div class="stat-sum" id="statSum">正在读取…</div>
+    <div class="stat-chart" id="statChart"></div>
+    <div class="stat-cols">
+      <div class="stat-col">
+        <h3>热门页面</h3>
+        <div id="statPaths"><p class="muted">—</p></div>
+      </div>
+      <div class="stat-col">
+        <h3>来源</h3>
+        <div id="statRefs"><p class="muted">—</p></div>
+      </div>
     </div>
-    <div class="stat-state" id="hmState">正在读取配置…</div>
+    <p class="stat-note">设备 / 系统 / 浏览器这类信息 GitHub 不提供——Pages 本身没有访问日志。要把设备维度补上，只能自建一个很小的统计后端，需要时再说。</p>
   </div>
 
   <div class="card" id="pluginCard">
@@ -314,7 +367,8 @@
     <b>下载加速：</b>20MB 以内的文件会优先从 jsDelivr 加速节点取回，实测比 GitHub Pages 快一个数量级，下载时显示实时进度；节点不通会自动回退本站。<strong>两种情况下没有加速</strong>：超过 20MB（加速节点有单文件上限），以及 Office 文档（<code>xlsx</code> / <code>docx</code> / <code>pptx</code>，被 jsDelivr 直接 403 屏蔽）——这两种会在列表里标「无加速」，走本站会慢一些；Office 文件可以先压成 zip 再上传，就能享受加速。<br>
     <b>公告：</b>本页「公告」一栏直接写仓库根目录的 <code>notice.json</code>，可以同时存在多条，首页按时间倒序显示（先列 3 条，可展开）；正文里的网址会自动变成蓝色「查看链接」标签，不会把长链接摊在页面上。编辑会覆盖同一条，删除立即从首页消失，都需要令牌。<br>
     <b>限制：</b>单文件上限 <strong>40MB</strong>（GitHub 写入接口实测可传 40MB，45MB 起会被拒绝）；同名文件会覆盖旧版本。请一次上传一个插件 zip，避免并发提交冲突。<br>
-    <b>访客统计：</b>全站页面会读 <code>analytics.json</code> 里的百度统计 ID 并加载 <code>hm.js</code>；没填 ID 就完全不请求。设备 / 系统 / 浏览器 / 屏幕 / 地域 / 来源等报表在百度统计后台看，本页只负责配置。本页自身不上报，避免把自己的访问混进去。<br>
+    <b>文章：</b>写在 <code>posts.json</code> 里，首页按日期倒序展示，点进去是 <code>post.html?id=…</code>。正文用简单 Markdown，改完提交约 1 分钟生效。<br>
+    <b>访问统计：</b>直接读 GitHub 的 14 天流量数据（浏览 / 访客 / 热门页面 / 来源），不需要任何第三方统计服务，也不用在页面里放统计脚本。设备维度 GitHub 不提供。<br>
     <b>安全：</b>本页密码是前端简易门禁，不是服务器级防护；令牌仅存于本机浏览器，请勿在公用设备上勾选「记住」。
   </div>
 
@@ -1297,67 +1351,313 @@
     nLoad().then(function(){ nStatus('已刷新', 'ok'); });
   };
 
-  /* ===== 访客统计：把百度统计站点 ID 写进 analytics.json ===== */
-  var A_FILE = 'analytics.json';
-  var hmInput  = document.getElementById('hmInput');
-  var hmSave   = document.getElementById('hmSave');
-  var hmState  = document.getElementById('hmState');
-  var hmBusy   = false;
+  /* ===== 文章管理：读写仓库根目录 posts.json ===== */
+  var P_FILE = 'posts.json';
+  var pItems = [], pEditing = null, pBusy = false;
+  var pListEl   = document.getElementById('postListAdmin');
+  var pTitleEl  = document.getElementById('pTitle');
+  var pDateEl   = document.getElementById('pDate');
+  var pTagsEl   = document.getElementById('pTags');
+  var pSumEl    = document.getElementById('pSummary');
+  var pBodyEl   = document.getElementById('pBody');
+  var pSaveBtn  = document.getElementById('pSave');
+  var pCancelBtn= document.getElementById('pCancel');
+  var pCountEl  = document.getElementById('pCount');
+  var pStatusEl = document.getElementById('pStatus');
 
-  function hmMsg(msg, kind){
-    hmState.className = 'stat-state' + (kind ? ' ' + kind : '');
-    hmState.textContent = msg;
+  function pStatus(msg, kind){
+    if(!msg){ pStatusEl.hidden = true; pStatusEl.textContent = ''; pStatusEl.className = 'status'; return; }
+    pStatusEl.hidden = false;
+    pStatusEl.className = 'status ' + (kind || 'info');
+    pStatusEl.textContent = msg;
   }
-  function hmValid(id){ return /^[0-9a-f]{16,40}$/i.test(id); }
+  function pToday(){
+    var d = new Date();
+    function p(n){ return (n < 10 ? '0' : '') + n; }
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+  function pNewId(){ return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function pNorm(p){
+    var tags = Array.isArray(p.tags) ? p.tags : String(p.tags || '').split(/[,\s]+/);
+    return {
+      id: p.id || pNewId(),
+      title: String(p.title || ''),
+      date: String(p.date || (p.updated || '').slice(0, 10) || ''),
+      tags: tags.map(function(t){ return String(t).trim(); }).filter(Boolean).slice(0, 6),
+      summary: String(p.summary || ''),
+      body: String(p.body || ''),
+      updated: p.updated || ''
+    };
+  }
+  function pPlain(md){
+    return String(md || '')
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/[#>*_`~-]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
 
-  function hmLoad(){
-    fetch(A_FILE + '?t=' + Date.now(), {cache: 'no-store'}).then(function(r){
+  function pRender(){
+    pListEl.textContent = '';
+    if(!pItems.length){
+      var e = document.createElement('p');
+      e.className = 'muted';
+      e.textContent = '还没有文章，下面写第一篇。';
+      pListEl.appendChild(e);
+      return;
+    }
+    pItems.slice().sort(function(a, b){
+      return String(b.date || '').localeCompare(String(a.date || ''));
+    }).forEach(function(p){
+      var box = document.createElement('div');
+      box.className = 'pi';
+
+      var head = document.createElement('div'); head.className = 'pi-head';
+      var t = document.createElement('span'); t.className = 'pi-title'; t.textContent = p.title || '（无标题）';
+      head.appendChild(t);
+      if(p.date){
+        var d = document.createElement('span'); d.className = 'pi-date'; d.textContent = p.date;
+        head.appendChild(d);
+      }
+      p.tags.forEach(function(tg){
+        var s = document.createElement('span'); s.className = 'pi-tag'; s.textContent = tg;
+        head.appendChild(s);
+      });
+      box.appendChild(head);
+
+      var ex = p.summary || pPlain(p.body).slice(0, 120);
+      if(ex){
+        var b = document.createElement('div'); b.className = 'pi-ex'; b.textContent = ex;
+        box.appendChild(b);
+      }
+
+      var act = document.createElement('div'); act.className = 'pi-act';
+      var ed = document.createElement('button'); ed.type = 'button';
+      ed.className = 'ghost'; ed.textContent = '编辑';
+      ed.onclick = function(){ pEdit(p.id); };
+      var del = document.createElement('button'); del.type = 'button';
+      del.className = 'danger'; del.textContent = '删除';
+      del.onclick = function(){ pDelete(p.id); };
+      act.appendChild(ed); act.appendChild(del);
+      box.appendChild(act);
+
+      pListEl.appendChild(box);
+    });
+  }
+
+  function pLoad(){
+    return fetch(P_FILE + '?t=' + Date.now(), {cache: 'no-store'}).then(function(r){
       if(!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     }).then(function(d){
-      var id = String((d && d.baidu) || '').trim();
-      hmInput.value = id;
-      if(id){
-        hmMsg('已启用 · 站点 ID：' + id + '（报表在百度统计后台看）', 'ok');
-      }else{
-        hmMsg('还没配置，全站目前不上报任何数据。');
-      }
+      var arr = Array.isArray(d) ? d : (d && Array.isArray(d.items) ? d.items : []);
+      pItems = arr.filter(function(p){ return p && p.title; }).map(pNorm);
+      pRender();
     }).catch(function(){
-      hmMsg('读取 analytics.json 失败，可先直接填 ID 保存。', 'err');
+      pItems = [];
+      pRender();
+      pStatus('读取 posts.json 失败，可先直接发布一篇。', 'warn');
     });
   }
 
-  function hmCommit(){
-    if(hmBusy) return;
+  function pReset(){
+    pEditing = null;
+    pTitleEl.value = '';
+    pDateEl.value = pToday();
+    pTagsEl.value = '';
+    pSumEl.value = '';
+    pBodyEl.value = '';
+    pCountEl.textContent = '0 字';
+    pSaveBtn.textContent = '发布文章';
+    pCancelBtn.hidden = true;
+    pStatus('', '');
+  }
+
+  function pEdit(id){
+    var hit = null;
+    pItems.forEach(function(p){ if(p.id === id) hit = p; });
+    if(!hit) return;
+    pEditing = id;
+    pTitleEl.value = hit.title;
+    pDateEl.value = hit.date || pToday();
+    pTagsEl.value = hit.tags.join(', ');
+    pSumEl.value = hit.summary;
+    pBodyEl.value = hit.body;
+    pCountEl.textContent = hit.body.length + ' 字';
+    pSaveBtn.textContent = '保存修改';
+    pCancelBtn.hidden = false;
+    pStatus('正在编辑「' + hit.title + '」，保存后覆盖这一篇。', 'info');
+    document.getElementById('postCard').scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
+
+  function pSave(){
+    if(pBusy) return;
     if(!getToken()){
-      hmMsg('保存配置需要先填写 GitHub 令牌（在上面的「上传文件」里连接）。', 'err');
-      showSetup('保存统计配置需要先填写令牌');
+      pStatus('发布文章需要一个有写权限的 GitHub 令牌，先在「上传文件」里填写并连接。', 'err');
+      showSetup('发布文章需要先填写令牌');
       return;
     }
-    var id = hmInput.value.trim().toLowerCase();
-    if(!hmValid(id)){
-      hmMsg('这串 ID 看起来不对：应该是 hm.js? 后面的 32 位十六进制字符。', 'err');
-      hmInput.focus();
-      return;
+    var title = pTitleEl.value.trim();
+    var body  = pBodyEl.value.trim();
+    if(!title){ pStatus('标题不能为空', 'err'); pTitleEl.focus(); return; }
+    if(!body){ pStatus('正文不能为空', 'err'); pBodyEl.focus(); return; }
+
+    var now = new Date().toISOString();
+    var tags = pTagsEl.value.split(/[,，\s]+/).map(function(t){ return t.trim(); })
+                 .filter(Boolean).slice(0, 6);
+    var item = {
+      id: pEditing || pNewId(),
+      title: title,
+      date: pDateEl.value || pToday(),
+      tags: tags,
+      summary: pSumEl.value.trim(),
+      body: body,
+      updated: now
+    };
+    var list, msg;
+    if(pEditing){
+      list = pItems.map(function(p){ return p.id === pEditing ? item : p; });
+      msg = '更新博客文章';
+    }else{
+      list = [item].concat(pItems);
+      msg = '发布博客文章：' + title;
     }
-    hmBusy = true; hmSave.disabled = true; hmSave.textContent = '提交中…';
-    hmMsg('正在保存…');
-    var data = {baidu: id, updated: new Date().toISOString()};
-    var text = JSON.stringify(data, null, 2) + '\n';
-    commitTree({'analytics.json': RP.utf8ToBytes(text)}, [], '配置访客统计').then(function(){
-      hmBusy = false; hmSave.disabled = false; hmSave.textContent = '保存并启用';
-      hmMsg('已保存，约 1 分钟后全站开始上报；数据要过几小时才有量。', 'ok');
+
+    pBusy = true; pSaveBtn.disabled = true;
+    var wasEditing = !!pEditing;
+    var old = pSaveBtn.textContent;
+    pSaveBtn.textContent = '提交中…';
+    pStatus(wasEditing ? '正在保存…' : '正在发布…', 'info');
+
+    var text = JSON.stringify({updated: now, items: list}, null, 2) + '\n';
+    commitTree({'posts.json': RP.utf8ToBytes(text)}, [], msg).then(function(){
+      pBusy = false; pSaveBtn.disabled = false; pSaveBtn.textContent = old;
+      pItems = list;
+      pRender();
+      pReset();
+      pStatus(wasEditing ? '已保存，约 1 分钟后首页更新' : '已发布，约 1 分钟后首页出现', 'ok');
     }).catch(function(e){
-      hmBusy = false; hmSave.disabled = false; hmSave.textContent = '保存并启用';
+      pBusy = false; pSaveBtn.disabled = false; pSaveBtn.textContent = old;
       var m = (e && e.message) ? e.message : '网络异常，请稍后重试';
       if(e && e.status === 401) m = '令牌无效或已过期';
       if(e && e.status === 403) m = '令牌没有写权限（需要 Contents: Read and write）';
-      hmMsg(m, 'err');
+      pStatus(m, 'err');
     });
   }
 
-  hmSave.addEventListener('click', hmCommit);
-  hmInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') hmCommit(); });
+  function pDelete(id){
+    if(pBusy) return;
+    if(!getToken()){ pStatus('删除文章需要先填写令牌', 'err'); showSetup('删除文章需要先填写令牌'); return; }
+    var hit = null;
+    pItems.forEach(function(p){ if(p.id === id) hit = p; });
+    if(!hit) return;
+    if(!confirm('删除文章「' + hit.title + '」？删除后链接会失效，且无法恢复。')) return;
+
+    var list = pItems.filter(function(p){ return p.id !== id; });
+    var now = new Date().toISOString();
+    pBusy = true; pSaveBtn.disabled = true;
+    pStatus('正在删除…', 'info');
+    var text = JSON.stringify({updated: now, items: list}, null, 2) + '\n';
+    commitTree({'posts.json': RP.utf8ToBytes(text)}, [], '删除博客文章：' + hit.title).then(function(){
+      pBusy = false; pSaveBtn.disabled = false;
+      pItems = list;
+      pRender();
+      if(pEditing === id) pReset();
+      pStatus('已删除，首页约 1 分钟内更新', 'ok');
+    }).catch(function(e){
+      pBusy = false; pSaveBtn.disabled = false;
+      pStatus((e && e.message) ? e.message : '删除失败，请稍后重试', 'err');
+    });
+  }
+
+  pBodyEl.addEventListener('input', function(){ pCountEl.textContent = pBodyEl.value.length + ' 字'; });
+  pSaveBtn.addEventListener('click', pSave);
+  pCancelBtn.addEventListener('click', pReset);
+  document.getElementById('postRefresh').onclick = function(){
+    pStatus('正在读取…', 'info');
+    pLoad().then(function(){ pStatus('已刷新', 'ok'); });
+  };
+
+  /* ===== 访问统计：直接读 GitHub 自带的 14 天流量数据，不接任何第三方 ===== */
+  var TRAFFIC = 'https://api.github.com/repos/' + REPO + '/traffic';
+  var statSum = document.getElementById('statSum');
+  var statChart = document.getElementById('statChart');
+  var statPaths = document.getElementById('statPaths');
+  var statRefs  = document.getElementById('statRefs');
+
+  function tMsg(msg, kind){
+    statSum.className = 'stat-sum' + (kind ? ' ' + kind : '');
+    statSum.textContent = msg;
+  }
+
+  function barChart(views){
+    statChart.textContent = '';
+    var max = 1;
+    views.forEach(function(v){ if(v.count > max) max = v.count; });
+    views.forEach(function(v){
+      var col = document.createElement('div'); col.className = 'bar-col';
+      var b = document.createElement('i');
+      b.style.height = (v.count ? Math.max(9, Math.round(v.count / max * 100)) : 3) + '%';
+      if(v.count) b.classList.add('has');
+      b.title = v.timestamp.slice(0, 10) + ' · ' + v.count + ' 次浏览 / ' + v.uniques + ' 人';
+      var d = document.createElement('span'); d.className = 'bar-day';
+      d.textContent = v.timestamp.slice(5, 10);
+      col.appendChild(b); col.appendChild(d);
+      statChart.appendChild(col);
+    });
+  }
+
+  function listInto(el, arr, fmt){
+    el.textContent = '';
+    if(!arr.length){
+      var p = document.createElement('p'); p.className = 'muted'; p.textContent = '—';
+      el.appendChild(p); return;
+    }
+    arr.slice(0, 6).forEach(function(it){
+      var row = document.createElement('div'); row.className = 'stat-item';
+      var n = document.createElement('span'); n.className = 'name'; n.textContent = fmt(it).name;
+      var v = document.createElement('span'); v.className = 'val'; v.textContent = fmt(it).val;
+      row.appendChild(n); row.appendChild(v); el.appendChild(row);
+    });
+  }
+
+  function tLoad(){
+    if(!getToken()){
+      tMsg('填上令牌后显示数据：这台浏览器里存的令牌就能读自己仓库的流量。');
+      statChart.textContent = '';
+      statPaths.innerHTML = '<p class="muted">—</p>';
+      statRefs.innerHTML = '<p class="muted">—</p>';
+      return;
+    }
+    tMsg('读取中…');
+    Promise.all([
+      gh(TRAFFIC + '/views?per=day'),
+      gh(TRAFFIC + '/popular/paths'),
+      gh(TRAFFIC + '/popular/referrers')
+    ]).then(function(res){
+      var v = res[0], p = res[1], r = res[2];
+      if(!v.ok){
+        if(v.status === 401) tMsg('令牌无效或已过期。', 'err');
+        else if(v.status === 403) tMsg('这个令牌读不到流量：需要仓库的 push 权限（classic 令牌勾 repo）。', 'err');
+        else tMsg('读取失败（HTTP ' + v.status + '）', 'err');
+        return;
+      }
+      var d = v.data || {};
+      tMsg('最近 14 天：' + (d.count || 0) + ' 次浏览 · ' + (d.uniques || 0) + ' 位访客');
+      barChart(d.views || []);
+      listInto(statPaths, (p.ok && p.data) || [], function(it){
+        return {name: it.path + (it.title ? ' · ' + it.title : ''), val: it.count + ' 次'};
+      });
+      listInto(statRefs, (r.ok && r.data) || [], function(it){
+        return {name: it.referrer || '（直接访问）', val: it.count + ' 次'};
+      });
+    }).catch(function(e){
+      tMsg('网络异常：' + ((e && e.message) || ''), 'err');
+    });
+  }
+  document.getElementById('statRefresh').addEventListener('click', tLoad);
 
   /* ===== 登录门禁：密码在本页校验，通过后才启动管理功能 ===== */
   var ADMIN_PASSWORD = 'hX126288@@';
@@ -1377,7 +1677,8 @@
     // 插件列表读源索引，没令牌时读 Pages 上的公开 Packages，同样能看
     loadPluginList();
     nLoad().then(function(){ if(!nItems.length) nStatus('', ''); });
-    hmLoad();
+    pLoad().then(function(){ if(!pItems.length) pStatus('', ''); });
+    tLoad();
     if(getToken()){ hideSetup(); }
     else { showSetup('当前是只读模式：可以查看、下载文件与已收录插件；上传需要先填写令牌。'); }
   }

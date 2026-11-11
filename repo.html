@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evander's Repo · iOS 越狱源</title>
+<link rel="icon" type="image/png" href="CydiaIcon.png">
+<meta name="description" content="Evander's Repo，兼容 Sileo / Zebra / Cydia / Installer 的 iOS 越狱源">
+<style>
+  :root{color-scheme:dark;--bg:#0a0f1e;--card:#131d33;--bd:#26365a;--tx:#eaf1ff;--mut:#93a7cd;--acc:#4a9dff;--ok:#42d392}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1b2c55 0%,var(--bg) 60%);
+       color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+       line-height:1.65;min-height:100vh}
+  .wrap{max-width:820px;margin:0 auto;padding:48px 20px 80px}
+  .top{display:flex;align-items:center;gap:18px;margin-bottom:8px}
+  a.blog-back{margin-left:auto;flex:none;font-size:13px;color:#9ecbff;text-decoration:none;
+              border:1px solid #2f4d7a;border-radius:9px;padding:7px 14px;transition:.15s}
+  a.blog-back:hover{background:#152b47;color:#cfe4ff}
+  @media(max-width:520px){a.blog-back{padding:6px 11px;font-size:12.5px}}
+  .top img{width:76px;height:76px;border-radius:18px;box-shadow:0 8px 30px #0008}
+  h1{font-size:30px;margin:0;letter-spacing:.3px}
+  .sub{color:var(--mut);font-size:15px;margin-top:2px}
+  .badge{display:inline-block;font-size:12px;padding:3px 10px;border:1px solid var(--bd);border-radius:99px;color:var(--mut);margin-left:8px}
+  .urlbox{margin:30px 0 14px;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px 20px;
+          display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .urlbox .lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;width:100%}
+  code.url{font-size:19px;font-weight:600;color:#bfe0ff;word-break:break-all;flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  button{cursor:pointer;border:0;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:600;
+         background:var(--acc);color:#04122a;transition:.15s}
+  button:hover{filter:brightness(1.12)}
+  button.copied{background:var(--ok);color:#04180e}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px 20px}
+  .card h2{font-size:16px;margin:0 0 12px;color:#9ecbff}
+  .card ul{margin:0;padding-left:18px;font-size:14px;color:var(--tx)}
+  .card li{margin:7px 0}
+  .card .m{color:var(--mut)}
+  .pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  a.pm-btn{display:block;text-align:center;text-decoration:none;background:var(--acc);color:#04122a;
+           border-radius:10px;padding:11px 8px;font-size:14px;font-weight:600;transition:.15s}
+  a.pm-btn:hover{filter:brightness(1.12)}
+  @media(max-width:380px){.pm-grid{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--bd)}
+  th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  td code{background:#0c1730;padding:2px 7px;border-radius:5px;font-size:12.5px;color:#a9d2ff}
+  .sec{margin-top:34px}
+  .sec h2{font-size:19px;margin:0 0 12px}
+  a{color:var(--acc)}
+  .note{font-size:13px;color:var(--mut);background:#101a2e;border-left:3px solid var(--acc);
+        padding:12px 16px;border-radius:0 10px 10px 0;margin-top:16px}
+  .contact-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+  .contact-row:first-child{padding-top:2px}
+  .contact-row:last-child{border-bottom:0;padding-bottom:2px}
+  .contact-row .k{font-size:13px;color:var(--mut);width:52px;flex:none}
+  .contact-row .v{font-size:18px;font-weight:600;color:#bfe0ff;flex:1;letter-spacing:1px;
+                  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  button.mini{border:1px solid var(--bd);border-radius:9px;padding:7px 15px;font-size:13px;
+              background:#1c335c;color:#cfe4ff}
+  button.mini:hover{filter:brightness(1.25)}
+  button.mini.copied{background:var(--ok);color:#04180e;border-color:var(--ok)}
+  footer{margin-top:44px;text-align:center;color:var(--mut);font-size:13px}
+  .foot-row{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;row-gap:9px}
+  .foot-sep{opacity:.45;user-select:none}
+  a.egg-link{color:inherit;text-decoration:none;cursor:pointer;border-bottom:1px dotted transparent;transition:.15s}
+  a.egg-link:hover{color:#bfe0ff;border-bottom-color:var(--acc)}
+  /* WorkBuddy 标识：图标与文字都进官网 */
+  a.wb-badge{display:inline-flex;align-items:center;gap:8px;color:inherit;text-decoration:none;
+             padding:2px 8px 2px 2px;border-radius:9px;transition:background .18s,color .15s}
+  a.wb-badge .wb-ico{width:21px;height:21px;display:block;border-radius:5px;box-shadow:0 2px 9px #0007;
+                     transition:box-shadow .18s,transform .18s}
+  a.wb-badge span{font-size:14px;letter-spacing:.1px}
+  a.wb-badge:hover{color:#eaf1ff;background:#17243d}
+  a.wb-badge:hover .wb-ico{transform:translateY(-1px);box-shadow:0 5px 16px #01c88666}
+  @media(max-width:520px){
+    .foot-row{flex-direction:column;gap:7px}
+    .foot-sep{display:none}
+    .wb-badge{gap:7px}
+  }
+  .admin-entry{margin-top:26px;text-align:center}
+  a.admin-btn{display:inline-block;text-decoration:none;background:#1f6feb;color:#fff;
+              border:1px solid #3b86ff;border-radius:10px;padding:11px 28px;
+              font-size:14px;font-weight:600;letter-spacing:.5px;box-shadow:0 6px 20px #1f6feb44}
+  a.admin-btn:hover{filter:brightness(1.14)}
+  /* 已上传插件列表 */
+  .bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .bar .m{font-size:13px;flex:1;min-width:180px}
+  .pl-item{display:block;padding:13px 0;border-bottom:1px solid var(--bd);text-decoration:none;color:inherit}
+  .pl-item:first-child{padding-top:2px}
+  .pl-item:last-child{border-bottom:0;padding-bottom:2px}
+  a.pl-item{cursor:pointer;border-radius:10px;padding-left:10px;padding-right:10px;margin:0 -10px;transition:background .15s}
+  a.pl-item:hover{background:#0f1a2e}
+  a.pl-item:hover .pl-go{color:#bfe0ff}
+  .pl-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .pl-name{font-size:16px;font-weight:600;color:#bfe0ff;word-break:break-all}
+  .pl-ver{display:inline-block;font-size:11px;color:var(--mut);border:1px solid var(--bd);
+          border-radius:99px;padding:1px 8px;vertical-align:2px;
+          font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .pl-go{margin-left:auto;font-size:12.5px;color:var(--mut);white-space:nowrap;transition:color .15s}
+  .pl-desc{font-size:13px;color:var(--mut);margin-top:4px;word-break:break-all}
+  .pl-tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+  .pl-tag{font-size:11px;color:#9ecbff;background:#0c1730;border:1px solid var(--bd);
+          border-radius:6px;padding:2px 8px}
+  .pl-empty{text-align:center;padding:26px;color:var(--mut);font-size:13px}
+  /* ===== 公告：可多条，最新的排在最上面 ===== */
+  .notice-list{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+  .notice-list[hidden]{display:none}
+  .notice{padding:14px 16px 15px 18px;position:relative;border:1px solid var(--bd);
+          border-radius:12px;background:#111c31;overflow:hidden}
+  .notice::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
+  .notice[data-level="warn"]{background:#1c1a12}
+  .notice[data-level="warn"]::before{background:#ffb86b}
+  .notice[data-level="hot"]{background:#1e1216}
+  .notice[data-level="hot"]::before{background:#ff6b81}
+  .nt-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:5px}
+  .nt-tag{font-size:11px;font-weight:700;letter-spacing:1px;color:#04122a;background:var(--acc);
+          border-radius:5px;padding:2px 8px;flex:none}
+  .notice[data-level="warn"] .nt-tag{background:#ffb86b;color:#2a1a04}
+  .notice[data-level="hot"] .nt-tag{background:#ff6b81;color:#2a0410}
+  .nt-title{font-size:15px;font-weight:700;color:#dceaff;word-break:break-word}
+  .nt-time{margin-left:auto;font-size:11.5px;color:var(--mut);
+           font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+  .nt-body{font-size:14px;color:#cfe0f5;white-space:pre-wrap;word-break:break-word}
+  /* 正文里的网址：自动变成蓝色「🔗 查看链接」小标签 */
+  .nt-link{display:inline-flex;align-items:center;gap:4px;vertical-align:-2px;color:#7cc0ff;
+           text-decoration:none;background:#0f2a49;border:1px solid #24507e;border-radius:6px;
+           padding:1px 8px 2px;margin:0 1px;white-space:nowrap;font-size:13px;transition:.15s}
+  .nt-link svg{width:12px;height:12px;flex:none;opacity:.9}
+  .nt-link:hover{color:#c7e4ff;background:#16395e;border-color:#3f75b0}
+  .nt-more{margin-top:12px;background:#101c33;border:1px dashed #2f4d7a;color:#9ecbff;
+           border-radius:9px;padding:8px 16px;font-size:13px;font-weight:600}
+  .nt-more[hidden]{display:none}
+  .nt-more:hover{background:#152b47;border-color:#3f638f}
+  @media(max-width:520px){
+    .nt-time{margin-left:0;width:100%;order:3}
+  }
+
+  /* ===== 打开首页时的代码滚动动画（约 5 秒，可点击跳过） ===== */
+  .boot{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;
+        justify-content:center;gap:14px;background:#05080f;
+        background-image:radial-gradient(900px 520px at 50% -8%,#16264a 0%,transparent 60%);
+        transition:opacity .45s ease}
+  .boot.done{opacity:0;pointer-events:none}
+  .boot-console{width:min(700px,91vw);height:min(440px,66vh);display:flex;flex-direction:column;
+                border:1px solid #1c2b47;border-radius:14px;background:#070d18;overflow:hidden;
+                box-shadow:0 34px 100px #000b,0 0 0 1px #ffffff06 inset}
+  .boot-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#0a1220;
+            border-bottom:1px solid #16233b;flex:none}
+  .boot-bar i{width:10px;height:10px;border-radius:50%;display:block}
+  .boot-bar i:nth-child(1){background:#ff5f57}
+  .boot-bar i:nth-child(2){background:#febc2e}
+  .boot-bar i:nth-child(3){background:#28c840}
+  .boot-title{margin-left:8px;font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;
+              color:#63799c;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .boot-body{position:relative;flex:1;overflow:hidden}
+  .boot-body::before{content:"";position:absolute;left:0;right:0;top:0;height:56px;z-index:2;
+                     background:linear-gradient(#070d18 12%,#070d1800);pointer-events:none}
+  .boot-body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:44px;z-index:2;
+                    background:linear-gradient(#070d1800,#070d18 86%);pointer-events:none}
+  .boot-lines{position:absolute;left:0;right:0;bottom:0;padding:0 16px 12px;
+              font:12.5px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;
+              font-variant-ligatures:none}
+  .boot-line{display:flex;gap:12px;white-space:pre;opacity:0;animation:bootIn .16s ease forwards}
+  .boot-line .ln{flex:none;min-width:26px;text-align:right;color:#2e4260;user-select:none}
+  .boot-line .cd{color:#b9cbe6;overflow:hidden;text-overflow:ellipsis}
+  @keyframes bootIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+  .c{color:#4a6182}
+  .k{color:#ff7b9c}
+  .s{color:#a8e6a0}
+  .f{color:#7ec9ff}
+  .n{color:#ffd166}
+  .ok{color:#42d392}
+  .warn{color:#ffb86b}
+  .boot-foot{display:flex;align-items:center;gap:12px;padding:10px 14px;flex:none;
+             background:#0a1220;border-top:1px solid #16233b}
+  .boot-track{flex:1;height:4px;border-radius:99px;background:#152238;overflow:hidden}
+  .boot-track i{display:block;width:0;height:100%;border-radius:99px;
+                background:linear-gradient(90deg,#4a9dff,#7ee8ff);box-shadow:0 0 10px #4a9dff88;
+                transition:width .18s linear}
+  #bootPct{min-width:36px;text-align:right;font:11.5px ui-monospace,Menlo,monospace;color:#7f96bb}
+  .boot-skip{margin:0;font-size:12px;color:#3f5474;letter-spacing:.6px}
+  @media(prefers-reduced-motion:reduce){.boot{display:none}}
+</style>
+</head>
+<body>
+
+<!-- 打开首页的代码滚动动画：约 5 秒，点击可跳过，动画结束自动移除 -->
+<div class="boot" id="boot">
+  <div class="boot-console">
+    <div class="boot-bar">
+      <i></i><i></i><i></i>
+      <span class="boot-title">evander@repo — bootstrap.sh</span>
+    </div>
+    <div class="boot-body">
+      <div class="boot-lines" id="bootLines"></div>
+    </div>
+    <div class="boot-foot">
+      <div class="boot-track"><i id="bootBar"></i></div>
+      <span id="bootPct">0%</span>
+    </div>
+  </div>
+  <p class="boot-skip">点击任意处跳过</p>
+</div>
+
+<div class="wrap">
+  <div class="top">
+    <img src="CydiaIcon.png" alt="repo icon">
+    <div>
+      <h1>Evander's Repo <span class="badge">iOS 越狱源</span></h1>
+      <div class="sub">个人维护的软件源 · 兼容 Sileo / Zebra / Cydia / Installer / Irisin / Saily</div>
+    </div>
+    <a class="blog-back" href="index.html">博客 ›</a>
+  </div>
+
+  <!-- 公告：内容来自仓库根目录的 notice.json，可多条；发布入口在 admin 页 -->
+  <div class="notice-list" id="noticeList" hidden></div>
+  <button class="nt-more" id="ntMore" type="button" hidden></button>
+
+  <div class="urlbox">
+    <div class="lbl">源地址 · 复制后添加到包管理器</div>
+    <code class="url" id="url">https://evandersun.github.io/</code>
+    <button id="copy">复制地址</button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>怎么添加</h2>
+      <p class="m" style="font-size:13px;margin:0 0 12px">点击对应客户端，直接跳转并添加本源；未安装该客户端则不会响应。</p>
+      <div class="pm-grid">
+        <a class="pm-btn" href="cydia://url/https://cydia.saurik.com/api/share#?source=https://evandersun.github.io/">Cydia</a>
+        <a class="pm-btn" href="sileo://source/https://evandersun.github.io/">Sileo</a>
+        <a class="pm-btn" href="zbra://sources/add/https://evandersun.github.io/">Zebra</a>
+        <a class="pm-btn" href="installer://add/repo=https://evandersun.github.io/">Installer</a>
+        <a class="pm-btn" href="irisin://repository/add?url=https://evandersun.github.io/">Irisin</a>
+        <a class="pm-btn" href="apt-repo://https://evandersun.github.io/">Saily</a>
+      </div>
+    </div>
+    <div class="card">
+      <h2>源信息</h2>
+      <table>
+        <tr><th>项目</th><th>内容</th></tr>
+        <tr><td>类型</td><td>flat repo</td></tr>
+        <tr><td>索引</td><td><code>Packages</code> / <code>Packages.gz</code></td></tr>
+        <tr><td>校验</td><td><code>Release</code>（MD5 / SHA1 / SHA256 / SHA512）</td></tr>
+        <tr><td>客户端</td><td>Sileo / Zebra / Cydia / Installer / Irisin / Saily</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>关于本源</h2>
+    <div class="card">
+      <p class="m" style="font-size:14px;margin:0">这是由 GitHub Pages 托管的标准 APT 软件源。索引文件与校验和由仓库内的构建脚本自动生成，包管理器可按设备架构读取对应条目。</p>
+    </div>
+    <div class="note">
+      源图标、索引与页面均随仓库更新自动发布；若包管理器里显示的是旧内容，刷新源或删除后重新添加即可。
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>已上传插件</h2>
+    <div class="card">
+      <div class="bar">
+        <span class="m">点条目查看详情 · 数据来自源的 <code>Packages</code> 索引，上传后约 10–60 秒更新</span>
+        <button class="mini" id="refreshPlugins">刷新</button>
+      </div>
+      <div id="pluginList"><div class="pl-empty">读取中…</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>联系我</h2>
+    <div class="card">
+      <div class="contact-row">
+        <span class="k">QQ</span>
+        <code class="v">2197822437</code>
+        <button class="mini" data-copy="2197822437">复制</button>
+      </div>
+      <div class="contact-row">
+        <span class="k">QQ群</span>
+        <code class="v">1135135953</code>
+        <button class="mini" data-copy="1135135953">复制</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="foot-row">
+      <span>Evander's Repo</span>
+      <span class="foot-sep">·</span>
+      <a class="egg-link" href="egg2.html">Powered by GitHub Pages</a>
+      <span class="foot-sep">·</span>
+      <a class="wb-badge" href="https://www.workbuddy.cn" target="_blank" rel="noopener noreferrer"
+         title="访问 WorkBuddy 官网（新窗口打开）">
+        <img class="wb-ico" src="assets/workbuddy.svg?v=2" alt="" width="21" height="21" decoding="async">
+        <span>Powered by WorkBuddy</span>
+      </a>
+    </div>
+  </footer>
+
+  <div class="admin-entry">
+    <a class="admin-btn" id="adminBtn" href="admin.html">admin登录</a>
+  </div>
+</div>
+
+<script src="js/repo-list.js"></script>
+<script>
+  function bindCopy(btn, getText){
+    btn.onclick=function(){
+      var s=getText(), old=btn.textContent;
+      function done(){btn.textContent='已复制 ✓';btn.classList.add('copied');
+        setTimeout(function(){btn.textContent=old;btn.classList.remove('copied');},1800);}
+      function fallback(){var i=document.createElement('textarea');i.value=s;document.body.appendChild(i);
+        i.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(i);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(s).then(done,fallback);
+      }else{fallback();}
+    };
+  }
+  var urlBtn=document.getElementById('copy'), urlEl=document.getElementById('url');
+  bindCopy(urlBtn, function(){return urlEl.textContent.trim();});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function(btn){
+    bindCopy(btn, function(){return btn.getAttribute('data-copy');});
+  });
+
+  /* 已上传插件列表：同源读取 Packages，不需要令牌或 GitHub API */
+  (function(){
+    var box = document.getElementById('pluginList');
+    function el(tag, cls, text){
+      var e = document.createElement(tag);
+      if(cls) e.className = cls;
+      if(text != null) e.textContent = text;
+      return e;
+    }
+    /* 详情页地址：control 里的 Depiction 字段；站内地址转成相对路径，本地预览也不会跳到线上 */
+    var SITE_ROOT = 'https://evandersun.github.io/';
+    function detailUrl(p){
+      var raw = p.depiction || p.sileoDepiction || '';
+      if(!raw) return '';
+      if(/\.json($|\?)/i.test(raw) && p.depiction) raw = p.depiction;
+      if(raw.indexOf(SITE_ROOT) === 0) return raw.slice(SITE_ROOT.length).replace(/^\//, '');
+      var base = (typeof location !== 'undefined' && location.href) ? location.href : SITE_ROOT;
+      try{
+        var abs = new URL(raw, base);
+        if(typeof location !== 'undefined' && abs.origin === location.origin)
+          return abs.pathname.replace(/^\//, '') + abs.search + abs.hash;
+        return abs.href;
+      }catch(e){ return ''; }
+    }
+    function render(items){
+      box.innerHTML = '';
+      if(!items.length){
+        box.appendChild(el('div','pl-empty','暂无插件，源里还没有上传的插件'));
+        return;
+      }
+      items.forEach(function(p){
+        var href = detailUrl(p);
+        var row = el(href ? 'a' : 'div', 'pl-item');
+        if(href){ row.href = href; row.title = p.name + ' 详情'; }
+        var head = el('div','pl-head');
+        head.appendChild(el('span','pl-name', p.name));
+        if(p.version) head.appendChild(el('span','pl-ver','v' + p.version));
+        if(href) head.appendChild(el('span','pl-go','详情 ›'));
+        row.appendChild(head);
+        if(p.packageId && p.packageId !== p.name)
+          row.appendChild(el('div','pl-desc', p.packageId));
+        if(p.description) row.appendChild(el('div','pl-desc', p.description));
+        if(p.archs.length){
+          var tags = el('div','pl-tags');
+          p.archs.sort().forEach(function(a){
+            tags.appendChild(el('span','pl-tag', RepoList.archLabel(a)));
+          });
+          row.appendChild(tags);
+        }
+        box.appendChild(row);
+      });
+    }
+    function load(){
+      box.innerHTML = '<div class="pl-empty">读取中…</div>';
+      // 时间戳穿透 Pages / CDN 缓存，拿到最新索引
+      fetch('Packages?t=' + Date.now(), {cache:'no-store'}).then(function(r){
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      }).then(function(txt){
+        if(typeof RepoList === 'undefined'){
+          box.innerHTML = '<div class="pl-empty">组件加载失败，请刷新页面重试</div>';
+          return;
+        }
+        render(RepoList.parsePackages(txt));
+      }).catch(function(){
+        box.innerHTML = '<div class="pl-empty">暂时无法读取插件列表，请稍后点「刷新」重试</div>';
+      });
+    }
+    document.getElementById('refreshPlugins').onclick = load;
+    load();
+  })();
+</script>
+<script>
+/* ===== 首页公告：读取 notice.json（可多条）；正文里的网址自动变成「🔗 查看链接」 ===== */
+(function(){
+  var FILE = 'notice.json', MAX_SHOW = 3;
+
+  var listEl = document.getElementById('noticeList');
+  var moreEl = document.getElementById('ntMore');
+  var items  = [], expanded = false;
+
+  var URL_RE = /https?:\/\/[^\s<>"'()\[\]{}（）【】「」《》，。；：！？、]+/gi;
+  /* 链条图标（内联 SVG，任何系统都能显示，不依赖 emoji 字体） */
+  var CHAIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" '
+            + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            + '<path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07l-1.41 1.41"/>'
+            + '<path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.41-1.41"/>'
+            + '</svg>';
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function fmt(iso){
+    if(!iso) return '';
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' '
+         + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  /* 逐段拼 DOM，不用 innerHTML：既防注入，又能把网址换成短链接 */
+  function paintBody(el, text){
+    el.textContent = '';
+    var urls  = text.match(URL_RE) || [];
+    var multi = urls.length > 1;
+    var last = 0, idx = 0, m;
+    URL_RE.lastIndex = 0;
+    while((m = URL_RE.exec(text)) !== null){
+      var url = m[0].replace(/[\.,;:!?]+$/, '');
+      if(!url) continue;
+      if(m.index > last) el.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var a = document.createElement('a');
+      a.className = 'nt-link';
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.title = url;
+      a.innerHTML = CHAIN + '<span>查看链接' + (multi ? ' ' + (++idx) : '') + '</span>';
+      el.appendChild(a);
+      last = m.index + m[0].length;
+    }
+    if(last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  function card(n){
+    var lv  = n.level === 'hot' ? 'hot' : (n.level === 'warn' ? 'warn' : 'info');
+    var box = document.createElement('div');
+    box.className = 'notice';
+    box.setAttribute('data-level', lv);
+
+    var head = document.createElement('div'); head.className = 'nt-head';
+    var tag  = document.createElement('span'); tag.className = 'nt-tag';
+    tag.textContent = lv === 'hot' ? '重要' : (lv === 'warn' ? '注意' : '公告');
+    var ttl  = document.createElement('span'); ttl.className = 'nt-title';
+    ttl.textContent = n.title || '公告';
+    head.appendChild(tag);
+    head.appendChild(ttl);
+
+    var time = fmt(n.updated);
+    if(time){
+      var tm = document.createElement('span'); tm.className = 'nt-time'; tm.textContent = time;
+      head.appendChild(tm);
+    }
+    box.appendChild(head);
+
+    var body = document.createElement('div'); body.className = 'nt-body';
+    paintBody(body, String(n.body || ''));
+    box.appendChild(body);
+    return box;
+  }
+
+  function render(){
+    listEl.textContent = '';
+    if(!items.length){ listEl.hidden = true; moreEl.hidden = true; return; }
+
+    items.sort(function(a, b){
+      return String(b.updated || '').localeCompare(String(a.updated || ''));
+    });
+    var show = expanded ? items : items.slice(0, MAX_SHOW);
+    show.forEach(function(n){ listEl.appendChild(card(n)); });
+    listEl.hidden = false;
+
+    var rest = items.length - show.length;
+    if(rest > 0){
+      moreEl.hidden = false;
+      moreEl.textContent = '还有 ' + rest + ' 条公告 · 展开全部';
+    }else if(expanded && items.length > MAX_SHOW){
+      moreEl.hidden = false;
+      moreEl.textContent = '收起公告';
+    }else{
+      moreEl.hidden = true;
+    }
+  }
+
+  /* 兼容旧格式（单个对象）与新格式 {updated, items:[...]} */
+  function normalize(d){
+    var arr = Array.isArray(d) ? d
+            : (d && Array.isArray(d.items) ? d.items : (d && d.body ? [d] : []));
+    return arr.filter(function(n){
+      return n && typeof n === 'object' && String(n.body || '').trim();
+    });
+  }
+
+  function load(){
+    fetch(FILE + '?t=' + Date.now(), {cache: 'no-store'}).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(d){
+      items = normalize(d);
+      render();
+    }).catch(function(){
+      items = [];
+      render();
+    });
+  }
+
+  moreEl.addEventListener('click', function(){ expanded = !expanded; render(); });
+  load();
+})();
+
+/* 打开首页的「代码滚动」动画：约 5 秒后淡出，点击/按键可立即跳过 */
+(function(){
+  var boot = document.getElementById('boot');
+  if(!boot) return;
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){
+    boot.parentNode.removeChild(boot); return;
+  }
+  /* 同一个会话（同一个标签页）里只播一次：刷新、返回、前进都不再重复 */
+  try{
+    if(sessionStorage.getItem('boot_once') === '1'){
+      boot.parentNode.removeChild(boot); return;
+    }
+    sessionStorage.setItem('boot_once', '1');
+  }catch(e){ /* 隐私模式禁用存储时，照常播放一次 */ }
+  var lines = document.getElementById('bootLines');
+  var bar   = document.getElementById('bootBar');
+  var pctEl = document.getElementById('bootPct');
+  var DUR = 5000, t0 = Date.now(), n = 0, finished = false;
+
+  /* 每行一个片段，class：c 注释 / k 关键字 / s 字符串 / f 函数 / n 常量 */
+  var CODE = [
+    '<span class="c">// evandersun.github.io · 源索引构建</span>',
+    '<span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">"fflate"</span>;',
+    '<span class="k">import</span> { sha256, sha512 } <span class="k">from</span> <span class="s">"./hash.js"</span>;',
+    '<span class="k">import</span> { readFile, writeFile } <span class="k">from</span> <span class="s">"node:fs/promises"</span>;',
+    '',
+    '<span class="k">const</span> repo = {',
+    '  name: <span class="s">"Evander&#39;s Repo"</span>,',
+    '  origin: <span class="s">"https://evandersun.github.io/"</span>,',
+    '  arch: [<span class="s">"iphoneos-arm64"</span>, <span class="s">"iphoneos-arm64e"</span>],',
+    '  index: [<span class="s">"Packages"</span>, <span class="s">"Packages.gz"</span>],',
+    '  release: <span class="s">"Release"</span>',
+    '};',
+    '',
+    '<span class="k">export async function</span> <span class="f">build</span>() {',
+    '  <span class="k">const</span> raw = <span class="k">await</span> <span class="f">readFile</span>(repo.index[<span class="n">0</span>], <span class="s">"utf8"</span>);',
+    '  <span class="k">const</span> list = <span class="f">parseStanzas</span>(raw);',
+    '',
+    '  <span class="k">for</span> (<span class="k">const</span> p <span class="k">of</span> list) {',
+    '    p.sha256 = <span class="k">await</span> <span class="f">sha256</span>(p.file);',
+    '    p.sha512 = <span class="k">await</span> <span class="f">sha512</span>(p.file);',
+    '    p.size   = <span class="k">await</span> <span class="f">stat</span>(p.file);',
+    '  }',
+    '',
+    '  <span class="k">const</span> gz = <span class="f">gzipSync</span>(raw, { level: <span class="n">6</span> });',
+    '  <span class="k">await</span> <span class="f">writeFile</span>(repo.index[<span class="n">1</span>], gz);',
+    '',
+    '  <span class="k">const</span> release = [',
+    '    <span class="s">"Origin: "</span> + repo.name,',
+    '    <span class="s">"Label: "</span> + repo.name,',
+    '    <span class="s">"Suite: stable"</span>,',
+    '    <span class="s">"Architectures: "</span> + repo.arch.<span class="f">join</span>(<span class="s">" "</span>),',
+    '    <span class="s">"Date: "</span> + <span class="k">new</span> <span class="f">Date</span>().<span class="f">toUTCString</span>(),',
+    '    <span class="s">"MD5Sum:"</span>',
+    '  ].<span class="f">join</span>(<span class="s">"\\n"</span>);',
+    '',
+    '  <span class="k">await</span> <span class="f">writeFile</span>(repo.release, release);',
+    '  <span class="k">return</span> { ok: <span class="k">true</span>, count: list.length };',
+    '}',
+    '',
+    '<span class="k">function</span> <span class="f">parseStanzas</span>(text) {',
+    '  <span class="k">return</span> text.<span class="f">trim</span>().<span class="f">split</span>(<span class="s">"\\n\\n"</span>).<span class="f">map</span>(block =&gt; {',
+    '    <span class="k">const</span> out = {};',
+    '    <span class="k">for</span> (<span class="k">const</span> line <span class="k">of</span> block.<span class="f">split</span>(<span class="s">"\\n"</span>)) {',
+    '      <span class="k">const</span> i = line.<span class="f">indexOf</span>(<span class="s">":"</span>);',
+    '      <span class="k">if</span> (i &lt; <span class="n">0</span>) <span class="k">continue</span>;',
+    '      out[line.<span class="f">slice</span>(<span class="n">0</span>, i)] = line.<span class="f">slice</span>(i + <span class="n">1</span>).<span class="f">trim</span>();',
+    '    }',
+    '    <span class="k">return</span> out;',
+    '  });',
+    '}',
+    '',
+    '<span class="c">/* 构建日志 */</span>',
+    '<span class="ok">[ ok ]</span> 读取 Packages      <span class="n">1.8 KB</span>',
+    '<span class="ok">[ ok ]</span> 解析 stanza × <span class="n">2</span>',
+    '<span class="ok">[ ok ]</span> 计算 SHA256 × <span class="n">36</span>  <span class="ok">matched</span>',
+    '<span class="ok">[ ok ]</span> 生成 Packages.gz   <span class="n">0.8 KB</span>',
+    '<span class="ok">[ ok ]</span> 写入 Release        <span class="n">3.7 KB</span>',
+    '<span class="warn">[ .. ]</span> 推送 GitHub Pages',
+    '<span class="ok">[ ok ]</span> 发布完成 <span class="n">2.4s</span>',
+    '',
+    '<span class="c">/* 客户端拉取索引 */</span>',
+    'GET <span class="s">/Packages.gz</span> <span class="n">200</span> <span class="c">application/gzip</span>',
+    'GET <span class="s">/Release</span>     <span class="n">200</span> <span class="c">text/plain</span>',
+    '<span class="ok">✓</span> 签名校验通过  <span class="n">36/36</span>',
+    '<span class="ok">✓</span> 源已就绪，正在进入首页 <span class="c">…</span>'
+  ];
+
+  function two(n){ return (n < 10 ? '0' : '') + n; }
+
+  function pushLine(html){
+    var d = document.createElement('div');
+    d.className = 'boot-line';
+    d.innerHTML = '<span class="ln">' + two(++n) + '</span>' +
+                  '<span class="cd">' + (html || '&nbsp;') + '</span>';
+    lines.appendChild(d);
+    while(lines.children.length > 90) lines.removeChild(lines.firstChild);
+  }
+
+  function end(){
+    if(finished) return;
+    finished = true;
+    clearInterval(timer);
+    boot.classList.add('done');
+    document.body.style.overflow = '';
+    setTimeout(function(){ if(boot.parentNode) boot.parentNode.removeChild(boot); }, 520);
+  }
+
+  document.body.style.overflow = 'hidden';
+  boot.addEventListener('click', end);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' || e.key === 'Enter') end(); });
+
+  var i = 0;
+  var timer = setInterval(function(){
+    var el = Date.now() - t0;
+    var pct = Math.min(100, el / DUR * 100);
+    bar.style.width = pct.toFixed(1) + '%';
+    pctEl.textContent = Math.round(pct) + '%';
+
+    if(el >= DUR - 700){
+      if(el < DUR - 640) pushLine('<span class="ok">✓</span> <span class="f">启动首页</span> <span class="c">…</span>');
+      if(el >= DUR - 300) end();
+      return;
+    }
+    pushLine(CODE[i % CODE.length]);
+    i++;
+  }, 72);
+})();
+</script>
+</body>
+</html>

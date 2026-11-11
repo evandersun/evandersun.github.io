@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文章 · evander 的博客</title>
+<meta name="description" content="evander 的博客文章">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234a9dff'/%3E%3Ctext x='32' y='45' font-family='-apple-system,Segoe UI,sans-serif' font-size='38' font-weight='700' text-anchor='middle' fill='%2304122a'%3Ee%3C/text%3E%3C/svg%3E">
+<style>
+  :root{color-scheme:dark;--bg:#0a0f1e;--card:#131d33;--bd:#26365a;--tx:#eaf1ff;--mut:#93a7cd;--acc:#4a9dff;--ok:#42d392}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1b2c55 0%,var(--bg) 60%);
+       color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+       line-height:1.8;min-height:100vh}
+  .wrap{max-width:720px;margin:0 auto;padding:24px 20px 70px}
+
+  .topbar{display:flex;align-items:center;gap:12px;padding:6px 0 26px}
+  a.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}
+  .mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;
+        font-size:18px;background:linear-gradient(145deg,#4a9dff,#7b5bff);color:#04122a;
+        box-shadow:0 6px 18px #4a9dff44;flex:none}
+  .brand b{font-size:15px}
+  .brand i{color:var(--mut);font-style:normal;font-size:12.5px;margin-left:2px}
+  .topbar .back{margin-left:auto;color:var(--mut);text-decoration:none;font-size:13.5px;
+                padding:7px 12px;border-radius:9px;transition:.15s}
+  .topbar .back:hover{color:#cfe4ff;background:#152b47}
+
+  #progress{position:fixed;left:0;top:0;height:2px;width:0;background:linear-gradient(90deg,#4a9dff,#7ee8ff);
+            z-index:99;transition:width .1s linear}
+
+  article h1{font-size:29px;line-height:1.4;margin:0 0 12px;letter-spacing:-.3px}
+  .meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:12.5px;color:var(--mut);
+        padding-bottom:16px;border-bottom:1px solid var(--bd);margin-bottom:24px}
+  .meta .tag{background:#0f2a49;border:1px solid #24507e;color:#9ecbff;border-radius:6px;padding:1px 8px}
+
+  .body{font-size:15.5px;color:#dbe7f7}
+  .body p{margin:0 0 16px}
+  .body h2{font-size:21px;margin:30px 0 10px;color:#eaf1ff}
+  .body h3{font-size:18px;margin:24px 0 8px;color:#e2edff}
+  .body h4{font-size:16px;margin:20px 0 6px;color:#d5e4fa}
+  .body ul,.body ol{margin:0 0 16px;padding-left:22px}
+  .body li{margin:5px 0;line-height:1.75}
+  .body blockquote{margin:0 0 16px;padding:10px 16px;border-left:3px solid var(--acc);
+                   background:#101a2e;border-radius:0 10px 10px 0;color:#b9cbe6}
+  .body code{background:#0c1730;border:1px solid #1d2c48;border-radius:5px;padding:0 6px;
+             font-size:13px;color:#a9d2ff;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .body pre{background:#070d18;border:1px solid #1c2b47;border-radius:12px;padding:14px 16px;
+            overflow:auto;margin:0 0 18px}
+  .body pre code{background:none;border:0;padding:0;font-size:12.8px;line-height:1.75;color:#c3d7ef}
+  .body a{color:#7cc0ff;text-decoration:none;border-bottom:1px solid #7cc0ff44}
+  .body a:hover{color:#c7e4ff;border-bottom-color:#c7e4ff}
+  .body hr{border:0;border-top:1px solid var(--bd);margin:26px 0}
+  .body img{max-width:100%;border-radius:10px}
+
+  .foot-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:40px;padding-top:20px;border-top:1px solid var(--bd)}
+  .foot-nav a{flex:1;min-width:150px;text-align:center;text-decoration:none;color:#9ecbff;
+              border:1px solid #2f4d7a;border-radius:11px;padding:11px 14px;font-size:13.5px;
+              font-weight:600;transition:.15s}
+  .foot-nav a:hover{background:#152b47;color:#cfe4ff}
+
+  .miss{text-align:center;padding:60px 20px;color:var(--mut)}
+  .miss h1{font-size:22px;color:var(--tx);margin:0 0 10px}
+  .miss a{color:var(--acc)}
+
+  footer{margin-top:46px;text-align:center;color:var(--mut);font-size:12.5px}
+  .foot-row{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;row-gap:9px}
+  .foot-sep{opacity:.45}
+  a.egg-link{color:inherit;text-decoration:none;border-bottom:1px dotted transparent}
+  a.egg-link:hover{color:#bfe0ff;border-bottom-color:var(--acc)}
+  a.wb-badge{display:inline-flex;align-items:center;gap:7px;color:inherit;text-decoration:none;
+             padding:2px 8px 2px 2px;border-radius:9px}
+  a.wb-badge .wb-ico{width:19px;height:19px;border-radius:5px;display:block;box-shadow:0 2px 9px #0007}
+  a.wb-badge:hover{color:#eaf1ff;background:#17243d}
+  @media(max-width:520px){
+    article h1{font-size:24px}
+    .foot-row{flex-direction:column;gap:7px}
+    .foot-sep{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<div class="wrap">
+  <div class="topbar">
+    <a class="brand" href="index.html">
+      <span class="mark">e</span>
+      <span><b>evander</b><i>的博客</i></span>
+    </a>
+    <a class="back" href="index.html">← 返回列表</a>
+  </div>
+
+  <div id="articleBox"><div class="miss">读取中…</div></div>
+
+  <div class="foot-nav">
+    <a href="index.html">← 全部文章</a>
+    <a href="repo.html">iOS 越狱源 →</a>
+  </div>
+
+  <footer>
+    <div class="foot-row">
+      <span>evander 的博客</span>
+      <span class="foot-sep">·</span>
+      <a class="egg-link" href="egg2.html">Powered by GitHub Pages</a>
+      <span class="foot-sep">·</span>
+      <a class="wb-badge" href="https://www.workbuddy.cn" target="_blank" rel="noopener noreferrer">
+        <img class="wb-ico" src="assets/workbuddy.svg?v=2" alt="" width="19" height="19" decoding="async">
+        <span>Powered by WorkBuddy</span>
+      </a>
+    </div>
+  </footer>
+</div>
+
+<script src="js/blog.js"></script>
+<script>
+(function(){
+  var id = '';
+  try { id = new URLSearchParams(location.search).get('id') || ''; } catch(e){}
+  var box = document.getElementById('articleBox');
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function day(s){
+    if(!s) return '';
+    var d = new Date(s);
+    if(isNaN(d.getTime())) return String(s);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function tagsOf(p){
+    return (Array.isArray(p.tags) ? p.tags : String(p.tags || '').split(/[,\s]+/))
+      .map(function(t){ return String(t).trim(); })
+      .filter(Boolean);
+  }
+
+  function miss(msg){
+    box.innerHTML = '<div class="miss"><h1>找不到这篇文章</h1><p>' + msg +
+      '</p><p><a href="index.html">回到文章列表</a></p></div>';
+    document.title = '找不到文章 · evander 的博客';
+  }
+
+  function show(p){
+    document.title = p.title + ' · evander 的博客';
+    var desc = document.querySelector('meta[name="description"]');
+    if(desc) desc.setAttribute('content', Blog.plain(p.body).slice(0, 120));
+
+    var art = document.createElement('article');
+    var h1 = document.createElement('h1'); h1.textContent = p.title;
+    art.appendChild(h1);
+
+    var meta = document.createElement('div'); meta.className = 'meta';
+    var d = day(p.date || p.updated);
+    if(d){ var t = document.createElement('time'); t.textContent = d; meta.appendChild(t); }
+    tagsOf(p).forEach(function(tg){
+      var s = document.createElement('span'); s.className = 'tag'; s.textContent = tg;
+      meta.appendChild(s);
+    });
+    if(meta.children.length) art.appendChild(meta);
+
+    var body = document.createElement('div'); body.className = 'body';
+    body.innerHTML = Blog.render(p.body || '');
+    art.appendChild(body);
+
+    box.innerHTML = '';
+    box.appendChild(art);
+    window.scrollTo(0, 0);
+  }
+
+  fetch('posts.json?t=' + Date.now(), {cache: 'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function(d){
+    var items = Array.isArray(d) ? d : (d && Array.isArray(d.items) ? d.items : []);
+    if(!id){ miss('链接里没有文章编号。'); return; }
+    var hit = null;
+    items.forEach(function(p){ if(p && p.id === id) hit = p; });
+    if(!hit){ miss('这篇文章可能已经被删掉，或者链接不完整。'); return; }
+    show(hit);
+  }).catch(function(){
+    miss('读取 posts.json 失败，稍后刷新试试。');
+  });
+
+  // 阅读进度条
+  var bar = document.getElementById('progress');
+  function onScroll(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h > 0 ? Math.min(100, window.scrollY / h * 100) : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, {passive: true});
+  window.addEventListener('resize', onScroll);
+  onScroll();
+})();
+</script>
+</body>
+</html>
