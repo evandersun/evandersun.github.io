@@ -1,0 +1,46 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+
+/Packages
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: no-cache, must-revalidate, no-transform
+
+/Packages.gz
+  Content-Type: application/gzip
+  Cache-Control: no-cache, must-revalidate, no-transform
+
+/Release
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: no-cache, must-revalidate, no-transform
+
+/sileo-featured.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-cache, must-revalidate
+
+/notice.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-store
+
+/posts.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-store
+
+/uploads/manifest.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-store
+
+/depiction/screentimespoofer.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: no-cache, must-revalidate
+
+/debs/*
+  Content-Type: application/vnd.debian.binary-package
+  Cache-Control: public, max-age=86400, no-transform
+
+/assets/*
+  Cache-Control: public, max-age=2592000
+
+/*.png
+  Cache-Control: public, max-age=2592000

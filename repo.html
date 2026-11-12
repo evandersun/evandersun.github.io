@@ -189,6 +189,7 @@
   .visit.on{display:block}
   .visit b{font-weight:600;color:#9ecbff}
 </style>
+  <script src="js/site.js"></script>
 </head>
 <body>
 
@@ -226,7 +227,7 @@
 
   <div class="urlbox">
     <div class="lbl">源地址 · 复制后添加到包管理器</div>
-    <code class="url" id="url">https://evandersun.github.io/</code>
+    <code class="url" id="url" data-site="text">https://evandersun.github.io/</code>
     <button id="copy">复制地址</button>
   </div>
 
@@ -235,12 +236,12 @@
       <h2>怎么添加</h2>
       <p class="m" style="font-size:13px;margin:0 0 12px">点击对应客户端，直接跳转并添加本源；未安装该客户端则不会响应。</p>
       <div class="pm-grid">
-        <a class="pm-btn" href="cydia://url/https://cydia.saurik.com/api/share#?source=https://evandersun.github.io/">Cydia</a>
-        <a class="pm-btn" href="sileo://source/https://evandersun.github.io/">Sileo</a>
-        <a class="pm-btn" href="zbra://sources/add/https://evandersun.github.io/">Zebra</a>
-        <a class="pm-btn" href="installer://add/repo=https://evandersun.github.io/">Installer</a>
-        <a class="pm-btn" href="irisin://repository/add?url=https://evandersun.github.io/">Irisin</a>
-        <a class="pm-btn" href="apt-repo://https://evandersun.github.io/">Saily</a>
+        <a class="pm-btn" data-site="href" href="cydia://url/https://cydia.saurik.com/api/share#?source=https://evandersun.github.io/">Cydia</a>
+        <a class="pm-btn" data-site="href" href="sileo://source/https://evandersun.github.io/">Sileo</a>
+        <a class="pm-btn" data-site="href" href="zbra://sources/add/https://evandersun.github.io/">Zebra</a>
+        <a class="pm-btn" data-site="href" href="installer://add/repo=https://evandersun.github.io/">Installer</a>
+        <a class="pm-btn" data-site="href" href="irisin://repository/add?url=https://evandersun.github.io/">Irisin</a>
+        <a class="pm-btn" data-site="href" href="apt-repo://https://evandersun.github.io/">Saily</a>
       </div>
     </div>
     <div class="card">
@@ -342,12 +343,15 @@
       return e;
     }
     /* 详情页地址：control 里的 Depiction 字段；站内地址转成相对路径，本地预览也不会跳到线上 */
-    var SITE_ROOT = 'https://evandersun.github.io/';
+    var SITE_ROOTS = (window.Site && Site.knownRoots()) ? Site.knownRoots() : ['https://evandersun.github.io/'];
     function detailUrl(p){
       var raw = p.depiction || p.sileoDepiction || '';
       if(!raw) return '';
       if(/\.json($|\?)/i.test(raw) && p.depiction) raw = p.depiction;
-      if(raw.indexOf(SITE_ROOT) === 0) return raw.slice(SITE_ROOT.length).replace(/^\//, '');
+      for(var si = 0; si < SITE_ROOTS.length; si++){
+        if(raw.indexOf(SITE_ROOTS[si]) === 0)
+          return raw.slice(SITE_ROOTS[si].length).replace(/^\//, '');
+      }
       var base = (typeof location !== 'undefined' && location.href) ? location.href : SITE_ROOT;
       try{
         var abs = new URL(raw, base);
@@ -551,7 +555,7 @@
 
   /* 每行一个片段，class：c 注释 / k 关键字 / s 字符串 / f 函数 / n 常量 */
   var CODE = [
-    '<span class="c">// evandersun.github.io · 源索引构建</span>',
+    '<span class="c">// ' + (window.Site ? Site.host : 'evandersun.github.io') + ' · 源索引构建</span>',
     '<span class="k">import</span> { gzipSync } <span class="k">from</span> <span class="s">"fflate"</span>;',
     '<span class="k">import</span> { sha256, sha512 } <span class="k">from</span> <span class="s">"./hash.js"</span>;',
     '<span class="k">import</span> { readFile, writeFile } <span class="k">from</span> <span class="s">"node:fs/promises"</span>;',

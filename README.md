@@ -4,6 +4,32 @@
 
 在 Sileo / Zebra / Cydia / Installer 里添加上面的地址即可。
 
+## 部署到 Cloudflare Pages
+
+同一份代码可以原样部署到 CF Pages，页面里的源地址、包管理器深链会自动跟随访问的域名
+（`js/site.js` 提供 `Site.root` / `Site.publicRoot`，各页面用 `data-site` 标记）。
+
+**推荐用 Git 集成**（连本仓库，Framework preset 选 None、Build command 留空、
+Build output directory 填 `/`）。这样 admin 页发公告 / 文章 / 上传插件时写入本仓库，
+会触发 Pages 自动重新部署，功能完整。若改用「直接上传 zip」，CF Pages 只是一份静态快照，
+admin 的写入不会同步过去，必须重新上传。
+
+根目录的 `_headers` 是 CF Pages 专用配置，做三件事：动态数据（`notice.json` /
+`posts.json` / `uploads/manifest.json`）禁用缓存，避免发布后读到旧内容；索引文件
+（`Packages` / `Packages.gz` / `Release`）加 `no-transform`，防止边缘节点二次压缩导致
+包管理器解压失败；`.deb` 与图片设置长缓存。
+
+生成一个可直接拖拽上传的部署包：
+
+```bash
+python3 tools/build_cf_pages.py                          # 自适应域名
+python3 tools/build_cf_pages.py --origin https://域名/   # 绑定自定义域名后固定源地址
+```
+
+`--origin` 会额外把 `Packages`、`depiction` JSON、README 里的绝对 URL 换成新域名，
+重建 `Packages.gz` 并重算 `Release` 里全部 36 项校验和。**注意：更换源地址后，
+已添加过旧源的用户必须在包管理器里重新添加一次。**
+
 ## 目录结构（flat APT repo）
 
 ```
